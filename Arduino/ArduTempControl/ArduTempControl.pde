@@ -1,3 +1,4 @@
+//#define DEBUG
 //pin definitions
 const int led_diag = 13;    //LED For Diagnostics
 const int led_r = 11;
@@ -67,7 +68,7 @@ void loop() {
         set_hvacmode(3);
       }
     } else {
-      set_hvacmode(0);dxZ
+      set_hvacmode(0);
     }
  
     
@@ -95,6 +96,9 @@ void set_hvacmode(int hvacmode) {
    analogWrite(led_g, 255);
    analogWrite(led_r, 255);
    analogWrite(led_b, 255);
+   #ifdef DEBUG
+   Serial.println("hvacmode 0");
+   #endif
    break;
    case 1:  // Heat + Fan
    digitalWrite(RELAY_FAN,HIGH);
