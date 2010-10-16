@@ -1,6 +1,6 @@
 Partlist
 
-Exported from Lipo-ds2764.sch at 10/16/2010 9:04:46 AM
+Exported from Lipo-ds2764.sch at 10/16/2010 10:40:39 AM
 
 EAGLE Version 5.10.0 Copyright (c) 1988-2010 CadSoft
 
@@ -19,8 +19,8 @@ JP1                     JUMPER-2PTH      1X02            SparkFun  1
 JP3                     M04PTH           1X04            SparkFun  1
 R2       1K             RESISTOR0603-RES 0603-RES        SparkFun  1
 R3       1K             RESISTOR0603-RES 0603-RES        SparkFun  1
-R4       150            RESISTOR0603-RES 0603-RES        SparkFun  1
+R4       15R            RESISTOR0603-RES 0603-RES        SparkFun  1
 R13      1K             RESISTOR0603-RES 0603-RES        SparkFun  1
-R14      150            RESISTOR0603-RES 0603-RES        SparkFun  1
-R15      150            RESISTOR0603-RES 0603-RES        SparkFun  1
-R16      150            RESISTOR0603-RES 0603-RES        SparkFun  1
+R14      15R            RESISTOR0603-RES 0603-RES        SparkFun  1
+R15      15R            RESISTOR0603-RES 0603-RES        SparkFun  1
+R16      15R            RESISTOR0603-RES 0603-RES        SparkFun  1
