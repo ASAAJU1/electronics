@@ -1,0 +1,46 @@
+Partlist
+
+Exported from Syn-ShieldCarger-v04.brd at 10/18/2010 5:02:33 PM
+
+EAGLE Version 5.10.0 Copyright (c) 1988-2010 CadSoft
+
+Part     Value                       Package               Library       Position (inch)       Orientation
+
+C1       0.47uF                      0603-CAP              SparkFun      (0.9 0.65)            R0
+C2       10uF                        0603-CAP              SparkFun      (1.1 0.65)            R0
+C3       10uF                        0603-CAP              SparkFun      (0.4875 0.65)         R270
+C4       1uF                         0603-CAP              SparkFun      (1.4 0.725)           R0
+C5       1uF                         0603-CAP              SparkFun      (1.6 0.725)           R0
+CHARGE   ORG                         CHIPLED_0603          adafruit      (1.9 0.075)           R0
+CN1                                  JST-PH-2-THM-RA       adafruit      (0.225 0.85)          R90
+CN3                                  USB-MINIB             adafruit      (0.15 1.2)            R270
+D1                                   SOD-323               SparkFun      (0.45 1.175)          R90
+D2                                   SMA-DIODE             SparkFun      (0.375 0.5875)        R90
+D3       ADR510                      SOT23-3               0_jc-modified (1.65 1.15)           R90
+ERR      RED                         CHIPLED_0603          adafruit      (1.825 0.075)         R0
+IC3                                  SO16-150MIL           0_jc-custom   (1 0.9)               R180
+JP1                                  1X02                  SparkFun      (0.375 0.9)           R270
+JP2                                  SJ_2S                 SparkFun      (1.5 1.225)           R0
+JP3                                  SJ_2S                 SparkFun      (1.4 0.55)            R0
+JP4                                  1X02                  SparkFun      (1.9 1.7)             R180
+JP6                                  SCREWTERMINAL-3.5MM-2 SparkFun      (0.15 0.5)            R90
+JP7      M12PTH                      1X12                  SparkFun      (1.7 1.35)            R180
+JP8      M12PTH                      1X12                  SparkFun      (1.7 0.45)            R180
+JP9                                  SJ_2S                 SparkFun      (0.85 1.225)          R180
+JP10                                 SJ_2S                 SparkFun      (0.725 1.225)         R180
+JP11                                 SJ_2S                 SparkFun      (1.4 1.225)           R0
+JP12     M14                         1X14                  SparkFun      (1.7 1.7)             R180
+JP13     M14                         1X14                  SparkFun      (1.675 0.1)           R180
+JP15                                 SJ_2                  SparkFun      (0.4 0.35)            R180
+LED3                                 CHIPLED_0603          adafruit      (1.975 0.075)         R0
+R1       10K                         0603-RES              SparkFun      (1.65 1.025)          R180
+R2       6.19K                       0603-RES              0_jc-custom   (0.7 0.9)             R90
+R3       7.3K                        0603-RES              0_jc-custom   (0.425 1.375)         R180
+R4       1K                          0603-RES              SparkFun      (1.925 0.25)          R270
+R5       1M                          0603-RES              SparkFun      (1.25 0.55)           R180
+R6       1M                          0603-RES              SparkFun      (1.1 0.55)            R180
+RTH      10K @ 25degC                AXIAL-0603            0_jc-custom   (0.3125 1.475)        R180
+R_PROG                               AXIAL-0603            0_jc-custom   (0.575 0.9)           R90
+U$1      SYNAPSEWIRELESS-RFENGINESTD SYNAPSERFENGINE       0_jc-custom   (1.65 1.51)           R270
+VRAUX    MCP1802                     SOT23-5               0_jc-modified (1.6 0.85)            R90
+VRMAIN   MCP1802                     SOT23-5               0_jc-modified (1.4 0.85)            R90

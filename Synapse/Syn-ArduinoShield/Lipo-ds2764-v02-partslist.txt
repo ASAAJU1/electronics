@@ -1,0 +1,26 @@
+Partlist
+
+Exported from Lipo-ds2764-v02.brd at 10/18/2010 5:01:55 PM
+
+EAGLE Version 5.10.0 Copyright (c) 1988-2010 CadSoft
+
+Part     Value          Package         Library   Position (mm)         Orientation
+
+C1       1nF            0603-CAP        SparkFun  (11.1125 13.0175)     R90
+C2       1nF            0603-CAP        SparkFun  (8.89 13.0175)        R270
+C3       1nF            0805            SparkFun  (23.8125 7.9375)      R90
+C13      0.1uF          0603-CAP        SparkFun  (8.89 8.255)          R270
+C14      0.1uF          0603-CAP        SparkFun  (13.97 1.5875)        R0
+CN1                     JST-PH-2-THM-RA adafruit  (5.715 8.89)          R90
+CN2                     JST-PH-2-THM-RA adafruit  (27.6225 8.89)        R270
+IC1      IRF7750        TSSOP8-4.4MM    ssozonoff (17.78 12.7)          R0
+IC2      DS2764         DS2764          ssozonoff (16.51 5.3975)        R270
+JP1                     1X02            SparkFun  (2.54 2.54)           R0
+JP3                     1X04            SparkFun  (23.495 1.905)        R0
+R2       1K             0603-RES        SparkFun  (23.8125 11.43)       R270
+R3       1K             0603-RES        SparkFun  (8.89 4.7625)         R270
+R4       15R            0603-RES        SparkFun  (14.9225 9.8425)      R0
+R13      1K             0603-RES        SparkFun  (11.1125 8.255)       R90
+R14      15R            0603-RES        SparkFun  (18.415 9.8425)       R180
+R15      15R            0603-RES        SparkFun  (22.225 5.3975)       R270
+R16      15R            0603-RES        SparkFun  (18.7325 1.5875)      R0
