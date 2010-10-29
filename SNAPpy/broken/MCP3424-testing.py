@@ -2,6 +2,25 @@
 Program Description:    MCP3424.py - Example I2C routines for the Microchip MCP3424 ADC.
 
 Thanks:                 http://forums.adafruit.com/viewtopic.php?f=31&t=12269
+
+Notes:
+Config register:
+bit 7   !RDY bit. on read 0 is newest data, 1 is not
+        in one shot mode, write a 1 to initiate a conversion
+bit 6-5 00=chan1, 01=chan2, 10=chan3, 11=chan4
+bit 4   !O/C
+        1 = continuous conversion mode
+        0 = one shot conversion
+bit 3-2 Sample rate
+        00 = 240 sps    12 bits
+        01 = 60 sps     14 bits
+        10 = 15 sps     16 bits
+        11 = 3.75 sps   18 bits
+bit 1-0 PGA Gain Selection
+        00 = x1
+        01 = x2
+        10 = x4
+        11 = x8
  
 -------------------------------------------------------------------------------------------------
 """
@@ -14,7 +33,8 @@ from synapse.switchboard import *
 portalAddr = '\x00\x00\x01' # hard-coded address for Portal <------------<<<<<<<<
 LED_PIN = GPIO_1
 
-MCP3424_ADDRESS = '\xD1' #1slave address is 01101000 which shifts to 11010001(R/W)
+MCP3424_ADDRESS = '\xD0'  #1slave address is 11010000 which shifts to 11010001(R/W)
+MCP3424_RADDRESS = '\xD1' #1slave address is 11010000 which shifts to 11010001(R/W)
 retries = 1
 
 # Glocal MCP3424 fields in config register
@@ -85,62 +105,58 @@ def MCP3424_init():
     #MCP3424_Write(adcConfig)
     #print "ADC_Config after write:",
     #print adcConfig
+    jt = MCP3424_16_BIT | MCP3424_CHANNEL_1 | MCP3424_START
+    print ord(jt)
     
+def MCP3424_config(chan, res, gain):
+    """Change the configuration of the mcp3424"""
+    global adcConfig
+    adcConfig |= chan << 5 | res << 2 | gain
+    #mvDivisor = 1 << (gain + 2*res)
+    print "ADC_Config: ",chr(adcConfig),adcConfig
+    MCP3424_Write(adcConfig)
+    return getI2cResult()
     
 def MCP3424_Write(config):
-    global MCP3424_ADDRESS
     cmd = ""
-    cmd += ord(MCP3424_ADDRESS )
-    cmd += ord(config)
+    cmd += MCP3424_ADDRESS
+    cmd += chr(config)
     i2cWrite(cmd,retries,False)
     print "Address: ",
-    print MCP3424_ADDRESS,
+    print ord(MCP3424_ADDRESS),
     print " Config: ",
-    print config,
+    print config," ",ord(config),
     print " Cmd: ",
-    print cmd,
+    print cmd," ",ord(cmd),
     print " Result: ",
     print getI2cResult()
     
     
 def MCP3424_Read():
-    global MCP3424_ADDRESS
-    data = i2cRead( MCP3424_ADDRESS, 4, 1, False)
-    rpc(portalAddr, "logEvent", data)
+    global MCP3424_RADDRESS
+    data = i2cRead( MCP3424_RADDRESS, 4, 1, False)
+    #rpc(portalAddr, "logEvent", data)
     
-    print ord(data[0])
-    print ord(data[1])
-    print ord(data[2])
     print ord(data[3])
-    print ord( MCP3424_ADDRESS )
-    print MCP3424_ADDRESS
+    print ord(data[2])
+    print ord(data[1])
+    print ord(data[0])
+    #print ord( MCP3424_ADDRESS )
+    #print MCP3424_ADDRESS
+    # in 12 bit mode this works!
+    msb = ord( data[0] )
+    lsb = ord( data[1] )
+    temp = ( msb <<8 ) | lsb;
+    # for positive
+    # input voltage = outputcode * (LSB/PGA)
+    # for negative
+    # input voltage = 2s compliment outputcode * (LSB/PGA)
+    # LSB Information:
+    # 12 bits   1mv
+    # 14 bits   250uv
+    # 16 bits   62.5uv
+    # 18 bits   15.625uv
+    print temp
+    rpc(portalAddr, "ADC_milliVolt", temp)
 
-    return getI2cResult()
-
-def jtest():
-    print adcConfig
-    print ord( MCP3424_START )
-    print ord( MCP3424_CHANNEL_1 )
-    print ord( MCP3424_CONTINUOUS )
-    
-    adcConfig2 = ord( MCP3424_START ) 
-    adcConfig2 += ord( MCP3424_CHANNEL_1 ) 
-    adcConfig2 += ord( MCP3424_CONTINUOUS )
-    
-    print adcConfig2
-    
-def scani():
-    x = 60
-    while x < 128:
-        i2cRead(x,1,1,False)
-        #print "Address: ",x,
-        #print " result: ",
-        #print getI2cResult()
-        if(getI2cResult() == 1):
-            print "A:",x
-        #rpc(portalAddr, "logEvent", data)
-        x += 1
-    print "Done!"
-    
-    
-    
+    return temp
