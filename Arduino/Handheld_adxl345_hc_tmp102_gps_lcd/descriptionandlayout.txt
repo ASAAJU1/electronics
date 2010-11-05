@@ -1,0 +1,26 @@
+Arduino - Seeeduino Stalker - Handheld enclosure
+D0	RX
+D1	TX
+D2	XBEE Assoc
+D3	LCD_D7
+D4	LCD_D6
+D5	LCD_D5
+D6	LCD_D4
+D7	LCD_EN
+D8	LCD_RS
+D9	LCD_Backlight+
+D10	SD_Cs
+D11	SD_DI
+D12	SD_DO
+D13	SD_CLK
+A0	
+A1	
+A2 	
+A3	
+A4	SDA33
+A5	SCL33
+
+Sensors:
+ADXL345
+HMC6352
+MediaTekGPS
