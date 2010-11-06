@@ -13,7 +13,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 // Other code credits?
 /////////////////////////////////////////////////////////////////////////////////////////
-
+#include "config.h"
 #define ADXL345 (0x53)    //ADXL345 device address
 #define TO_READ (6)        //num of bytes we are going to read each time (two bytes for each axis)
 
@@ -41,12 +41,13 @@ long previousMillis = 0;  // will store last time Temp was updated
 // A simple data logger for the Arduino analog pins
 #define ECHO_TO_SERIAL   1 // echo data to serial port
 #define WAIT_TO_START    1 // Wait for serial input in setup()
+#define DEBUG            0 // Turn on or off Debug statements
 int LOG_INTERVAL = 500; // mills between entries
 int SYNC_INTERVAL = 1000; // mills between calls to sync()
 uint32_t syncTime = 0;     // time of last sync()
 ////////////////////////////////////////
-int lcdBLP = 9;
-int lcdBL = 64;
+int lcdBLP = 9;  // LCD Backlight Pin
+int lcdBL = 64;  // LCD Backlight PWM Brightness
 ////////////////////////////////////////
 
 #include <SdFat.h>
@@ -89,7 +90,7 @@ void error_P(const char* str) {
 	SerialPrintln_P(str);
 	lcd.print(str);
 	if (card.errorCode()) {
-		PgmPrint("SD error: ");
+		PgmPrint("uSD error: ");
 		lcd.setCursor(0,1);
 		lcd.print("uSD error: ");
 		Serial.print(card.errorCode(), HEX);
@@ -98,13 +99,13 @@ void error_P(const char* str) {
 		lcd.print(card.errorCode(), HEX);
 		lcd.print(',');
 		lcd.print(card.errorData(), HEX);
-	}
+	}  // end if
 	while(1);
-}
+}  // end of error_P
 
 void setup(void) {
 	Serial.begin(9600);
-	analogWrite(lcdBLP, lcdBL);
+	analogWrite(lcdBLP, lcdBL);  
 	lcd.begin(16,2);
 	lcd.print("HHS alpha 0.0.4");
 	lcd.setCursor(0, 1);
@@ -120,7 +121,7 @@ void setup(void) {
 	Serial.println();
 
 #if WAIT_TO_START
-	Serial.println("Type any character to start");
+	Serial.println("Type any character to start, or press i for info");
 	while (!Serial.available());
 	int inByte = Serial.read();
 	//Serial.println(inByte);
@@ -166,6 +167,7 @@ void setup(void) {
 	if (file.writeError || !file.sync()) {
 		error("write header failed");
 	}
+
 	Wire.begin();        // join i2c bus (address optional for master)
 	//Turning on the ADXL345
 	writeTo(ADXL345, 0x2D, 0);      
@@ -273,6 +275,9 @@ void loop(void) {
 #if ECHO_TO_SERIAL
 	Serial.println();
 #endif //ECHO_TO_SERIAL
+	////////////////////////////////////////////
+	// print to lcd 
+	////////////////////////////////////////////
 	lcd.clear();
 	lcd.print(reading);
 	lcd.setCursor(5,0);
@@ -291,7 +296,7 @@ void loop(void) {
 	if ((millis() - syncTime) <  SYNC_INTERVAL) return;
 	syncTime = millis();
 	if (!file.sync()) error("sync failed");
-}
+}  // end of loop
 
 
 
@@ -539,32 +544,41 @@ void scanFunc( byte addr, byte result ) {
 
 int menuSetup(int opt1) {
 	int ii = 1;
+	char x_buffer[3];
+	char y_buffer[4];
+	int j = 0;
 	while (ii == 1) {
+		PgmPrint("=====");
 		PgmPrint("=====");
 		PgmPrint("=====");
 		PgmPrint("=====");
 		Serial.print(" information ");
 		PgmPrint("=====");
 		PgmPrint("=====");
+		PgmPrint("=====");
 		PgmPrintln("=====");
 		lcd.clear();
 		lcd.print("Sample: ");
-		lcd.print(1000/LOG_INTERVAL);
+		lcd.print(1000.0/LOG_INTERVAL);
 		lcd.print("Hz");
 		lcd.setCursor(0,1);
 		lcd.print("Sync: ");
-		lcd.print(1000/SYNC_INTERVAL);
+		lcd.print(1000.0/SYNC_INTERVAL);
 		lcd.print("Hz");
 		Serial.print("Sample Rate: ");
-		Serial.print(1000/LOG_INTERVAL);
-		Serial.print("Hz  Log Rate: ");
-		Serial.print(1000/SYNC_INTERVAL);
+		Serial.print(1000.0/LOG_INTERVAL);
+		Serial.print("Hz  Sync Rate: ");
+		Serial.print(1000.0/SYNC_INTERVAL);
 		Serial.println("Hz");
+		Serial.println("ADXL345:\tActive\t HMC6352:\tActive");
+		Serial.println("RTC:    \tActive\t TMP102: \tActive");
 
 		PgmPrint("=====");
 		PgmPrint("=====");
 		PgmPrint("=====");
-		Serial.print(" Setup Menu ");
+		PgmPrint("=====");
+		Serial.print(" Setup  Menu ");
+		PgmPrint("=====");
 		PgmPrint("=====");
 		PgmPrint("=====");
 		PgmPrintln("=====");
@@ -572,6 +586,8 @@ int menuSetup(int opt1) {
 		Serial.println("1. Scan I2C Bus");
 		Serial.println("2. SD Info");
 		Serial.println("3. Change Sample Rate");
+		Serial.println("4. Change Sync Rate");
+		Serial.println("5. Change LCD Brightness");
 		Serial.println("0. Exit");
 		while (!Serial.available());
 		if (Serial.available() > 0) {
@@ -598,15 +614,71 @@ int menuSetup(int opt1) {
 				printSDInfo();
 				break;
 			case '3':
-				Serial.println("Enter new sample rate in milliseconds: ");
+				Serial.println("Enter new sample rate in milliseconds(xxx): ");
 				while (Serial.available()<3);
-				char x_buffer[3];
+				//char x_buffer[3];
 				if (Serial.available()){
-					for (int j = 0; j <3; j++) {
+					for (j = 0; j < 3; j++) {
 						x_buffer[j] = Serial.read();
+						#if DEBUG
+						Serial.print(" ");
+						Serial.print(j, DEC);
+						Serial.print(" ");
+						Serial.print(x_buffer[j]);
+						Serial.print(" ");
+						#endif
 					}
 					LOG_INTERVAL = atoi(x_buffer);
 					Serial.println(LOG_INTERVAL);
+					Serial.flush();
+				}
+				break;
+			case '4':
+				Serial.println("Enter new sync rate in milliseconds(xxxx): ");
+				while (Serial.available()<4);
+				//char y_buffer[4];
+				if (Serial.available()){
+					for (j = 0; j < 4; j++) {
+						y_buffer[j] = Serial.read();
+						#if DEBUG
+						Serial.print(" ");
+						Serial.print(j, DEC);
+						Serial.print(" ");
+						Serial.print(y_buffer[j]);
+						Serial.print(" ");
+						#endif
+					}
+					SYNC_INTERVAL = atoi(y_buffer);
+					Serial.println(SYNC_INTERVAL);
+					Serial.flush();
+					for (j = 0; j < 4; j++) {
+						y_buffer[j] = 0;
+					}
+				}
+				break;
+			case '5':
+				Serial.println("Enter new lcd backlight value 000-255: ");
+				while (Serial.available()<3);
+				//char x_buffer[3];
+				if (Serial.available()){
+					for (j = 0; j <3; j++) {
+						x_buffer[j] = Serial.read();
+						#if DEBUG
+						Serial.print(" ");
+						Serial.print(j, DEC);
+						Serial.print(" ");
+						Serial.print(x_buffer[j]);
+						Serial.print(" ");
+						#endif
+					}
+					lcdBL = atoi(x_buffer);
+					Serial.flush();
+					Serial.print("Setting LCD Backlight to ");
+					Serial.print(lcdBL);
+					Serial.print(". ");
+					analogWrite(lcdBLP, lcdBL);
+					Serial.print(lcdBL/255.0 * 100.0);
+					Serial.println("%");
 				}
 				break;
 			case '0':
