@@ -6,6 +6,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 // Sd functions based off of SdFat Analog logger
 // also sdfatinfo
+// http://code.google.com/p/sdfatlib/
 /////////////////////////////////////////////////////////////////////////////////////////
 // ADXL345 code from forum??
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -222,14 +223,23 @@ void loop(void) {
 	file.print(y);
 	file.print(",");
 	file.print(z);
-	file.print(",");
+	file.print(", ");
 #if ECHO_TO_SERIAL
 	Serial.print(x);
 	Serial.print(",");
 	Serial.print(y);
 	Serial.print(",");
 	Serial.print(z);
-	Serial.print(",");
+	Serial.print(", ");
+#endif //ECHO_TO_SERIAL
+	////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////
+	float valtemp = readTMP();
+	file.print(valtemp);
+	file.print(", ");
+#if ECHO_TO_SERIAL
+	Serial.print(valtemp);
+	Serial.print(", ");
 #endif //ECHO_TO_SERIAL
 	////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////
@@ -354,6 +364,27 @@ int readCompass(void) {
 	} 
 	return reading;
 } 
+
+float readTMP(void) {
+	byte res;
+	byte msb;
+	byte lsb;
+	int val;
+	float valF;
+	int valP;
+	res = Wire.requestFrom(72,2); //add0 tied to GND
+	if (res == 2) {
+		msb = Wire.receive(); /* Whole degrees */
+		lsb = Wire.receive(); /* Fractional degrees */
+		//Serial.print(msb,BIN);
+		//Serial.print(".");
+		//Serial.print(lsb,BIN);
+		val = ((msb) << 4) | ((lsb) >> 4); /* LSB */
+		valF = (val*0.1125+32);
+		valP = val*0.0625;
+		return valF;
+	}
+}
 
 //void printDT(void) {
 //}
