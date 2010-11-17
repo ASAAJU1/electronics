@@ -119,6 +119,10 @@ def clearProtRegister():
 
 def getDSProtectState():
     bitSet = ord(readDS2764(0x00,1))
+    return bitSet
+
+def printDSProtectState():
+    bitSet = getDSProtectState()
     binStr = ""
     # lookup = ["OV","UV","COC","DOC","CC","DC","CE","DE"]
     i = 0
