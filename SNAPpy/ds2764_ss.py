@@ -4,7 +4,6 @@ Program Description:    DS2764.py - Example I2C routines for the Maxim DS2764.
 -------------------------------------------------------------------------------------------------
 """
 
-#from synapse.pinWakeup import *
 from synapse.platforms import *
 from synapse.switchboard import *
 from synapse.hexSupport import *
@@ -14,8 +13,6 @@ DS2764_ADDRESS = 52<<1  #1slave address is 01101000 which shifts to 01101001(R/W
 retries = 1
 
 buffer = 0
-initComplete = False
-
 msLoopCounter = 0
 
 #--------------------
@@ -24,7 +21,6 @@ msLoopCounter = 0
 
 @setHook(HOOK_STARTUP)
 def start():
-    global initComplete
     # Go ahead and redirect STDOUT to Portal now
     ucastSerial("\x00\x00\x01") # put your correct Portal address here!
     crossConnect(DS_STDIO,DS_TRANSPARENT)
@@ -36,7 +32,7 @@ def start():
 @setHook(HOOK_100MS)
 def triggeredAt100ms():
     global buffer, msLoopCounter
-    if initComplete and msLoopCounter >= 5:        
+    if msLoopCounter >= 5:        
         buffer = readDS2764(0x0C,6)   
         msLoopCounter = 0
              
@@ -109,7 +105,7 @@ def setAccumulatedCurrent(mAhValue):
     cmd += chr(lsb)
     return sendDS2764(cmd)
 
-def clearProtRegister():
+def clearDSProtRegister():
     cmd = buildDSCmd(0x00, False)    
     cmd = cmd + chr(0x03) 
     r = sendDS2764(cmd)   
@@ -117,16 +113,18 @@ def clearProtRegister():
         print "I2C error " + str(r)
         
 
-def getDSProtectState():
+def getDSProtRegister():
     bitSet = ord(readDS2764(0x00,1))
     return bitSet
 
-def printDSProtectState():
-    bitSet = getDSProtectState()
+def printDSProtRegister():
+    bitSet = getDSProtRegister()
     binStr = ""
     # lookup = ["OV","UV","COC","DOC","CC","DC","CE","DE"]
     i = 0
     while i < 8:
+        if (i == 0):
+            binStr += "|"
         binStr += "1|" if (bitSet & 128) else "0|"        
         bitSet = bitSet << 1
         i = i+1
