@@ -12,26 +12,15 @@ portalAddr = '\x00\x00\x01' # hard-coded address for Portal <------------<<<<<<<
 DS2764_ADDRESS = 52<<1  #1slave address is 01101000 which shifts to 01101001(R/W)
 retries = 1
 
+dataFetchTriggerCalled = False
 buffer = 0
 msLoopCounter = 0
 
-#--------------------
-# Startup Hook
-#--------------------    
 
-@setHook(HOOK_STARTUP)
-def start():
-    # Go ahead and redirect STDOUT to Portal now
-    ucastSerial("\x00\x00\x01") # put your correct Portal address here!
-    crossConnect(DS_STDIO,DS_TRANSPARENT)
-    
-    # I2C GPIO_17/18 used for MCP3424
-    i2cInit(True)
-    initComplete = True
-    
-@setHook(HOOK_100MS)
-def triggeredAt100ms():
-    global buffer, msLoopCounter
+def DS2764FetchBasic():
+    """ Too be called every 100ms """
+    global buffer, msLoopCounter, dataFetchTriggerCalled
+    dataFetchTriggerCalled = True
     if msLoopCounter >= 5:        
         buffer = readDS2764(0x0C,6)   
         msLoopCounter = 0
@@ -41,7 +30,9 @@ def triggeredAt100ms():
         
 def readDS2764(firstReg, numRegs):
     cmd = buildDSCmd(firstReg, False)
-    i2cWrite(cmd, retries, False)    
+    i2cWrite(cmd, retries, False)
+    if (getI2cResult() == 0):
+        print "You must call i2cInit() before using the library"
     cmd = chr( DS2764_ADDRESS | 1 )
     return i2cRead(cmd, numRegs, retries, False)
     
@@ -57,22 +48,29 @@ def buildDSCmd(registerAddress, isRead):
     return cmd    
 
 def getDSVoltage():
-    global buffer
-    v = (ord(buffer[0])) << 8 | ord(buffer[1])
-    v = v >> 6    
-    v = (((v*61) / 10) * 8) / 10
-    v = v << 1
-    return v
+    if (not dataFetchTriggerCalled):
+        print "You must call DS2764FetchBasic() every 100ms!!"
+    else:
+        v = (ord(buffer[0])) << 8 | ord(buffer[1])
+        v = v >> 6    
+        v = (((v*61) / 10) * 8) / 10
+        v = v << 1
+        return v
 
 def getDSCurrent():
-    global buffer
-    c = (ord(buffer[2]) << 8 ) | ord(buffer[3])
-    c = c / 8 * 5 / 8
-    return c
+    if (not dataFetchTriggerCalled):
+        print "You must call DS2764FetchBasic() every 100ms!!"
+    else:
+        c = (ord(buffer[2]) << 8 ) | ord(buffer[3])
+        c = c / 8 * 5 / 8
+        return c
 
 def getDSACurrent():
-    ac = ((ord(buffer[4]) << 8) | ord(buffer[5])) / 4
-    return ac
+    if (not dataFetchTriggerCalled):
+        print "You must call DS2764FetchBasic() every 100ms!!"
+    else:
+        ac = ((ord(buffer[4]) << 8) | ord(buffer[5])) / 4
+        return ac
 
 def getDSTemperature():
     buf = readDS2764(0x18,2)
