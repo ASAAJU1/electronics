@@ -1,2 +1,5 @@
 - Fix USB connecter part. The "guide holes" are not spaced properly based on the part we are using
-- Add some solderless jumprs to route I2C correctly based on an RF100 or RF200
+- Add some solderless jumpers to route I2C correctly based on an RF100 or RF200
+
+- Make sure decoupling caps are physically as close as possible to the MCP73861
+- add pullups for I2C bus, done rely on RFEngine pullups.
