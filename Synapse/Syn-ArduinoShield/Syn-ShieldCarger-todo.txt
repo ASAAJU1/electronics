@@ -3,3 +3,6 @@
 
 - Make sure decoupling caps are physically as close as possible to the MCP73861
 - add pullups for I2C bus, done rely on RFEngine pullups.
+
+- Research a wat to toggle te EN pin on MCP73861. Must be high when going from no power -> power
+- Research alternative to achieve maximum power usage provided by solar panel
