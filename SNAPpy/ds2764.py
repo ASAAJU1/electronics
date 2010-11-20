@@ -12,8 +12,10 @@ from synapse.hexSupport import *
 portalAddr = '\x00\x00\x01' # hard-coded address for Portal <------------<<<<<<<<
 LED_PIN = GPIO_0
 
-DS2764_ADDRESS = 52<<1  #1slave address is 01101000 which shifts to 01101001(R/W)
+DS2764_ADDRESS = 52<<1  #slave address is 01101000 which shifts to 01101001(R/W)
+PCF2129_ADDRESS = 81<<1 #slave address is 10100010 which shifts to 10100011(R/W)
 retries = 1
+buffer = 0
 
 #--------------------
 # Startup Hook
@@ -35,7 +37,7 @@ def start():
     i2cInit(True)
     
     #Test TX
-    mcastRpc(1,1, "testTx")
+    #mcastRpc(1,1, "testTx")
     #rpc(portalAddr, setButtonCount, 5)
 
     
@@ -46,7 +48,7 @@ def start():
 @setHook(HOOK_100MS)    
 def timer100msEvent(currentMs):
     """On the 100ms tick, pulse the LED"""
-    pulsePin(LED_PIN, 25, True)
+    #pulsePin(LED_PIN, 25, True)
 
 #--------------
 # RPC_Sent Hook
@@ -55,9 +57,8 @@ def timer100msEvent(currentMs):
 #def rpcSentEvent(bufRef):
 #    mcastRpc(1,1, "testTx")
 
-def buildTWICmd(registerAddress, isRead):
+def buildTWICmd(slaveAddress, registerAddress, isRead):
     """internal helper routine"""
-    slaveAddress = DS2764_ADDRESS
     if isRead:
         slaveAddress |= 1 # read        
  
@@ -68,7 +69,7 @@ def buildTWICmd(registerAddress, isRead):
  
 def readDS2764(firstReg, numRegs):
     """read registers starting at firstReg and numRegs"""
-    cmd = buildTWICmd(firstReg, False)
+    cmd = buildTWICmd(DS2764_ADDRESS, firstReg, False)
     #dumpHex(cmd)
     i2cWrite(cmd, retries, False)
     #print getI2cResult()
@@ -78,12 +79,69 @@ def readDS2764(firstReg, numRegs):
     result = i2cRead(cmd, numRegs, retries, False)
 
     #dumpHex(result)
+    return result
+
+def readPCF2129(firstReg, numRegs):
+    """read registers starting at firstReg and numRegs"""
+    cmd = buildTWICmd(PCF2129_ADDRESS, firstReg, False)
+    #dumpHex(cmd)
+    i2cWrite(cmd, retries, False)
+    #print getI2cResult()
+    
+    cmd = chr( PCF2129_ADDRESS | 1 )
+    #dumpHex(cmd)
+    result = i2cRead(cmd, numRegs, retries, False)
+
+    #dumpHex(result)
     #print getI2cResult()
     return result
 
+def displayClockTime():
+    global buffer
+    buffer = readPCF2129(0x03,7)
+    
+    Seconds = bcdToDec(ord(buffer[0]) & 0x7F)
+    Minutes = bcdToDec(ord(buffer[1]) & 0x7F)
+    Hours = bcdToDec(ord(buffer[2]) & 0x3F)
+    Days = bcdToDec(ord(buffer[3]) & 0x3F)
+    DOW = bcdToDec(ord(buffer[4]) & 0x07)
+    Months = bcdToDec(ord(buffer[5]) & 0x1F)
+    Years = bcdToDec(ord(buffer[6]))
+    eventString = "Military Time: " + str(Hours) + ":" + str(Minutes) + ":" + str(Seconds) + " DOW = " + str(DOW) 
+    rpc(portalAddr, "logEvent", eventString)
+    
+    #print str(Hours),":",str(Minutes),":",str(Seconds),
+    #print " ",str(Years),"/",str(Months),"/",str(Days)," ",str(DOW)
+def displayClockDate():
+    global buffer
+    buffer = readPCF2129(0x03,7)
+    
+    Seconds = bcdToDec(ord(buffer[0]) & 0x7F)
+    Minutes = bcdToDec(ord(buffer[1]) & 0x7F)
+    Hours = bcdToDec(ord(buffer[2]) & 0x3F)
+    Date = bcdToDec(ord(buffer[3]) & 0x3F)
+    DOW = bcdToDec(ord(buffer[4]) & 0x07)
+    Month = bcdToDec(ord(buffer[5]) & 0x1F)
+    Year = bcdToDec(ord(buffer[6]))
+    eventString = "Date: " + str(Month) + "/" + str(Date) + "/" + str(Year) 
+    rpc(portalAddr, "logEvent", eventString)
+    
+def writeClockTime(Year,Month,Day,DOW,Hour,Minute,Second):
+    cmd = buildTWICmd(PCF2129_ADDRESS, 0x03, False)
+    cmd += chr(decToBcd(int(Second)))
+    cmd += chr(decToBcd(int(Minute)))
+    cmd += chr(decToBcd(int(Hour)))
+    cmd += chr(decToBcd(int(Day)))
+    cmd += chr(decToBcd(int(DOW)))
+    cmd += chr(decToBcd(int(Month)))
+    cmd += chr(decToBcd(int(Year)))
+    #dumpHex(cmd)
+    i2cWrite(cmd, retries, False)
+    return getI2cResult()
+
 def writeDS2764(Reg, Value):
     """Write to a register on the DS2764"""
-    cmd = buildTWICmd(Reg, False)
+    cmd = buildTWICmd(DS2764_ADDRESS, Reg, False)
     cmd += chr( Value )
     dumpHex(cmd)
     i2cWrite(cmd, retries, False)
@@ -176,4 +234,12 @@ def printDSProtectState():
         print "Sleep Mode Enabled"
     
     
+def decToBcd(val):
+    return ( (val/10*16) + (val%10) ) 
+
+def bcdToDec(val):
+    return ( (val/16*10) + (val%16) )   
+
+def getPortalTime():
+    rpc(portalAddr, "setRFTime", localAddr())
     
