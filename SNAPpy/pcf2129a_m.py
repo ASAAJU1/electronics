@@ -83,6 +83,17 @@ def displayClockDT():
     DOW = bcdToDec(ord(buff[4]) & 0x07)
     Months = bcdToDec(ord(buff[5]) & 0x1F)
     Years = bcdToDec(ord(buff[6]))
+    
+    if (Months < 10):
+        Months = str(0) + str(Months)
+    if (Days < 10):
+        Days = str(0) + str(Days)
+    if (Hours < 10):
+        Hours = str(0) + str(Hours)
+    if (Minutes < 10):
+        Minutes = str(0) + str(Minutes)    
+    if (Seconds < 10):
+        Seconds = str(0) + str(Seconds)
     eventString = str(Years) + str(Months) + str(Days) + str(Hours) +  str(Minutes) + str(Seconds)
     #rpc(portalAddr, "logEvent", eventString)
     return eventString
