@@ -26,24 +26,66 @@
 
 int dsAddress = 0x34;
 int reading = 0; 
+byte inByte;
+int seconds;
+int minutes;
+int hours;
+int t;
 
 void setup() 
 { 
 	Serial.begin(9600);          // start serial communication at 9600bps 
+	Serial.print(".");
 	Wire.begin();                // join i2c bus (address optional for master) 
-	resetdsProtection();
+	//resetdsProtection();
 	Serial.println("End Setup");
 } 
 
 void loop() 
 { 
+	if (Serial.available()) {
+		inByte = Serial.read();
+		switch (inByte) {
+		case '1':
+			Wire.beginTransmission(dsAddress);
+			Wire.send(0x00);
+			Wire.send(0x03);  //Clear OV and UV, enable charge and discharge
+			//Wire.send(0x00);  //Clear OV and UV, diable charge and discharge
+			Wire.endTransmission();
+			Serial.println("Enable charge and discharge");
+			break;
+		case '0':
+			Wire.beginTransmission(dsAddress);
+			Wire.send(0x00);
+			//Wire.send(0x03);  //Clear OV and UV, enable charge and discharge
+			Wire.send(0x00);  //Clear OV and UV, diable charge and discharge
+			Wire.endTransmission();
+			Serial.println("Disable Charge and Discharge");
+			break;
+		}
+	}
+
+
+	
 	getdsProtection();
 	getdsVoltage();  
 	getdsTemp();
+	Serial.print(",");
+t = millis() / 1000;
+hours = t / 3600;
+minutes = t/60 - (60 * hours);
+seconds = t - (3600 * hours) - (60 * minutes);
+Serial.print(hours);
+Serial.print(":");
+Serial.print(minutes);
+Serial.print(":");
+Serial.print(seconds);
+Serial.print(",");
+	Serial.print(millis());
 
 	for (int i=0; i<10; i++) {
 		Serial.print(".");
-		delay(1000);
+		delay(100);
 	}
 	Serial.println();
 
@@ -64,7 +106,7 @@ float getdsTemp() {
 		reading = reading >> 5;
 		reading = reading * 0.125;
 		Serial.print(reading);    // print the reading 
-		Serial.println(" degree C");
+		Serial.print(" degree C ");
 	}
 
 	return reading;
@@ -85,15 +127,15 @@ int getdsProtection(void) {
 		//Serial.println(dsProtect,BIN);
 		//Serial.println(dsStatus,BIN);
 
-		if (dsProtect & DS00OV) { Serial.println("Over Voltage"); }
-		if (dsProtect & DS00UV) { Serial.println("Under Voltage"); }
-		if (dsProtect & DS00COC) { Serial.println("Charge Over Current"); }
-		if (dsProtect & DS00DOC) { Serial.println("Discharge Over Current"); }
-		if (dsProtect & DS00CC) { Serial.println("CC Pin state"); }
-		if (dsProtect & DS00DC) { Serial.println("DC Pin State"); }
-		if (dsProtect & DS00CE) { Serial.println("Charging Enabled"); }
-		if (dsProtect & DS00DE) { Serial.println("Discharging Enabled"); }
-		if (dsStatus & 32) { Serial.println("Sleep mode enabled");}
+		if (dsProtect & DS00OV) { Serial.print("Over Voltage, "); }
+		if (dsProtect & DS00UV) { Serial.print("Under Voltage, "); }
+		if (dsProtect & DS00COC) { Serial.print("Charge Over Current, "); }
+		if (dsProtect & DS00DOC) { Serial.print("Discharge Over Current, "); }
+		if (dsProtect & DS00CC) { Serial.print("CC Pin state, "); }
+		if (dsProtect & DS00DC) { Serial.print("DC Pin State, "); }
+		if (dsProtect & DS00CE) { Serial.print("Charging Enabled, "); }
+		if (dsProtect & DS00DE) { Serial.print("Discharging Enabled, "); }
+		if (dsStatus & 32) { Serial.print("Sleep mode enabled, ");}
 	}
 	return dsProtect;
 }
@@ -125,22 +167,18 @@ float getdsVoltage(void) {
 		acurrent = acurrent << 8;
 		acurrent += Wire.receive();
 		
-		if ((current & 0x80) == 0x80) {
-			current = (current ^ 0xFFFFFFFF) * -1;
-			Serial.println("neg current");
-		}
-		current = current >> 3;
+		current = current >>3;
 		double c = (current * 0.625);
 		
 		acurrent = acurrent * 0.25;
 		
 		Serial.print("V: ");
 		Serial.print(voltage);
-		Serial.print(" Current: ");
+		Serial.print(", C: ");
 		Serial.print(c);
-		Serial.print("mA. Accumulated Current: ");
+		Serial.print("mA, Accumulated C: ");
 		Serial.print(acurrent);
-		Serial.println("mAh");
+		Serial.print("mAh, ");
 	}
 	return voltage;
 }
@@ -155,23 +193,22 @@ int resetdsProtection(void) {
 	//Wire.send(0x00);  //Clear OV and UV, diable charge and discharge
 	Wire.endTransmission();
 	delay(10);
+	// Read Protection Register
+	Wire.beginTransmission(dsAddress);
+	Wire.send(0x00);
+	Wire.endTransmission();
+
 	Wire.requestFrom(dsAddress, 2);
 	if(2 <= Wire.available())     // if two bytes were received 
 	{ 
 		dsProtect = Wire.receive();
 		dsStatus = Wire.receive();
-		//Serial.println(dsProtect,BIN);    // print the reading 
-		//Serial.println(dsStatus,BIN);
+		Serial.println(dsProtect,BIN);    // print the reading 
+		Serial.println(dsStatus,BIN);
 
-		if (dsProtect & DS00OV) { Serial.println("Over Voltage"); }
-		if (dsProtect & DS00UV) { Serial.println("Under Voltage"); }
-		if (dsProtect & DS00COC) { Serial.println("Charge Over Current"); }
-		if (dsProtect & DS00DOC) { Serial.println("Discharge Over Current"); }
-		if (dsProtect & DS00CC) { Serial.println("CC Pin state"); }
-		if (dsProtect & DS00DC) { Serial.println("DC Pin State"); }
-		if (dsProtect & DS00CE) { Serial.println("Charging Enabled"); }
-		if (dsProtect & DS00DE) { Serial.println("Discharging Enabled"); }
-		if (dsStatus & 32) { Serial.println("Sleep mode enabled");}
 	}
 	return dsProtect;
+}
+
+int menu(void) {
 }
