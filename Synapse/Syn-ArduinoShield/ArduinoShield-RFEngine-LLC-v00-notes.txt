@@ -1,0 +1,17 @@
+ Arduino/Synapse RF Engine Shield:
+===================================
+
+All Through Hole parts for easy assembly for all skill levels
+V-Reg and diode to step down 5v to 3.3v
+Jumper selectable UARTs
+Break out all Synapse pins
+Extra break out pins for arduino
+
+ Jumpers:
+==========
+1. 5/3.3V arduino
+2. 
+3. RFE UART0 RX UART1
+4. RFE UART0 TX UART1
+5. Arduino D0 RX D2
+6. Arduino D1 TX D3
