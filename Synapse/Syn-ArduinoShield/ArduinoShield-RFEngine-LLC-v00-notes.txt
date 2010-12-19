@@ -10,7 +10,7 @@ Extra break out pins for arduino
  Jumpers:
 ==========
 1. 5/3.3V arduino
-2. 
+2. vreg disconnect
 3. RFE UART0 RX UART1
 4. RFE UART0 TX UART1
 5. Arduino D0 RX D2
