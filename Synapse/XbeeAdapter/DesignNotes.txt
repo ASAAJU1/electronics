@@ -1,21 +1,21 @@
  Xbee -> SNAP RF Engine Mappings:
 ==================================
-VCC						->	VCC
-DOUT					->	TX1
-DIN/!CONFIG				->	RX1
-DIO12					->	
-!RESET					->	!RESET
-RSSI PWM/DIO10			->	GPIO0
-reserved->DNC			->	Do not connect
-!DTR/SLEEP_RQ/DIO8		->	
-GND						->	GND
-DIO4					->	
-!CTS/DIO7				->	CTS1
-ON/!SLEEP				->	
-VREF					->	
-Associate/DIO5			->	
-!RTS/DIO6				->	RTS1
-AD3						->	AD3
-AD2						->	AD2
-AD1						->	AD1
-AD0/COMISSIONING BUTTON	->	AD0
+VCC                     ->    VCC
+DOUT                    ->    TX1
+DIN/!CONFIG             ->    RX1
+DIO12                   ->    
+!RESET                  ->    !RESET
+RSSI PWM/DIO10          ->    GPIO0
+reserved->DNC           ->    Do not connect
+!DTR/SLEEP_RQ/DIO8      ->    
+GND                     ->    GND
+DIO4                    ->    
+!CTS/DIO7               ->    CTS1
+ON/!SLEEP               ->    
+VREF                    ->    
+Associate/DIO5          ->    
+!RTS/DIO6               ->    RTS1
+AD3                     ->    AD3
+AD2                     ->    AD2
+AD1                     ->    AD1
+AD0/COMISSIONING BUTTON ->    AD0
