@@ -1,0 +1,13 @@
+The Snap RF Base Board needs to be simple, but effective.
+
+Must Include:
+* Place to plug in RF Engine
+* Standard Addon/stacking headers
+* RTC
+* Voltage Regulator to 3.3V
+* Less than 4 sq inches.
+* mounting holes
+
+Should it have:
+* Bridge Rectifier so power input works eiter way?
+* ADR 1 V Ref? (at least the foot print)
