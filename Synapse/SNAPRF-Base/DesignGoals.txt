@@ -3,11 +3,32 @@ The Snap RF Base Board needs to be simple, but effective.
 Must Include:
 * Place to plug in RF Engine
 * Standard Addon/stacking headers
-* RTC
+* RTC (Preferably TXCO)
 * Voltage Regulator to 3.3V
 * Less than 4 sq inches.
 * mounting holes
+* I2C jumpers for RF100/RF200
 
 Should it have:
 * Bridge Rectifier so power input works eiter way?
 * ADR 1 V Ref? (at least the foot print)
+* 24LC256 EEPROM for offline sotrage (at least the footprint)
+* RS-232 Level converter)
+
+digikey part #S5751-12-ND	100@59.20	2/pcb
+digikey part #490-1691-1-ND 100@6.24
+MCP1802T-3302I/OTCT-ND		100@40.00	2/pcb
+568-4960-5-ND				25@67.50	pcf2129a
+24LC256T-I/MSCT-ND			25@20.75	eeprom msop 3mm wide
+
+
+Parts if unterest to research to rs232 logic level conversion:
+ISL83220ECVZ-T
+ICL3221CVZ
+MAX3221CPWR
+MAX3221EIPWR
+MAX3227ECUE+
+MAX3221CUE+
+MAX3323EEUE+
+MAX3223IPWR
+
