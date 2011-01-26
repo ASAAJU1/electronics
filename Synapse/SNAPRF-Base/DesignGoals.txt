@@ -20,15 +20,20 @@ digikey part #490-1691-1-ND 100@6.24
 MCP1802T-3302I/OTCT-ND		100@40.00	2/pcb
 568-4960-5-ND				25@67.50	pcf2129a
 24LC256T-I/MSCT-ND			25@20.75	eeprom msop 3mm wide
+ICL3221IAZ-ND				25@33.15	rs232 1 channel
+MAX3223IPWR					25@54		20tssop 2 ch
+ICL3232IBNZ-ND				25@24.00	dual 16soic 3.9mm wide
+MAX3232ESE+					25@105.00	3.90mm wide soic
 
 
 Parts if unterest to research to rs232 logic level conversion:
-ISL83220ECVZ-T
-ICL3221CVZ
+ISL83220ECVZ-T	no good. no stock on -40 85
+ICL3221CVZ no good temp range. use this instead ICL3221IAZ 
+ICL3223ECAZ-TCT-ND			25@35.10	nogood not temp range
 MAX3221CPWR
 MAX3221EIPWR
 MAX3227ECUE+
 MAX3221CUE+
-MAX3323EEUE+
+
 MAX3223IPWR
 
