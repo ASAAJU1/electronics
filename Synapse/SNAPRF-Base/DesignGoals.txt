@@ -8,6 +8,7 @@ Must Include:
 * Less than 4 sq inches.
 * mounting holes
 * I2C jumpers for RF100/RF200
+* PCB Footprint for I2C Pullup resistors
 
 Should it have:
 * Bridge Rectifier so power input works eiter way?
