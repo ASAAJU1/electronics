@@ -16,6 +16,16 @@ Should it have:
 * 24LC256 EEPROM for offline sotrage (at least the footprint)
 * RS-232 Level converter)
 
+
+Reserved mapout
+R1	vcc3 aux
+R2
+R3
+R4
+R5	SDA
+R6	SCL
+
+
 digikey part #S5751-12-ND	100@59.20	2/pcb
 digikey part #490-1691-1-ND 100@6.24
 MCP1802T-3302I/OTCT-ND		100@40.00	2/pcb
