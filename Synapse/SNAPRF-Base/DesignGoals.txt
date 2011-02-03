@@ -13,10 +13,12 @@ Must Include:
 Should it have:
 * Bridge Rectifier so power input works eiter way?
 * ADR 1 V Ref? (at least the foot print)
-* 24LC256 EEPROM for offline sotrage (at least the footprint)			'1010'210
+* 24LC256 EEPROM for offline sotrage (at least the footprint)			'1010'200
 * RS-232 Level converter)
 * LM75a I2C temp sensor 3microamp shutdown ESD							'1001'210
 
+TODO:
+Add SJ for rf300 I2C
 
 Reserved mapout
 R1	vcc3 aux
@@ -48,4 +50,5 @@ MAX3227ECUE+
 MAX3221CUE+
 
 MAX3223IPWR
+
 
