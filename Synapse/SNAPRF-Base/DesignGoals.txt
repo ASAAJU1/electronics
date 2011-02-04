@@ -3,7 +3,7 @@ The Snap RF Base Board needs to be simple, but effective.
 Must Include:
 * Place to plug in RF Engine
 * Standard Addon/stacking headers
-* RTC (Preferably TXCO)
+* RTC (Preferably TXCO)												'1010001' 0xA2 read
 * Voltage Regulator to 3.3V
 * Less than 4 sq inches.
 * mounting holes
@@ -13,9 +13,9 @@ Must Include:
 Should it have:
 * Bridge Rectifier so power input works eiter way?
 * ADR 1 V Ref? (at least the foot print)
-* 24LC256 EEPROM for offline sotrage (at least the footprint)			'1010'200
+* 24LC256 EEPROM for offline sotrage (at least the footprint)			'1010'200	0xA0 read
 * RS-232 Level converter)
-* LM75a I2C temp sensor 3microamp shutdown ESD							'1001'210
+* LM75a I2C temp sensor 3microamp shutdown ESD							'1001'210	0x90 read
 
 TODO:
 Add SJ for rf300 I2C
