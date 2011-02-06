@@ -3,22 +3,24 @@ The Snap RF Base Board needs to be simple, but effective.
 Must Include:
 * Place to plug in RF Engine
 * Standard Addon/stacking headers
-* RTC (Preferably TXCO)												'1010001' 0xA2 read
+* RTC (Preferably TXCO)													'1010001' 0xA2 write
 * Voltage Regulator to 3.3V
 * Less than 4 sq inches.
 * mounting holes
 * I2C jumpers for RF100/RF200
 * PCB Footprint for I2C Pullup resistors
+* 24LC256 EEPROM for offline sotrage (at least the footprint)			'1010'200	0xA0 write
+* RS-232 Level converter)
+* LM75a I2C temp sensor 3microamp shutdown ESD							'1001'210	0x90 write
 
 Should it have:
 * Bridge Rectifier so power input works eiter way?
 * ADR 1 V Ref? (at least the foot print)
-* 24LC256 EEPROM for offline sotrage (at least the footprint)			'1010'200	0xA0 read
-* RS-232 Level converter)
-* LM75a I2C temp sensor 3microamp shutdown ESD							'1001'210	0x90 read
 
-TODO:
-Add SJ for rf300 I2C
+I2C Addressing
+* PCF2129A									'1010001'R	0xA2 write
+* 24LCD256		'1010'210 All adr at gnd	'1010000'R	0xA0 write
+* LM75A			'1001'210 All adr at gnd	'1001000'R	0x90 write
 
 Reserved mapout
 R1	vcc3 aux
@@ -27,28 +29,4 @@ R3
 R4
 R5	SDA
 R6	SCL
-
-
-digikey part #S5751-12-ND	100@59.20	2/pcb
-digikey part #490-1691-1-ND 100@6.24
-MCP1802T-3302I/OTCT-ND		100@40.00	2/pcb
-568-4960-5-ND				25@67.50	pcf2129a
-24LC256T-I/MSCT-ND			25@20.75	eeprom msop 3mm wide
-ICL3221IAZ-ND				25@33.15	rs232 1 channel
-MAX3223IPWR					25@54		20tssop 2 ch
-ICL3232IBNZ-ND				25@24.00	dual 16soic 3.9mm wide
-MAX3232ESE+					25@105.00	3.90mm wide soic
-
-
-Parts if unterest to research to rs232 logic level conversion:
-ISL83220ECVZ-T	no good. no stock on -40 85
-ICL3221CVZ no good temp range. use this instead ICL3221IAZ 
-ICL3223ECAZ-TCT-ND			25@35.10	nogood not temp range
-MAX3221CPWR
-MAX3221EIPWR
-MAX3227ECUE+
-MAX3221CUE+
-
-MAX3223IPWR
-
 
