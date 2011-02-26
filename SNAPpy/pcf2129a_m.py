@@ -1,10 +1,12 @@
 """
-Program Description:    PCF2129A.py - Example I2C routines for the NXP PCF2129A TXCO RTC.
+Program Description:    PCF2129A_m.py - Example I2C routines for the NXP PCF2129A TXCO RTC.
+This is a module meant to be imported.
 
 -------------------------------------------------------------------------------------------------
 """
 
 PCF2129_ADDRESS = 81<<1 #slave address is 10100010 which shifts to 10100011(R/W)
+retries = 1
 
 def buildTWICmd(slaveAddress, registerAddress, isRead):
     """internal helper routine"""
@@ -40,7 +42,7 @@ def displayClockTime():
     DOW = bcdToDec(ord(buff[4]) & 0x07)
     Months = bcdToDec(ord(buff[5]) & 0x1F)
     Years = bcdToDec(ord(buff[6]))
-    eventString = "Military Time: " + str(Hours) + ":" + str(Minutes) + ":" + str(Seconds) + " DOW = " + str(DOW) 
+    eventString = "Military Time: " + str(Hours) + ":" + str(Minutes) + ":" + str(Seconds)
     rpc(portalAddr, "logEvent", eventString)
     
 def displayClockDate():
@@ -50,14 +52,17 @@ def displayClockDate():
     DOW = bcdToDec(ord(buff[1]) & 0x07)
     Month = bcdToDec(ord(buff[2]) & 0x1F)
     Year = bcdToDec(ord(buff[3]))
-    eventString = "Date: " + str(Month) + "/" + str(Date) + "/" + str(Year) 
+    
+    eventString = "Date: " + str(displayDOW(DOW)) + " " + str(Month) + "/" + str(Date) + "/" + str(Year) 
     rpc(portalAddr, "logEvent", eventString)
 
 def checkClockYear():
     buff = readPCF2129(0x09,1)
     
     Year = bcdToDec(ord(buff[0]))
-    if (Year <> 10):
+    if (Year <> 11):
+        eventString = "Invalid year " + str(Year)
+        rpc(portalAddr, "logEvent", eventString)
         getPortalTime()
     
 def writeClockTime(Year,Month,Day,DOW,Hour,Minute,Second):
@@ -69,6 +74,19 @@ def writeClockTime(Year,Month,Day,DOW,Hour,Minute,Second):
     cmd += chr(decToBcd(int(DOW)))
     cmd += chr(decToBcd(int(Month)))
     cmd += chr(decToBcd(int(Year)))
+    #dumpHex(cmd)
+    i2cWrite(cmd, retries, False)
+    return getI2cResult()
+
+def writeClockAlarm(Minute,Second):
+    cmd = buildTWICmd(PCF2129_ADDRESS, 0x0A, False)
+    cmd += chr(decToBcd(int(Second)))
+    #cmd += chr(decToBcd(int(Minute)))
+    #cmd += chr(decToBcd(int(Hour)))
+    #cmd += chr(decToBcd(int(Day)))
+    #cmd += chr(decToBcd(int(DOW)))
+    #cmd += chr(decToBcd(int(Month)))
+    #cmd += chr(decToBcd(int(Year)))
     #dumpHex(cmd)
     i2cWrite(cmd, retries, False)
     return getI2cResult()
@@ -97,6 +115,23 @@ def displayClockDT():
     eventString = str(Years) + str(Months) + str(Days) + str(Hours) +  str(Minutes) + str(Seconds)
     #rpc(portalAddr, "logEvent", eventString)
     return eventString
+
+def displayDOW(DOW):
+    if (DOW == 0):
+        Day = "Sun"
+    if (DOW == 1):
+        Day = "Mon"
+    if (DOW == 2):
+        Day = "Tues"
+    if (DOW == 3):
+        Day = "Wed"
+    if (DOW == 4):
+        Day = "Thu"
+    if (DOW == 5):
+        Day = "Fri"
+    if (DOW == 6):
+        Day = "Sat"
+    return Day
 
 def decToBcd(val):
     return ( (val/10*16) + (val%10) ) 
