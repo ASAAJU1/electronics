@@ -77,17 +77,22 @@ def writeClockTime(Year,Month,Day,DOW,Hour,Minute,Second):
     #dumpHex(cmd)
     i2cWrite(cmd, retries, False)
     return getI2cResult()
+    displayClockDate()
+
 
 def writeClockAlarm(Minute,Second):
+    cmd = buildTWICmd(PCF2129_ADDRESS, 0x01, False)
+    cmd += chr(2)
+    i2cWrite(cmd, retries, False)
+    
     cmd = buildTWICmd(PCF2129_ADDRESS, 0x0A, False)
+    
     cmd += chr(decToBcd(int(Second)))
-    #cmd += chr(decToBcd(int(Minute)))
-    #cmd += chr(decToBcd(int(Hour)))
-    #cmd += chr(decToBcd(int(Day)))
-    #cmd += chr(decToBcd(int(DOW)))
-    #cmd += chr(decToBcd(int(Month)))
-    #cmd += chr(decToBcd(int(Year)))
-    #dumpHex(cmd)
+    cmd += chr(decToBcd(int(Minute)))
+    cmd += chr(128) #cmd += chr(decToBcd(int(Hour)))
+    cmd += chr(128) #cmd += chr(decToBcd(int(Day)))
+    cmd += chr(128) #cmd += chr(decToBcd(int(DOW)))
+    dumpHex(cmd)
     i2cWrite(cmd, retries, False)
     return getI2cResult()
 
@@ -142,4 +147,5 @@ def bcdToDec(val):
 def getPortalTime():
     """ Call This to have Portal Set RTC"""
     rpc(portalAddr, "setRFTime", localAddr())
+    
     

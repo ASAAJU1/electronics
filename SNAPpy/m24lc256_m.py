@@ -12,7 +12,8 @@ NOTE! - This script requires SNAP 2.1 or greater! It uses the I2C support first
 added in SNAP 2.1, and will not work in a SNAP 2.0 node.
 
 ------------------------------------------------------------------------------
-modified for 24LC256 with address lines tied to GND.
+modified for 24LC256 with address lines tied to GND. 
+To be imported as module
 """
 
 from synapse.hexSupport import *
@@ -37,11 +38,11 @@ def readEEPROM(memoryAddress, dataLen):
     cmd += chr( memoryAddress >> 8 )
     cmd += chr( memoryAddress & 0xff)
 
-    dumpHex(cmd)
+    #dumpHex(cmd)
 
     result = i2cWrite(cmd, retries, False)
-    print "Read Select address result: "
-    print result
+    #print "Read Select address result: "
+    #print result
 
     cmd = chr( EEPROM_ADDRESS | 1 ) # NOW we can read data back
 
@@ -71,6 +72,34 @@ def writeEEblock(memoryAddress, data):
     # Add on the actual data bytes
     cmd += data
 
-    dumpHex(cmd)
+    #dumpHex(cmd)
 
     i2cWrite(cmd, retries, False)
+    
+def eraseEEProm():
+    String2 = ""
+    index = 0
+    jc = 0
+    while (index < 60):
+        String2 = String2 + "0"
+        index += 1
+    print String2
+    index = 0
+    while (index < 512):
+        print str(index)
+        ttaddress = index * 64
+        print ttaddress
+        writeEEblock(ttaddress,String2)
+        index += 1
+        cmd = chr( EEPROM_ADDRESS ) # NOT a read
+        print "Start waiting for ack"
+        while (jc <> 1):
+            jc = 0
+            i2cWrite(cmd, retries, False)
+            tt = getI2cResult()
+            print tt
+            jc = tt
+                
+                
+            
+        
