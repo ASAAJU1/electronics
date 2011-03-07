@@ -1,3 +1,14 @@
+"""
+SNARF-BASE-testing.py   - Main script to test built in devices on board and
+                        - pinwake by rtc on RF100/200
+
+CC BY 3.0  J.C. Woltz
+http://creativecommons.org/licenses/by/3.0/
+
+v201103062335
+
+"""
+
 from synapse.platforms import *
 from synapse.switchboard import *
 from synapse.pinWakeup import *
@@ -17,12 +28,12 @@ RTC_INT = GPIO_10
 
 @setHook(HOOK_STARTUP)
 def start():    
-    setPinDir(VAUX, True)
-    writePin(VAUX, False)
-    setPinDir(RTC_INT, False)
-    setPinPullup(RTC_INT, True)
-    monitorPin(RTC_INT, True)
-    wakeupOn(RTC_INT, True, False)
+    setPinDir(VAUX, True)       #output
+    writePin(VAUX, False)       #Turn off aux power
+    setPinDir(RTC_INT, False)   #Input
+    setPinPullup(RTC_INT, True) #Turn on pullup
+    monitorPin(RTC_INT, True)   #monitor changes to this pin. Will go low on int
+    wakeupOn(RTC_INT, True, False)  #Wake from sleep when pin goes low
     
     # Go ahead and redirect STDOUT to Portal now
     ucastSerial("\x00\x00\x01") # put your correct Portal address here!
@@ -35,6 +46,7 @@ def start():
     
     #sleep(1,3)
     #Check if rtc has invalid year, if so, automatically update rtc from portal
+    #This is not a very robust check, but work for testing.
     checkClockYear()
     
     print "Startup Done!"
@@ -65,6 +77,7 @@ def doEveryMinute():
     #address = datablock * 64
     global taddress
     
+    #For testing, we log clockdate and time, temp C, temp F to half a page of eeprom
     eventString = str(displayClockDT()) + "," + str(displayLMTemp()) + "," + str(displayLMTempF()) + ",EOB"
     t = len(eventString)
     if (t < 32):
@@ -87,7 +100,7 @@ def doEveryMinute():
 @setHook(HOOK_GPIN)
 def buttonEvent(pinNum, isSet):
     """Hooked into the HOOK_GPIN event"""
-    #global timeFlag
+    #mostly debug and pointless irw
     print str(pinNum),
     print str(isSet)
     eventString = "HOOK_GPIN " + str(pinNum) + str(isSet)
@@ -101,6 +114,26 @@ def testLogE():
     String2 = str(getI2cResult()) + " " + str(t)
     return String2
 
-def sleepTest(mode, ticks):
-    wakeupOn(GPIO_10, True, False)
-    sleep(mode, ticks)
+def sleepTest():
+    """Quick way to goto sleep"""
+    #wakeupOn(GPIO_10, True, False)
+    sleep(0,0)
+    
+def zQuickSleepTest(Minute,Second):
+    writeClockAlarm(Minute,Second)
+    sleep(0,0)
+    
+def zCalcWakeTime():
+    """Set the RTC INT to triger at the next 10 minute interval"""
+    buff = readPCF2129(0x03,2)
+    
+    Seconds = bcdToDec(ord(buff[0]) & 0x7F)
+    Minutes = bcdToDec(ord(buff[1]) & 0x7F)
+    
+    Minutes += 10
+    Minutes = Minutes / 10
+    Minutes = Minutes * 10
+    if (Minutes > 50):
+        Minutes = 0
+    writeClockAlarm(Minutes, 0)
+    return str(Minutes)

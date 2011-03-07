@@ -1,6 +1,8 @@
 """
 Program Description:    PCF2129A_m.py - Example I2C routines for the NXP PCF2129A TXCO RTC.
 This is a module meant to be imported.
+v201103061848   writeClockAlarm(Minute,Second) Sets the control register for an interrupt 
+                to trigger at that time. Easily expandable to hours and date.
 
 -------------------------------------------------------------------------------------------------
 """
@@ -92,7 +94,7 @@ def writeClockAlarm(Minute,Second):
     cmd += chr(128) #cmd += chr(decToBcd(int(Hour)))
     cmd += chr(128) #cmd += chr(decToBcd(int(Day)))
     cmd += chr(128) #cmd += chr(decToBcd(int(DOW)))
-    dumpHex(cmd)
+    #dumpHex(cmd)
     i2cWrite(cmd, retries, False)
     return getI2cResult()
 
