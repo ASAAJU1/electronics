@@ -1,0 +1,1 @@
+avrdude -p atmega32u4 -P usb -c usbtiny -U flash:w:BootloaderDFU.hex -U lfuse:w:0xFC:m -U hfuse:w:0xD0:m
