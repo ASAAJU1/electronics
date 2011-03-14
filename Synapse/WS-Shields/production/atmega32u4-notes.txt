@@ -1,0 +1,7 @@
+lock bits
+chip erase sets lock bits to 0x3f
+00111111
+after programing you want:
+..101111
+lock fuse 0x2f
+-U lfuse:w:0xde:m -U hfuse:w:0xd9:m -U efuse:w:0xf3:m 
