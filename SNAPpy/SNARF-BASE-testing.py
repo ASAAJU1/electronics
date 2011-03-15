@@ -66,9 +66,10 @@ def timer100msEvent(msTick):
     
 def doEverySecond():
     #pass
-    eventString = str(displayLMTempF()) + "," + str(displayLMTemp())
+    global taddress
+    eventString = str(displayClockDT()) + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
     print eventString
-    print displayClockDT()
+    #print displayClockDT()
     #sleep(0,1)
     
     
@@ -137,3 +138,8 @@ def zCalcWakeTime():
         Minutes = 0
     writeClockAlarm(Minutes, 0)
     return str(Minutes)
+
+def turnONVAUX():
+    writePin(VAUX, True)       #Turn on aux power 
+def turnONVAUX():
+    writePin(VAUX, False)      #Turn off aux power
