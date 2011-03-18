@@ -1,3 +1,9 @@
 avrdude -p atmega32u4 -P usb -c usbtiny -U flash:w:BootloaderDFU.hex -U lfuse:w:0xFC:m -U hfuse:w:0xD0:m
 avrdude -p atmega32u4 -P usb -c usbtiny -D -U flash:w:USBtoSerial.hex
+pause
 avrdude -p atmega32u4 -P usb -c usbtiny -D -U lfuse:w:0xde:m -U hfuse:w:0xd9:m -U lock:w:0x29:m 
+pause
+
+batchisp -hardware usb -device atmega32u4 -operation erase f
+batchisp -hardware usb -device atmega32u4 -operation loadbuffer USBtoSerial.hex program
+batchisp -hardware usb -device atmega32u4 -operation start reset 0
