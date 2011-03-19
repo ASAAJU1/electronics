@@ -7,7 +7,9 @@ http://creativecommons.org/licenses/by/3.0/
 
 v201103062335 - Too many mods to log
 v201103171943 - Set initial Portal Address to none. Add set_portal_addr() function
-				Add the zCalcWakeTime1() function. 
+                Add the zCalcWakeTime1() function. 
+v201103191511 - Would not compile without a portalAddr. So set portal as 1 and left
+                Function to change portal addr.
 
 """
 
@@ -18,8 +20,8 @@ from pcf2129a_m import *
 from lm75a_m import *
 from m24lc256_m import *
 
-#portalAddr = '\x00\x00\x01' # hard-coded address for Portal <------------<<<<<<<<
-portal_addr = None
+portalAddr = '\x00\x00\x01' # hard-coded address for Portal <------------<<<<<<<<
+#portal_addr = None
 secondCounter = 0 
 minuteCounter = 0
 datablock = 1
@@ -32,26 +34,25 @@ RTC_INT = GPIO_10
 
 @setHook(HOOK_STARTUP)
 def start():    
-	# Setup the Auxilary Regulator for sensors:
+    # Setup the Auxilary Regulator for sensors:
     setPinDir(VAUX, True)       #output
     writePin(VAUX, False)       #Turn off aux power
-	# Setup the RTC Interrupt pin
+    # Setup the RTC Interrupt pin
     setPinDir(RTC_INT, False)   #Input
     setPinPullup(RTC_INT, True) #Turn on pullup
     monitorPin(RTC_INT, True)   #monitor changes to this pin. Will go low on int
     wakeupOn(RTC_INT, True, False)  #Wake from sleep when pin goes low
     
-	
-	# I2C GPIO_17/18 rf100. rf200 needs external pullups.
+    # I2C GPIO_17/18 rf100. rf200 needs external pullups.
     i2cInit(True)
-	
-	# On startup try to get the portal address. 
-	if portal_addr is None:
-		mcastRpc(1, 5, "get_portal_logger")
-	else:
-		getPortalTime()
+    # On startup try to get the portal address. 
+    if portal_addr is None:
+        mcastRpc(1, 5, "get_portal_logger")
+    else:
+        getPortalTime()
     # Go ahead and redirect STDOUT to Portal now
     #ucastSerial(portal_addr) # put your correct Portal address here!
+    getPortalTime()
     initUart(0,9600)
     flowControl(0,False)
     crossConnect(DS_STDIO,DS_UART0)
@@ -140,8 +141,8 @@ def zQuickSleepTest(Minute,Second):
     
 def zCalcWakeTime10():
     """Set the RTC INT to triger at the next 10 minute interval"""
-	# This is an abbreviated part of displayClockTime retrieving
-	# only the current seconds and minutes.
+    # This is an abbreviated part of displayClockTime retrieving
+    # only the current seconds and minutes.
     buff = readPCF2129(0x03,2)
     
     Seconds = bcdToDec(ord(buff[0]) & 0x7F)
@@ -157,8 +158,8 @@ def zCalcWakeTime10():
 
 def zCalcWakeTime1():
     """Set the RTC INT to triger in one minute, then goto sleep"""
-	# This is an abbreviated part of displayClockTime retrieving
-	# only the current seconds and minutes.
+    # This is an abbreviated part of displayClockTime retrieving
+    # only the current seconds and minutes.
     buff = readPCF2129(0x03,2)
     
     Seconds = bcdToDec(ord(buff[0]) & 0x7F)
@@ -185,4 +186,4 @@ def set_portal_addr():
     """Set the portal SNAP address to the caller of this function"""
     global portal_addr
     portal_addr = rpcSourceAddr()
-	getPortalTime()
+    getPortalTime()

@@ -83,14 +83,14 @@ def writeClockTime(Year,Month,Day,DOW,Hour,Minute,Second):
 
 
 def writeClockAlarm(Minute,Second):
-	# This section clears the Alarm INT and programs
-	# This INT to go low when the alarm is triggered
+    # This section clears the Alarm INT and programs
+    # This INT to go low when the alarm is triggered
     cmd = buildTWICmd(PCF2129_ADDRESS, 0x01, False)
     cmd += chr(2)
     i2cWrite(cmd, retries, False)
     # end of section
-	
-	#This section Sets the Alarm time to trigger at: 
+    
+    #This section Sets the Alarm time to trigger at: 
     cmd = buildTWICmd(PCF2129_ADDRESS, 0x0A, False)
     
     cmd += chr(decToBcd(int(Second)))

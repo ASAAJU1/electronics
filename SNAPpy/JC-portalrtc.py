@@ -10,7 +10,7 @@ get_temp_logger written by Synapse Wireless
 import binascii
 import time
 
-import thermistor
+#import thermistor
 
 
 CSV_FILENAME = "tempDataLog.csv"
