@@ -10,12 +10,15 @@ v201103171943 - Set initial Portal Address to none. Add set_portal_addr() functi
                 Add the zCalcWakeTime1() function. 
 v201103191511 - Would not compile without a portalAddr. So set portal as 1 and left
                 Function to change portal addr.
+v201103231616 - modified to test the atmega addon board. We start with the VAUX on
+                as that powers the SD CARD.
 
 """
 
 from synapse.platforms import *
 from synapse.switchboard import *
 from synapse.pinWakeup import *
+from synapse.sysInfo import *
 from pcf2129a_m import *
 from lm75a_m import *
 from m24lc256_m import *
@@ -36,7 +39,7 @@ RTC_INT = GPIO_10
 def start():    
     # Setup the Auxilary Regulator for sensors:
     setPinDir(VAUX, True)       #output
-    writePin(VAUX, False)       #Turn off aux power
+    writePin(VAUX, True)       #Turn on aux power
     # Setup the RTC Interrupt pin
     setPinDir(RTC_INT, False)   #Input
     setPinPullup(RTC_INT, True) #Turn on pullup
@@ -53,9 +56,16 @@ def start():
     # Go ahead and redirect STDOUT to Portal now
     #ucastSerial(portal_addr) # put your correct Portal address here!
     getPortalTime()
-    initUart(0,9600)
-    flowControl(0,False)
-    crossConnect(DS_STDIO,DS_UART0)
+    initUart(1,9600)
+    flowControl(1,False)
+    crossConnect(DS_STDIO, DS_UART1)
+    # send errors to portal
+    uniConnect(DS_PACKET_SERIAL, DS_ERROR)
+    
+    devName = loadNvParam(8)  # get the device name
+    
+    #Test to try and catch any output/errors from addon
+    stdinMode(0, False)      # Line Mode, Echo Off
         
 
     
@@ -69,16 +79,49 @@ def start():
 @setHook(HOOK_100MS)
 def timer100msEvent(msTick):
     """Hooked into the HOOK_100MS event"""
-    global secondCounter, minuteCounter
+    global secondCounter
     secondCounter += 1
     if secondCounter >= 10:
         doEverySecond()      
         secondCounter = 0
-        minuteCounter += 1
-        if minuteCounter >= 600:
-            doEveryMinute()
-            minuteCounter = 0
     
+    
+@setHook(HOOK_1S) 
+def doEverySec(tick): 
+    global minuteCounter
+    minuteCounter += 1
+    if minuteCounter >= 60:
+        #doEveryLongLog()
+        minuteCounter = 0
+
+@setHook(HOOK_STDIN) 
+def getInput(data): 
+    ''' Process command line input '''
+    pass
+    global cmd, arg
+    if data == '?':
+        help()
+    elif len(data):
+        getCmdArg(data)
+        ret = None
+        print
+        
+        if arg != None:
+            ret = cmd(arg)
+        else:
+            ret = cmd()
+    
+        if ret != None:
+            print " => ", ret
+            
+    print "\r\n>",
+    
+
+@setHook(HOOK_RPC_SENT) 
+def rpcDone(bufRef): 
+    #pass
+    print str(bufRef)
+
 def doEverySecond():
     #pass
     global taddress
@@ -89,7 +132,7 @@ def doEverySecond():
     #sleep(0,1)
     
     
-def doEveryMinute():
+def doEveryLongLog():
     global datablock
     #address = datablock * 64
     global taddress
@@ -111,6 +154,10 @@ def doEveryMinute():
     #    t = 32
     taddress += tt
     datablock += 1
+    zCalcWakeTime10()
+    turnOFFVAUX()
+    sleep(0,0)
+    turnONVAUX()
     
     return getI2cResult()
     
@@ -188,3 +235,63 @@ def set_portal_addr():
     global portal_addr
     portal_addr = rpcSourceAddr()
     getPortalTime()
+
+def getCmdArg(input):
+    """Parse out a single int or string argument from given command-line input"""
+    global cmd, arg
+    cmd = ''
+    arg = None
+    i = 0
+    while i < len(input):
+        c = input[i]
+        if c == ' ':
+            if '0' <= input[i+1] <= '9':
+                arg = int(input[i:])
+                input = cmd
+            else:
+                arg = input[i+1:]
+                input = cmd
+            break
+
+        cmd += c
+        i += 1
+
+#@setHook(HOOK_STDIN)    
+def stdinEvent(data):
+    ''' Process command line input '''
+    global cmd, arg
+
+    if data == '?':
+        help()
+    elif len(data):
+        getCmdArg(data)
+        ret = None
+        print
+        
+        if arg != None:
+            ret = cmd(arg)
+        else:
+            ret = cmd()
+    
+        if ret != None:
+            print " => ", ret
+            
+    print "\r\n>",
+
+#----- The following are some simple functions for us to easily invoke from CLI -----
+
+def help():
+    print "\r\nThis sample CLI can call any SNAPpy function."
+    print "Enter a function name [' ' + optional argument]"
+
+def ver():
+    print "SNAP v", getInfo(SI_TYPE_VERSION_MAJOR), '.', getInfo(SI_TYPE_VERSION_MINOR)
+    print "Device Type: ", loadNvParam(10)
+    
+def echo(text):
+    print text
+    
+@setHook(HOOK_STDIN)    
+def stdinEventd(data):
+    ''' Process command line input '''
+    rpc(portalAddr, "logEvent", data)

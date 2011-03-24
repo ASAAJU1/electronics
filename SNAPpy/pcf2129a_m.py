@@ -35,6 +35,7 @@ def readPCF2129(firstReg, numRegs):
     return result
 
 def displayClockTime():
+    """example routine to RPC to Portal the Time from RTC, can be modified to return string"""
     buff = readPCF2129(0x03,7)
     
     Seconds = bcdToDec(ord(buff[0]) & 0x7F)
@@ -48,6 +49,7 @@ def displayClockTime():
     rpc(portalAddr, "logEvent", eventString)
     
 def displayClockDate():
+    """example routine to RPC to Portal the Date from RTC, can be modified to return string"""
     buff = readPCF2129(0x06,4)
     
     Date = bcdToDec(ord(buff[0]) & 0x3F)
@@ -59,6 +61,7 @@ def displayClockDate():
     rpc(portalAddr, "logEvent", eventString)
 
 def checkClockYear():
+    """Very Crude routine to see if RTC has correct year, if not, request time from portal"""
     buff = readPCF2129(0x09,1)
     
     Year = bcdToDec(ord(buff[0]))
@@ -103,6 +106,7 @@ def writeClockAlarm(Minute,Second):
     return getI2cResult()
 
 def displayClockDT():
+    """returns a string of length12 YYMMDDHHmmSS"""
     buff = readPCF2129(0x03,7)
     
     Seconds = bcdToDec(ord(buff[0]) & 0x7F)

@@ -26,11 +26,25 @@ def setRFTime(nodeAddr):
     DOW = int(time.strftime('%w'))
     
     rpc(nodeAddr, "writeClockTime", Year, Month, Date, DOW, Hour, Minute, Second)
-
+    
+def setRFPCF2129Time():
+    """Call with nodeAddr to set the time on that node"""
+    Year = int(time.strftime('%y'))
+    Month = int(time.strftime('%m'))
+    Date = int(time.strftime('%d'))
+    Hour = int(time.strftime('%H'))
+    Minute = int(time.strftime('%M'))
+    Second = int(time.strftime('%S'))
+    DOW = int(time.strftime('%w'))
+    
+    mcastrpc(1, 3, 'writeClockTime', Year, Month, Date, DOW, Hour, Minute, Second)
+    
 ###############################################################################
 ## Below is from Synapse Wireless    ##########################################
 ###############################################################################
-	
+def plotlq(who, lq): 
+  logData(who,lq,256)
+
 #Thermistor characteristics based on thermistor type used
 BETA = 4450.0      # K
 R25 = 100000.0  # Ohms
