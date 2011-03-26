@@ -31,6 +31,8 @@ datablock = 1
 taddress = 64
 
 #These are the GPIO pins used on the SNARF-BASE v3.h
+#This has been tested with RF100 and RF200
+#on RF200, This pin works, but consumes more power than it could
 VAUX = GPIO_5
 RTC_INT = GPIO_10
 
@@ -65,6 +67,7 @@ def start():
     devName = loadNvParam(8)  # get the device name
     
     #Test to try and catch any output/errors from addon
+    #possible future addon for 2way comm
     stdinMode(0, False)      # Line Mode, Echo Off
         
 
@@ -94,7 +97,7 @@ def doEverySec(tick):
         #doEveryLongLog()
         minuteCounter = 0
 
-@setHook(HOOK_STDIN) 
+#@setHook(HOOK_STDIN) 
 def getInput(data): 
     ''' Process command line input '''
     pass
@@ -119,15 +122,23 @@ def getInput(data):
 
 @setHook(HOOK_RPC_SENT) 
 def rpcDone(bufRef): 
-    #pass
-    print str(bufRef)
+    if bufRef == myRpcID:
+      #You know this particular RPC has been sent
+      pass
+    pass
+    #print str(bufRef)
 
 def doEverySecond():
     #pass
     global taddress
+    global portalAddr
+    global myRpcID
     eventString = str(displayClockDT()) + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
     print eventString
-    rpc("\x00\x00\x01", "plotlq", localAddr(), getLq())
+    rpc(portalAddr, "plotlq", loadNvParam(8), getLq())
+    myRpcID = getInfo(9)
+    rpc(portalAddr, "infoDT", displayClockDT())
+    myRpcID = getInfo(9)
     #print displayClockDT()
     #sleep(0,1)
     
@@ -202,6 +213,7 @@ def zCalcWakeTime10():
     if (Minutes > 50):
         Minutes = 0
     writeClockAlarm(Minutes, 0)
+    rpc(portalAddr, "WakeAlert", Minutes, Seconds)
     return str(Minutes)
 
 def zCalcWakeTime1():

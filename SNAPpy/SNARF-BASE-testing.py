@@ -19,6 +19,7 @@ from synapse.pinWakeup import *
 from pcf2129a_m import *
 from lm75a_m import *
 from m24lc256_m import *
+from jc_m import *
 
 portalAddr = '\x00\x00\x01' # hard-coded address for Portal <------------<<<<<<<<
 #portal_addr = None
@@ -46,7 +47,7 @@ def start():
     # I2C GPIO_17/18 rf100. rf200 needs external pullups.
     i2cInit(True)
     # On startup try to get the portal address. 
-    if portal_addr is None:
+    if portalAddr is None:
         mcastRpc(1, 5, "get_portal_logger")
     else:
         getPortalTime()
@@ -84,7 +85,8 @@ def doEverySecond():
     global taddress
     eventString = str(displayClockDT()) + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
     print eventString
-    rpc("\x00\x00\x01", "plotlq", localAddr(), getLq())
+    rpc(portalAddr, "plotlq", loadNvParam(8), getLq())
+    rpc(portalAddr, "infoDT", displayClockDT())
     #print displayClockDT()
     #sleep(0,1)
     
@@ -105,7 +107,7 @@ def doEveryMinute():
     tt = len(eventString)
     writeEEblock(taddress, eventString)
 
-    eventString = eventString + " " + str(t) + " " + str(taddress) + " " + str(tt)
+    eventString = loadNvParam(8) + ": " + eventString + " " + str(t) + " " + str(taddress) + " " + str(tt)
     rpc(portalAddr, "logEvent", eventString)
     #if (t < 32):
     #    t = 32
@@ -131,51 +133,6 @@ def testLogE():
     String2 = str(getI2cResult()) + " " + str(t)
     return String2
 
-def sleepTest():
-    """Quick way to goto sleep"""
-    #wakeupOn(GPIO_10, True, False)
-    sleep(0,0)
-    
-def zQuickSleepTest(Minute,Second):
-    writeClockAlarm(Minute,Second)
-    sleep(0,0)
-    
-def zCalcWakeTime10():
-    """Set the RTC INT to triger at the next 10 minute interval"""
-    # This is an abbreviated part of displayClockTime retrieving
-    # only the current seconds and minutes.
-    buff = readPCF2129(0x03,2)
-    
-    Seconds = bcdToDec(ord(buff[0]) & 0x7F)
-    Minutes = bcdToDec(ord(buff[1]) & 0x7F)
-    
-    Minutes += 10
-    Minutes = Minutes / 10
-    Minutes = Minutes * 10
-    if (Minutes > 50):
-        Minutes = 0
-    writeClockAlarm(Minutes, 0)
-    return str(Minutes)
-
-def zCalcWakeTime1():
-    """Set the RTC INT to triger in one minute, then goto sleep"""
-    # This is an abbreviated part of displayClockTime retrieving
-    # only the current seconds and minutes.
-    buff = readPCF2129(0x03,2)
-    
-    Seconds = bcdToDec(ord(buff[0]) & 0x7F)
-    Minutes = bcdToDec(ord(buff[1]) & 0x7F)
-    
-    Minutes += 1
-    #Minutes = Minutes / 10
-    #Minutes = Minutes * 10
-    if (Minutes > 59):
-        Minutes = 0
-    writeClockAlarm(Minutes, Seconds)
-    eventString = "Going to sleep, wake at: " + str(Minutes) + ":" + str(Seconds)
-    rpc(portalAddr, "logEvent", eventString)
-    return eventString
-
 
 def turnONVAUX():
     writePin(VAUX, True)       #Turn on aux power 
@@ -185,6 +142,6 @@ def turnOFFVAUX():
 
 def set_portal_addr():
     """Set the portal SNAP address to the caller of this function"""
-    global portal_addr
-    portal_addr = rpcSourceAddr()
+    global portalAddr
+    portalAddr = rpcSourceAddr()
     getPortalTime()
