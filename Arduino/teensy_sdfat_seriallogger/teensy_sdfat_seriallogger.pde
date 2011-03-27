@@ -1,7 +1,7 @@
 //#define F_CPU 8000000UL
 //#define F_CLOCK 8000000UL
 // A simple data logger for the Arduino analog pins
-#define LOG_INTERVAL  1 // mills between entries
+#define LOG_INTERVAL  200 // mills between entries
 #define ECHO_TO_SERIAL   1 // echo data to serial port
 #define WAIT_TO_START    0 // Wait for serial input in setup()
 #define SYNC_INTERVAL 1000 // mills between calls to sync()
@@ -26,6 +26,10 @@ int led4 = 9;
 int ledr = 4;
 int ledg = 14;
 int ledb = 15;
+int ledblevel = 0;
+
+int powersave = 0;
+int ledsoff = 1;
 
 // store error strings in flash to save RAM
 #define error(s) error_P(PSTR(s))
@@ -94,7 +98,7 @@ void setup(void) {
   if (!root.openRoot(&volume)) error("openRoot failed");
   
   // create a new file
-  char name[] = "LOGGER00.CSV";
+  char name[] = "LOGGRR00.CSV";
   for (uint8_t i = 0; i < 100; i++) {
     name[6] = i/10 + '0';
     name[7] = i%10 + '0';
@@ -118,8 +122,12 @@ void loop(void) {
   file.writeError = 0;
   delay((LOG_INTERVAL -1) - (millis() % LOG_INTERVAL));
   
-  if (Uart.available()) {
-    digitalWrite (ledb,HIGH);
+  if (Uart.available()){
+    if (ledson) {
+      ledblevel += 50;
+      analogWrite (ledb,ledblevel);
+    }
+    //digitalWrite (ledb,HIGH);
     inByte = Uart.read();    
     file.print(inByte);
     Serial.print(inByte);
@@ -127,7 +135,7 @@ void loop(void) {
     //Serial.print(inByte,HEX);
     //Serial.print(" ");
     } else {
-      digitalWrite (ledb, LOW);
+      //digitalWrite (ledb, LOW);
     }
     
   if (file.writeError) error("write data failed");
@@ -136,13 +144,19 @@ void loop(void) {
   if ((millis() - syncTime) <  SYNC_INTERVAL) return;
   syncTime = millis();
   if (!file.sync()) {
+    digitalWrite(ledb,LOW);
+    digitalWrite(ledg,LOW);
     error("sync failed");
   } else {
-    for(int i = 255; i>0; i--) {
-      analogWrite(ledg,i);
-      delay(1);
+    if (ledson) {
+      digitalWrite(ledb,LOW);
+      digitalWrite(ledg,LOW);
+      for(int i = 255; i>0; i--) {
+        analogWrite(ledg,i);
+        delay(1);
+      }
+      digitalWrite(ledg,LOW);
     }
-    digitalWrite(ledg,LOW);
   }
   digitalWrite(ledb,LOW);
 }
