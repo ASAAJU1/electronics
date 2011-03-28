@@ -83,10 +83,11 @@ def timer100msEvent(msTick):
 def doEverySecond():
     #pass
     global taddress
-    eventString = str(displayClockDT()) + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
+    dts = str(displayClockDT())
+    eventString = dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
     print eventString
-    rpc(portalAddr, "plotlq", loadNvParam(8), getLq())
-    rpc(portalAddr, "infoDT", displayClockDT())
+    rpc(portalAddr, "plotlq", loadNvParam(8), getLq(), dts)
+    #rpc(portalAddr, "infoDT", displayClockDT())
     #print displayClockDT()
     #sleep(0,1)
     

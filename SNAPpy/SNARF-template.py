@@ -72,7 +72,7 @@ def timer100msEvent(msTick):
     
 def doEverySecond():
     #pass
-    rpc(portalAddr, "plotlq", loadNvParam(8), getLq())
+    rpc(portalAddr, "plotlq", loadNvParam(8), getLq(), 0)
     #rpc(portalAddr, "infoDT", displayClockDT())
     
 def doEveryMinute():

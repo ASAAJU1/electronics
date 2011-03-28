@@ -22,6 +22,7 @@ from synapse.sysInfo import *
 from pcf2129a_m import *
 from lm75a_m import *
 from m24lc256_m import *
+from jc_m import *
 
 portalAddr = '\x00\x00\x01' # hard-coded address for Portal <------------<<<<<<<<
 #portal_addr = None
@@ -40,18 +41,20 @@ RTC_INT = GPIO_10
 @setHook(HOOK_STARTUP)
 def start():    
     # Setup the Auxilary Regulator for sensors:
-    setPinDir(VAUX, True)       #output
-    writePin(VAUX, True)       #Turn on aux power
+    setPinDir(VAUX, True)           #output
+    writePin(VAUX, True)            #Turn on aux power
+    #VAUX needs to be on initially to initialize SD Card
+    
     # Setup the RTC Interrupt pin
-    setPinDir(RTC_INT, False)   #Input
-    setPinPullup(RTC_INT, True) #Turn on pullup
-    monitorPin(RTC_INT, True)   #monitor changes to this pin. Will go low on int
+    setPinDir(RTC_INT, False)       #Input
+    setPinPullup(RTC_INT, True)     #Turn on pullup
+    monitorPin(RTC_INT, True)       #monitor changes to this pin. Will go low on int
     wakeupOn(RTC_INT, True, False)  #Wake from sleep when pin goes low
     
     # I2C GPIO_17/18 rf100. rf200 needs external pullups.
     i2cInit(True)
     # On startup try to get the portal address. 
-    if portal_addr is None:
+    if portalAddr is None:
         mcastRpc(1, 5, "get_portal_logger")
     else:
         getPortalTime()
@@ -82,17 +85,19 @@ def start():
 @setHook(HOOK_100MS)
 def timer100msEvent(msTick):
     """Hooked into the HOOK_100MS event"""
-    global secondCounter
-    secondCounter += 1
-    if secondCounter >= 10:
-        doEverySecond()      
-        secondCounter = 0
+    pass
+    #global secondCounter
+    #secondCounter += 1
+    #if secondCounter >= 10:
+    #    doEverySecond()      
+    #    secondCounter = 0
     
     
 @setHook(HOOK_1S) 
 def doEverySec(tick): 
     global minuteCounter
     minuteCounter += 1
+    doEverySecond()
     if minuteCounter >= 60:
         #doEveryLongLog()
         minuteCounter = 0
@@ -103,7 +108,8 @@ def getInput(data):
     pass
     global cmd, arg
     if data == '?':
-        help()
+        #help()
+        pass
     elif len(data):
         getCmdArg(data)
         ret = None
@@ -120,7 +126,7 @@ def getInput(data):
     print "\r\n>",
     
 
-@setHook(HOOK_RPC_SENT) 
+#@setHook(HOOK_RPC_SENT) 
 def rpcDone(bufRef): 
     if bufRef == myRpcID:
       #You know this particular RPC has been sent
@@ -189,53 +195,6 @@ def testLogE():
     String2 = str(getI2cResult()) + " " + str(t)
     return String2
 
-def sleepTest():
-    """Quick way to goto sleep"""
-    #wakeupOn(GPIO_10, True, False)
-    sleep(0,0)
-    
-def zQuickSleepTest(Minute,Second):
-    writeClockAlarm(Minute,Second)
-    sleep(0,0)
-    
-def zCalcWakeTime10():
-    """Set the RTC INT to triger at the next 10 minute interval"""
-    # This is an abbreviated part of displayClockTime retrieving
-    # only the current seconds and minutes.
-    buff = readPCF2129(0x03,2)
-    
-    Seconds = bcdToDec(ord(buff[0]) & 0x7F)
-    Minutes = bcdToDec(ord(buff[1]) & 0x7F)
-    
-    Minutes += 10
-    Minutes = Minutes / 10
-    Minutes = Minutes * 10
-    if (Minutes > 50):
-        Minutes = 0
-    writeClockAlarm(Minutes, 0)
-    rpc(portalAddr, "WakeAlert", Minutes, Seconds)
-    return str(Minutes)
-
-def zCalcWakeTime1():
-    """Set the RTC INT to triger in one minute, then goto sleep"""
-    # This is an abbreviated part of displayClockTime retrieving
-    # only the current seconds and minutes.
-    buff = readPCF2129(0x03,2)
-    
-    Seconds = bcdToDec(ord(buff[0]) & 0x7F)
-    Minutes = bcdToDec(ord(buff[1]) & 0x7F)
-    
-    Minutes += 1
-    #Minutes = Minutes / 10
-    #Minutes = Minutes * 10
-    if (Minutes > 59):
-        Minutes = 0
-    writeClockAlarm(Minutes, Seconds)
-    eventString = "Going to sleep, wake at: " + str(Minutes) + ":" + str(Seconds)
-    rpc(portalAddr, "logEvent", eventString)
-    return eventString
-
-
 def turnONVAUX():
     writePin(VAUX, True)       #Turn on aux power 
 
@@ -244,8 +203,8 @@ def turnOFFVAUX():
 
 def set_portal_addr():
     """Set the portal SNAP address to the caller of this function"""
-    global portal_addr
-    portal_addr = rpcSourceAddr()
+    global portalAddr
+    portalAddr = rpcSourceAddr()
     getPortalTime()
 
 def getCmdArg(input):
@@ -267,34 +226,6 @@ def getCmdArg(input):
 
         cmd += c
         i += 1
-
-#@setHook(HOOK_STDIN)    
-def stdinEvent(data):
-    ''' Process command line input '''
-    global cmd, arg
-
-    if data == '?':
-        help()
-    elif len(data):
-        getCmdArg(data)
-        ret = None
-        print
-        
-        if arg != None:
-            ret = cmd(arg)
-        else:
-            ret = cmd()
-    
-        if ret != None:
-            print " => ", ret
-            
-    print "\r\n>",
-
-#----- The following are some simple functions for us to easily invoke from CLI -----
-
-def help():
-    print "\r\nThis sample CLI can call any SNAPpy function."
-    print "Enter a function name [' ' + optional argument]"
 
 def ver():
     print "SNAP v", getInfo(SI_TYPE_VERSION_MAJOR), '.', getInfo(SI_TYPE_VERSION_MINOR)

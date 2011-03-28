@@ -42,9 +42,10 @@ def setRFPCF2129Time():
 ###############################################################################
 ## Below is from Synapse Wireless    ##########################################
 ###############################################################################
-def plotlq(who, lq): 
+def plotlq(who, lq, dts): 
     logData(who,lq,256)
     remoteNode.setColumn("Link", lq)
+    remoteNode.setColumn("DT", dts)
 
 def infoDT(dts):
     remoteNode.setColumn("DT", dts)
