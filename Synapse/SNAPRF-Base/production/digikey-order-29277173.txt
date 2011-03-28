@@ -1,0 +1,30 @@
+Web ID,Access ID,Salesorder Number,Shipping Method,Payment Method,
+35036931,7527,29277173,FedEx Ground (order by 7:00 PM CT),VISA,
+
+Shipping Address
+First Name,Last Name,Company,Mail Stop,Address Line 1,Address Line 2,City,State,Postal Code,Country,Email Address,Telephone,
+J.C.,Woltz,,,620 N. Zane Ave,,Lancaster,OH,43130,USA,jwoltz@gmail.com,740-215-7316,
+
+Billing Address
+First Name,Last Name,Company,Mail Stop,Address Line 1,Address Line 2,City,State,Postal Code,Country,Email Address,Telephone,
+J.C.,Woltz,,,620 N. Zane Ave,,Lancaster,OH,43130,USA,,740-215-7316,
+
+Index,Quantity,Part Number,Description,Customer Reference,Backorder Quantity,Unit Price USD,Extended Price USD,
+1,2,S5800-40-ND,CONN HEADER 2MM SINGLE STR 40POS,,0,1.20000,$2.40,
+2,50,MCP1802T-3302I/OTCT-ND,IC REG LDO 300MA 3.3V SOT23-5,,0,0.44000,$22.00,
+3,25,568-4960-5-ND,IC REAL TIME CLK/CALENDAR 20SOIC,,0,2.70000,$67.50,
+4,30,490-3886-1-ND,CAP CER 10UF 16V X5R 0805,,0,0.32900,$9.87,
+5,130,490-4785-1-ND,CAP CER 1UF 25V X7R 0805,,0,0.13720,$17.84,
+6,30,B240A-FDICT-ND,DIODE SCHOTTKY 40V 2A SMA,,0,0.41300,$12.39,
+7,30,ED2635-ND,TERM BLOCK 3.5MM VERT 2POS PCB,,0,0.21900,$6.57,
+8,25,568-4227-1-ND,IC TEMP SENSOR DIGITAL 8TSSOP,,0,0.84000,$21.00,
+9,100,3M9389CT-ND,CONN SOCKET 12POS 2MM VERT SMD,,0,1.51680,$151.68,
+10,25,24LC256T-I/SNCT-ND,IC EEPROM 256KBIT 400KHZ 8SOIC,,0,0.79000,$19.75,
+11,25,296-19854-1-ND,IC RS232 3V5.5V 15KVESD 16-SOIC,,0,1.89000,$47.25,
+12,130,490-1666-1-ND,CAP CER .1UF 50V 10% X7R 0805,,0,0.02470,$3.21,
+13,6,ATMEGA32U4-AU-ND,MCU AVR 32K FLASH 16MHZ 44-TQFP,,0,6.04000,$36.24,
+14,1,SMD291AX10-ND,SOLDER PASTE NO-CLEAN 63/37 10CC,,0,18.75000,$18.75,
+,,,,,,Subtotal,$436.45
+,,,,,,Shipping,unknown
+,,,,,,Estimated Sales Tax,$28.37
+,,,,,,Total,unknown
