@@ -30,3 +30,5 @@ R4	RAW_VIN (version 3.h2 and later)
 R5	SDA
 R6	SCL
 
+changes:
+ICL3223EIVZ
