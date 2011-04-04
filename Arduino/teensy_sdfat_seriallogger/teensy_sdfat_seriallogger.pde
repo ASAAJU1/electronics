@@ -29,7 +29,7 @@ int ledb = 15;
 int ledblevel = 0;
 
 int powersave = 0;
-int ledsoff = 1;
+int ledson = 1;
 
 // store error strings in flash to save RAM
 #define error(s) error_P(PSTR(s))
