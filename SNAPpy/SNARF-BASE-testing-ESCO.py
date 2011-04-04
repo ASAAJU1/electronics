@@ -11,6 +11,8 @@ v201103171943 - Set initial Portal Address to none. Add set_portal_addr() functi
 v201103191511 - Would not compile without a portalAddr. So set portal as 1 and left
                 Function to change portal addr.
 v201103272322 - testing plotlq rpc call, modfied arguments
+v201104021650 - Branch SNARF-BASE-testing, modify for LOCATION at ESCO With ATMEGA
+v201104041240 - Added devname everywhere. modified jc_m and portal to diplay more info about when it will wakeup
 
 """
 
@@ -29,6 +31,7 @@ minuteCounter = 0
 datablock = 1
 taddress = 64
 
+
 #These are the GPIO pins used on the SNARF-BASE v3.h
 VAUX = GPIO_5
 RTC_INT = GPIO_10
@@ -36,9 +39,11 @@ RTC_INT = GPIO_10
 
 @setHook(HOOK_STARTUP)
 def start():    
+    global devName
+    devName = str(loadNvParam(8))
     # Setup the Auxilary Regulator for sensors:
     setPinDir(VAUX, True)       #output
-    writePin(VAUX, True)       #Turn off aux power
+    writePin(VAUX, True)        #Turn on aux power
     # Setup the RTC Interrupt pin
     setPinDir(RTC_INT, False)   #Input
     setPinPullup(RTC_INT, True) #Turn on pullup
@@ -48,16 +53,16 @@ def start():
     # I2C GPIO_17/18 rf100. rf200 needs external pullups.
     i2cInit(True)
     # On startup try to get the portal address. 
-    if portalAddr is None:
-        mcastRpc(1, 5, "get_portal_logger")
-    else:
-        getPortalTime()
+    #if portalAddr is None:
+    #    mcastRpc(1, 5, "get_portal_logger")
+    #else:
+    #    getPortalTime()
     # Go ahead and redirect STDOUT to Portal now
     #ucastSerial(portal_addr) # put your correct Portal address here!
     getPortalTime()
-    initUart(0,9600)
-    flowControl(0,False)
-    #crossConnect(DS_STDIO,DS_UART0)
+    initUart(1,9600)
+    flowControl(1,False)
+    crossConnect(DS_STDIO,DS_UART1)
         
 
     
@@ -73,21 +78,26 @@ def timer100msEvent(msTick):
     """Hooked into the HOOK_100MS event"""
     global secondCounter, minuteCounter
     secondCounter += 1
-    if secondCounter >= 10:
-        doEverySecond()      
+    if secondCounter == 10:
+        doEverySecond()
+        doEveryMinute()
+    if secondCounter == 70:
+        zCalcWakeTime10info()
+    if secondCounter >= 200:
         secondCounter = 0
-        minuteCounter += 1
-        if minuteCounter >= 600:
-            doEveryMinute()
-            minuteCounter = 0
+        sleep(0,0)
+        #minuteCounter += 1
+        #if minuteCounter >= 600:
+        #    doEveryMinute()
+        #    minuteCounter = 0
     
 def doEverySecond():
     #pass
     global taddress
     dts = str(displayClockDT())
-    eventString = dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
+    eventString = devName + ":" + dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
     print eventString
-    rpc(portalAddr, "plotlq", loadNvParam(8), getLq(), dts)
+    #rpc(portalAddr, "plotlq", loadNvParam(8), getLq(), dts)
     #rpc(portalAddr, "infoDT", displayClockDT())
     #print displayClockDT()
     #sleep(0,1)
@@ -109,7 +119,7 @@ def doEveryMinute():
     tt = len(eventString)
     writeEEblock(taddress, eventString)
 
-    eventString = loadNvParam(8) + ": " + eventString + " " + str(t) + " " + str(taddress) + " " + str(tt)
+    eventString = devName + ": " + eventString + " " + str(t) + " " + str(taddress) + " " + str(tt)
     rpc(portalAddr, "logEvent", eventString)
     #if (t < 32):
     #    t = 32
@@ -124,11 +134,11 @@ def buttonEvent(pinNum, isSet):
     #mostly debug and pointless irw
     print str(pinNum),
     print str(isSet)
-    eventString = "HOOK_GPIN " + str(pinNum) + str(isSet)
+    eventString = devName + " HOOK_GPIN " + str(pinNum) + str(isSet)
     rpc(portalAddr, "logEvent", eventString)
     
 def testLogE():
-    eventString = "Config: " + str(displayClockDT()) + ",EOB"
+    eventString = devName + " Start: " + str(displayClockDT()) + ",EOB"
     t = len(eventString)
     #writeEEblock(taddress, eventString)
     writeEEblock(0, eventString)

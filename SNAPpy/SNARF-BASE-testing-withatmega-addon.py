@@ -30,6 +30,9 @@ secondCounter = 0
 minuteCounter = 0
 datablock = 1
 taddress = 64
+portalAck = False
+portalSleepAck = False
+sleepcounter = 0
 
 #These are the GPIO pins used on the SNARF-BASE v3.h
 #This has been tested with RF100 and RF200
@@ -40,6 +43,8 @@ RTC_INT = GPIO_10
 
 @setHook(HOOK_STARTUP)
 def start():    
+    global devName
+    devName = str(loadNvParam(8))
     # Setup the Auxilary Regulator for sensors:
     setPinDir(VAUX, True)           #output
     writePin(VAUX, True)            #Turn on aux power
@@ -65,9 +70,8 @@ def start():
     flowControl(1,False)
     crossConnect(DS_STDIO, DS_UART1)
     # send errors to portal
-    uniConnect(DS_PACKET_SERIAL, DS_ERROR)
+    #uniConnect(DS_PACKET_SERIAL, DS_ERROR)
     
-    devName = loadNvParam(8)  # get the device name
     
     #Test to try and catch any output/errors from addon
     #possible future addon for 2way comm
@@ -82,74 +86,47 @@ def start():
     
     print "Startup Done!"
     
+    
 @setHook(HOOK_100MS)
 def timer100msEvent(msTick):
     """Hooked into the HOOK_100MS event"""
-    pass
-    #global secondCounter
-    #secondCounter += 1
-    #if secondCounter >= 10:
-    #    doEverySecond()      
-    #    secondCounter = 0
-    
-    
-@setHook(HOOK_1S) 
-def doEverySec(tick): 
-    global minuteCounter
-    minuteCounter += 1
-    doEverySecond()
-    if minuteCounter >= 60:
-        #doEveryLongLog()
-        minuteCounter = 0
-
-#@setHook(HOOK_STDIN) 
-def getInput(data): 
-    ''' Process command line input '''
-    pass
-    global cmd, arg
-    if data == '?':
-        #help()
-        pass
-    elif len(data):
-        getCmdArg(data)
-        ret = None
-        print
-        
-        if arg != None:
-            ret = cmd(arg)
-        else:
-            ret = cmd()
-    
-        if ret != None:
-            print " => ", ret
-            
-    print "\r\n>",
-    
+    global secondCounter, minuteCounter
+    secondCounter += 1
+    if secondCounter == 10:
+        doEverySecond()
+        doEveryMinute()
+    if secondCounter == 70:
+        zCalcWakeTime10info()
+    if secondCounter >= 200:
+        secondCounter = 0
+        sleep(0,0)
+        #minuteCounter += 1
+        #if minuteCounter >= 600:
+        #    doEveryMinute()
+        #    minuteCounter = 0
 
 #@setHook(HOOK_RPC_SENT) 
-def rpcDone(bufRef): 
-    if bufRef == myRpcID:
-      #You know this particular RPC has been sent
-      pass
-    pass
-    #print str(bufRef)
+#def rpcDone(bufRef): 
+#    if bufRef == myRpcID:
+#      #You know this particular RPC has been sent
+#      pass
+#    pass
+#    #print str(bufRef)
 
 def doEverySecond():
     #pass
     global taddress
-    global portalAddr
-    global myRpcID
-    eventString = str(displayClockDT()) + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
+    dts = str(displayClockDT())
+    eventString = devName + ":" + dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
     print eventString
-    rpc(portalAddr, "plotlq", loadNvParam(8), getLq())
-    myRpcID = getInfo(9)
-    rpc(portalAddr, "infoDT", displayClockDT())
-    myRpcID = getInfo(9)
+    #myRpcID = getInfo(9)
+    #rpc(portalAddr, "infoDT", displayClockDT())
+    #myRpcID = getInfo(9)
     #print displayClockDT()
     #sleep(0,1)
     
     
-def doEveryLongLog():
+def doEveryMinute():
     global datablock
     #address = datablock * 64
     global taddress
@@ -165,16 +142,12 @@ def doEveryLongLog():
     tt = len(eventString)
     writeEEblock(taddress, eventString)
 
-    eventString = eventString + " " + str(t) + " " + str(taddress) + " " + str(tt)
+    eventString = devName + ": " + eventString + " " + str(t) + " " + str(taddress) + " " + str(tt)
     rpc(portalAddr, "logEvent", eventString)
     #if (t < 32):
     #    t = 32
     taddress += tt
     datablock += 1
-    zCalcWakeTime10()
-    turnOFFVAUX()
-    sleep(0,0)
-    turnONVAUX()
     
     return getI2cResult()
     
@@ -184,17 +157,34 @@ def buttonEvent(pinNum, isSet):
     #mostly debug and pointless irw
     print str(pinNum),
     print str(isSet)
-    eventString = "HOOK_GPIN " + str(pinNum) + str(isSet)
+    eventString = devName + " HOOK_GPIN " + str(pinNum) + str(isSet)
     rpc(portalAddr, "logEvent", eventString)
     
 def testLogE():
-    eventString = "Config: " + str(displayClockDT()) + ",EOB"
+    eventString = devName + " Start: " + str(displayClockDT()) + ",EOB"
     t = len(eventString)
     #writeEEblock(taddress, eventString)
     writeEEblock(0, eventString)
     String2 = str(getI2cResult()) + " " + str(t)
     return String2
 
+def portalcmdsleep():
+    global portalSleepAck
+    global minuteCounter
+    global sleepcounter
+    portalSleepAck = True
+    sleepcounter = minuteCounter + 4
+    
+def gotosleep():
+    global portalSleepAck
+    if (portalSleepAck):
+        #turnOFFVAUX()
+        #sleep(0,0)
+        turnONVAUX()
+        portalSleepAck = False
+        
+        
+    
 def turnONVAUX():
     writePin(VAUX, True)       #Turn on aux power 
 
@@ -207,34 +197,14 @@ def set_portal_addr():
     portalAddr = rpcSourceAddr()
     getPortalTime()
 
-def getCmdArg(input):
-    """Parse out a single int or string argument from given command-line input"""
-    global cmd, arg
-    cmd = ''
-    arg = None
-    i = 0
-    while i < len(input):
-        c = input[i]
-        if c == ' ':
-            if '0' <= input[i+1] <= '9':
-                arg = int(input[i:])
-                input = cmd
-            else:
-                arg = input[i+1:]
-                input = cmd
-            break
-
-        cmd += c
-        i += 1
-
-def ver():
-    print "SNAP v", getInfo(SI_TYPE_VERSION_MAJOR), '.', getInfo(SI_TYPE_VERSION_MINOR)
-    print "Device Type: ", loadNvParam(10)
-    
 def echo(text):
     print text
     
 @setHook(HOOK_STDIN)    
 def stdinEventd(data):
     ''' Process command line input '''
-    rpc(portalAddr, "logEvent", data)
+    c = data[0]
+    if c == 'r':
+        print "rrrr"
+    else:
+        rpc(portalAddr, "logEvent", data)

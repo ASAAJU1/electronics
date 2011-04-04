@@ -2,6 +2,9 @@
 Program Description:    lm75a_m.py - Example I2C routines for the NXP LM75A Temp.
 Uses the buildTWICmd from pcf2129a_m.py
 
+CC BY 3.0  J.C. Woltz
+http://creativecommons.org/licenses/by/3.0/
+
 -------------------------------------------------------------------------------------------------
 """
 LM75_ADDRESS = 72<<1    #slave aaddress is '1001'210, 2 1 0 are gnd =0. shifts to 10010000
