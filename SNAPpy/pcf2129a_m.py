@@ -92,8 +92,9 @@ def writeClockTime(Year,Month,Day,DOW,Hour,Minute,Second):
 def writeClockAlarm(Minute,Second):
     # This section clears the Alarm INT and programs
     # This INT to go low when the alarm is triggered
+    # Control_2
     cmd = buildTWICmd(PCF2129_ADDRESS, 0x01, False)
-    cmd += chr(2)
+    cmd += chr(2)   #Turn on AIE BIT
     i2cWrite(cmd, retries, False)
     # end of section
     
