@@ -99,7 +99,39 @@ def zCalcWakeTime10info():
     Minutes += 10
     Minutes = Minutes / 10
     Minutes = Minutes * 10
-    if (Minutes > 50):
+    if (Minutes > 59):
+        Minutes = 0
+        Hours += 1
+    if (Hours > 23):
+        Hours = 0
+        Days += 1
+        DOW += 1
+    Seconds = 0
+    writeClockAlarm(Minutes, Seconds)
+    eventString = "Going to sleep, wake at: " + str(Hours) + ":" + str(Minutes) + ":" + str(Seconds)
+    rpc(portalAddr, "logEvent", eventString)
+    writeClockAlarm(Minutes, Seconds)
+    rpc(portalAddr, "WakeDisplay", Years,Months,Days,DOW,Hours,Minutes,Seconds)
+    return str(Minutes)
+
+def zCalcWakeTime2info():
+    """Set the RTC INT to triger at the next 10 minute interval"""
+    # This is an abbreviated part of displayClockTime retrieving
+    # only the current seconds and minutes.
+    buff = readPCF2129(0x03,7)
+    
+    Seconds = bcdToDec(ord(buff[0]) & 0x7F)
+    Minutes = bcdToDec(ord(buff[1]) & 0x7F)
+    Hours = bcdToDec(ord(buff[2]) & 0x3F)
+    Days = bcdToDec(ord(buff[3]) & 0x3F)
+    DOW = bcdToDec(ord(buff[4]) & 0x07)
+    Months = bcdToDec(ord(buff[5]) & 0x1F)
+    Years = bcdToDec(ord(buff[6]))
+    
+    Minutes += 2
+    #Minutes = Minutes / 10
+    #Minutes = Minutes * 10
+    if (Minutes > 59):
         Minutes = 0
         Hours += 1
     if (Hours > 23):

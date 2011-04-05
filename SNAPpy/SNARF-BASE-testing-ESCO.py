@@ -30,7 +30,7 @@ secondCounter = 0
 minuteCounter = 0
 datablock = 1
 taddress = 64
-
+jcdebug = True
 
 #These are the GPIO pins used on the SNARF-BASE v3.h
 VAUX = GPIO_5
@@ -63,9 +63,8 @@ def start():
     initUart(1,9600)
     flowControl(1,False)
     crossConnect(DS_STDIO,DS_UART1)
-        
-
     
+    #taddress = readEEPROM(59,5)
     #sleep(1,3)
     #Check if rtc has invalid year, if so, automatically update rtc from portal
     #This is not a very robust check, but work for testing.
@@ -83,7 +82,8 @@ def timer100msEvent(msTick):
         doEveryMinute()
     if secondCounter == 70:
         zCalcWakeTime10info()
-    if secondCounter >= 200:
+        savelastwritelocation()
+    if secondCounter >= 300:
         secondCounter = 0
         sleep(0,0)
         #minuteCounter += 1
@@ -132,10 +132,11 @@ def doEveryMinute():
 def buttonEvent(pinNum, isSet):
     """Hooked into the HOOK_GPIN event"""
     #mostly debug and pointless irw
-    print str(pinNum),
-    print str(isSet)
-    eventString = devName + " HOOK_GPIN " + str(pinNum) + str(isSet)
-    rpc(portalAddr, "logEvent", eventString)
+    if (jcdebug):
+        print str(pinNum),
+        print str(isSet)
+        eventString = devName + ": HOOK_GPIN: " + str(pinNum) + " " + str(isSet)
+        rpc(portalAddr, "logEvent", eventString)
     
 def testLogE():
     eventString = devName + " Start: " + str(displayClockDT()) + ",EOB"
@@ -157,3 +158,16 @@ def set_portal_addr():
     global portalAddr
     portalAddr = rpcSourceAddr()
     getPortalTime()
+
+def savelastwritelocation():
+    global taddress
+    if (taddress < 100):
+        tt = "000" + str(taddress)
+    elif (taddress < 1000):
+        tt = "00" + str(taddress)
+    elif (taddress < 10000):
+        tt = "0" + str(taddress)
+    else:
+        tt = str(taddress)
+    writeEEblock(59, tt)
+    return tt
