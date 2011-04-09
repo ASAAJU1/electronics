@@ -35,12 +35,14 @@ jcdebug = True
 #These are the GPIO pins used on the SNARF-BASE v3.h
 VAUX = GPIO_5
 RTC_INT = GPIO_10
-
+LED1 = GPIO_0
 
 @setHook(HOOK_STARTUP)
 def start():    
     global devName
+    global taddress
     devName = str(loadNvParam(8))
+    setPinDir(LED1, True)
     # Setup the Auxilary Regulator for sensors:
     setPinDir(VAUX, True)       #output
     writePin(VAUX, True)        #Turn on aux power
@@ -64,7 +66,7 @@ def start():
     flowControl(1,False)
     crossConnect(DS_STDIO,DS_UART1)
     
-    #taddress = readEEPROM(59,5)
+    #taddress = int(readEEPROM(59,5))
     #sleep(1,3)
     #Check if rtc has invalid year, if so, automatically update rtc from portal
     #This is not a very robust check, but work for testing.
@@ -76,15 +78,21 @@ def start():
 def timer100msEvent(msTick):
     """Hooked into the HOOK_100MS event"""
     global secondCounter, minuteCounter
+    pulsePin(LED1, 5, True)
     secondCounter += 1
+    pulsePin(LED1, 50, True)
     if secondCounter == 10:
         doEverySecond()
         doEveryMinute()
     if secondCounter == 70:
         zCalcWakeTime10info()
         savelastwritelocation()
+    if secondCounter == 100:
+        tt = str(readEEPROM(59,5))
+        rpc(portalAddr, "dispayLastWriteAddress", tt)
     if secondCounter >= 300:
         secondCounter = 0
+        writePin(LED1, False)
         sleep(0,0)
         #minuteCounter += 1
         #if minuteCounter >= 600:
@@ -93,6 +101,7 @@ def timer100msEvent(msTick):
     
 def doEverySecond():
     #pass
+    #Since the uart is crossconnected, this goes out over the uart
     global taddress
     dts = str(displayClockDT())
     eventString = devName + ":" + dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)

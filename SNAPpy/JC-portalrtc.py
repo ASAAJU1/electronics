@@ -42,9 +42,12 @@ def setRFPCF2129Time():
 def pingESCO():
     rpc("\x00\x31\x56", "vmStat", 10)
 
+def dispayLastWriteAddress(tt):
+    remoteNode.setColumn("Next Address", tt)
+    
 def WakeAlert(Minutes, Seconds):
     eventString = str(Minutes) + " " + str(Seconds)
-    remoteNode.setColumn("Wake At:",eventString);
+    remoteNode.setColumn("Wake At:",eventString)
     rpc(remoteAddr, "portalcmdsleep")
 
 def WakeDisplay(Years, Months, Days, DOW, Hours, Minutes, Seconds):
@@ -61,7 +64,7 @@ def WakeDisplay(Years, Months, Days, DOW, Hours, Minutes, Seconds):
         Seconds = str(0) + str(Seconds)
     eventString = str(displayDOW(DOW)) + " " + str(20) + str(Years) + "." + str(Months) + "." + str(Days) + " " + str(Hours) + ":" +  str(Minutes) + ":" + str(Seconds)
     #eventString = str(Minutes) + " " + str(Seconds)
-    remoteNode.setColumn("Wake At",eventString);
+    remoteNode.setColumn("Wake At",eventString)
     #rpc(remoteAddr, "portalcmdsleep")
 
 def displayDOW(DOW):
