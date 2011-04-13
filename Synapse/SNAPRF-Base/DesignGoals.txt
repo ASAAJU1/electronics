@@ -31,6 +31,26 @@ R4	RAW_VIN (version 3.h2 and later)
 R5	SDA
 R6	SCL
 
+Power Budget:
+MCP1802-3.3v	Iq=25-50 uA, Ishdn=0.01-0.10 uA, 
+When no valid RS-232 voltages (see Figure 6)
+are sensed on any receiver input for 30µs, the charge
+pump and transmitters power-down, thereby reducing
+supply current to 1µA. Invalid receiver levels occur
+whenever the driving peripheral’s outputs are shut off
+(powered down) or when the RS-232 interface cable is
+disconnected. The ICL32xxE powers back up whenever it
+detects a valid RS-232 voltage level on any receiver
+input. This
+
+
+
+
+
+
+
+
+
 changes:
 ICL3223EIVZ
 F4Swu7Aruphewume
