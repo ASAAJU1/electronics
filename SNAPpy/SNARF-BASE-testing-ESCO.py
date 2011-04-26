@@ -67,7 +67,7 @@ def start():
     crossConnect(DS_STDIO,DS_UART1)
     
     #Will read the last taddress write and continue from there
-	#taddress = int(readEEPROM(59,5))
+    #taddress = int(readEEPROM(59,5))
 
     #Check if rtc has invalid year, if so, automatically update rtc from portal
     #This is not a very robust check, but work for testing.
