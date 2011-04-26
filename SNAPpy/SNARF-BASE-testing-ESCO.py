@@ -28,14 +28,14 @@ portalAddr = '\x00\x00\x01' # hard-coded address for Portal <------------<<<<<<<
 #portal_addr = None
 secondCounter = 0 
 minuteCounter = 0
-datablock = 1
-taddress = 64
-jcdebug = True
+datablock = 1		#64Byte Page to store info in eeprom
+taddress = 64		#address to store info in eeprom
+jcdebug = True		#Set to false for quieter run time
 
 #These are the GPIO pins used on the SNARF-BASE v3.h
-VAUX = GPIO_5
-RTC_INT = GPIO_10
-LED1 = GPIO_0
+VAUX = GPIO_5		#Set low to turn off aux power
+RTC_INT = GPIO_10	#Will go low on alarm
+LED1 = GPIO_0		#Just an led to indicate node is awake
 
 @setHook(HOOK_STARTUP)
 def start():    
@@ -60,14 +60,15 @@ def start():
     #else:
     #    getPortalTime()
     # Go ahead and redirect STDOUT to Portal now
-    #ucastSerial(portal_addr) # put your correct Portal address here!
+    #ucastSerial(portalAddr) # put your correct Portal address here!
     getPortalTime()
     initUart(1,9600)
     flowControl(1,False)
     crossConnect(DS_STDIO,DS_UART1)
     
-    #taddress = int(readEEPROM(59,5))
-    #sleep(1,3)
+    #Will read the last taddress write and continue from there
+	#taddress = int(readEEPROM(59,5))
+
     #Check if rtc has invalid year, if so, automatically update rtc from portal
     #This is not a very robust check, but work for testing.
     checkClockYear()

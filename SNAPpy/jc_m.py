@@ -131,7 +131,7 @@ def zCalcWakeTime2info():
     Minutes += 2
     #Minutes = Minutes / 10
     #Minutes = Minutes * 10
-    if (Minutes > 59):
+    if (Minutes > 58):
         Minutes = 0
         Hours += 1
     if (Hours > 23):

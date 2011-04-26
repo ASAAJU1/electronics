@@ -89,6 +89,8 @@ def displayDOW(DOW):
         Day = "Fri"
     if (DOW == 6):
         Day = "Sat"
+	if (DOW == 7):
+		Day = "Sun"
     return Day
     
 ###############################################################################
