@@ -32,7 +32,7 @@ int ledb = 15;
 int ledblevel = 0;
 
 int powersave = 0;
-int ledson = 1;
+int ledson = 0;
 
 int led1 = 4; // B7
 int led2 = 15; //B6
