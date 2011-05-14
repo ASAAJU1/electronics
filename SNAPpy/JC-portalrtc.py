@@ -4,6 +4,8 @@ setRFTime function written by me.
 
 get_temp_logger written by Synapse Wireless
 F4Swu7Aruphewume
+
+at this point, many other synapse example functions added
 """
 """
     logSupport.py - one method of supporting "log to file" functionality
@@ -18,7 +20,9 @@ import binascii
 import time
 
 #import thermistor
-
+import wx
+buttonCount = 0
+frame = None
 
 CSV_FILENAME = "tempDataLog.csv"
 
@@ -50,12 +54,12 @@ def pingESCO():
     rpc("\x00\x31\x56", "vmStat", 10)
 
 def dispayLastWriteAddress(tt):
-    remoteNode.setColumn("Next Address", tt)
+    remoteNode.setColumn("Next EEPROM Address", tt)
     
 def WakeAlert(Minutes, Seconds):
     eventString = str(Minutes) + " " + str(Seconds)
-    remoteNode.setColumn("Wake At:",eventString)
-    rpc(remoteAddr, "portalcmdsleep")
+    remoteNode.setColumn("Wake At",eventString)
+    #rpc(remoteAddr, "portalcmdsleep")
 
 def WakeDisplay(Years, Months, Days, DOW, Hours, Minutes, Seconds):
     
@@ -168,6 +172,68 @@ def logToFile(this, baseName, logInfo):
         handler.setFormatter(formatter)
         log.addHandler(handler)
         this.logSetup = True
-
     log.info(logInfo)
+    
+def setButtonCount(newCount):
+    """Called by multicastCounter nodes to set new count"""
+    global frame
+    
+    if not frame:
+        frame = McastFrame(root)
+
+    frame.displayButtonCount(newCount)
+    
+    
+class McastFrame(wx.Frame):
+    """Main window frame"""
+    def __init__(self, parent):
+        wx.Frame.__init__(self, parent, -1, "Synapse Multicast Counter", style = wx.DEFAULT_FRAME_STYLE | wx.STAY_ON_TOP)
+        self.Bind(wx.EVT_CLOSE, self.onClose)
+        self.panel = McastPanel(self)
+        self.Show(True)
+
+    def onClose(self, event):
+        self.Destroy()
+
+    def displayButtonCount(self, newCount):
+        self.panel.sc.SetValue(newCount)
+        self.panel.text.SetLabel('%d' % newCount)
+        self.Refresh()
+        
+        
+class McastPanel(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent, -1)
+        self.mcastFrame = parent
+        box = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(box)
+        
+        self.text = wx.StaticText(self, -1, "0", (30, 40))
+        font = wx.Font(72, wx.DEFAULT, wx.NORMAL, wx.BOLD, False, "Courier New")
+        self.text.SetFont(font)
+        box.Add(self.text, 1, wx.ALIGN_CENTER)
+        
+        self.sc = wx.SpinCtrl(self, -1, "", (30, 40), style = wx.SP_ARROW_KEYS | wx.SP_WRAP)
+        self.sc.SetRange(0,99)
+        self.Bind(wx.EVT_SPINCTRL, self.OnSpin, self.sc)
+        box.Add(self.sc, 0, wx.ALIGN_CENTER)
+
+    def OnSpin(self, event):
+        global buttonCount
+        buttonCount = event.Selection
+        self.text.SetLabel('%d' % buttonCount)
+        multicastRpc(1, 2, 'setButtonCount', buttonCount)
+    
+
+if __name__ == '__main__':
+    """Mcast Test""" 
+    class MyApp(wx.App):
+        def OnInit(self):
+            self.frame = McastFrame(None)
+            self.SetTopWindow(self.frame)
+            return True
+
+
+    app = MyApp(0)
+    app.MainLoop()
 
