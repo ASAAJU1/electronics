@@ -7,6 +7,7 @@ Program Description:    DS2764.py - Example I2C routines for the Maxim DS2764.
 from synapse.platforms import *
 from synapse.switchboard import *
 from synapse.hexSupport import *
+from logger import *
 
 portalAddr = '\x00\x00\x01' # hard-coded address for Portal <------------<<<<<<<<
 DS2764_ADDRESS = 52<<1  #1slave address is 01101000 which shifts to 01101001(R/W)
@@ -31,8 +32,11 @@ def DS2764FetchBasic():
 def readDS2764(firstReg, numRegs):
     cmd = buildDSCmd(firstReg, False)
     i2cWrite(cmd, retries, False)
-    if (getI2cResult() == 0):
-        print "You must call i2cInit() before using the library"
+    r = getI2cResult()
+    if (r == 0):
+        log("You must call i2cInit() before using the library")
+    if (r > 1):
+        log("I2C error code " + str(r))
     cmd = chr( DS2764_ADDRESS | 1 )
     return i2cRead(cmd, numRegs, retries, False)
     
@@ -49,7 +53,7 @@ def buildDSCmd(registerAddress, isRead):
 
 def getDSVoltage():
     if (not dataFetchTriggerCalled):
-        print "You must call DS2764FetchBasic() every 100ms!!"
+        log("You must call DS2764FetchBasic() every 100ms!!")
     else:
         v = (ord(buffer[0])) << 8 | ord(buffer[1])
         v = v >> 6    
@@ -59,7 +63,7 @@ def getDSVoltage():
 
 def getDSCurrent():
     if (not dataFetchTriggerCalled):
-        print "You must call DS2764FetchBasic() every 100ms!!"
+        log("You must call DS2764FetchBasic() every 100ms!!")
     else:
         c = (ord(buffer[2]) << 8 ) | ord(buffer[3])
         c = c / 8 * 5 / 8
@@ -67,7 +71,7 @@ def getDSCurrent():
 
 def getDSACurrent():
     if (not dataFetchTriggerCalled):
-        print "You must call DS2764FetchBasic() every 100ms!!"
+        log("You must call DS2764FetchBasic() every 100ms!!")
     else:
         ac = ((ord(buffer[4]) << 8) | ord(buffer[5])) / 4
         return ac
@@ -108,7 +112,7 @@ def clearDSProtRegister():
     cmd = cmd + chr(0x03) 
     r = sendDS2764(cmd)   
     if r != 1:
-        print "I2C error " + str(r)
+        log("I2C error " + str(r))
         
 
 def getDSProtRegister():
@@ -130,7 +134,7 @@ def printDSProtRegister():
         
 def sendDS2764(cmd):
     i2cWrite(cmd, retries, False)
-    return getI2cResult()        
+    return getI2cResult()     
         
 def byteToBinStr(b):
     i = 1
