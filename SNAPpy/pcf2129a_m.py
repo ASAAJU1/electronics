@@ -161,6 +161,7 @@ def bcdToDec(val):
 
 def getPortalTime():
     """ Call This to have Portal Set RTC"""
+    #portalAddr = "\x4c\x70\xbd"
     rpc(portalAddr, "setRFTime", localAddr())
     
     

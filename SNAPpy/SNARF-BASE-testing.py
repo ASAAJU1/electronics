@@ -57,7 +57,7 @@ def start():
     getPortalTime()
     initUart(0,9600)
     flowControl(0,False)
-    #crossConnect(DS_STDIO,DS_UART0)
+    crossConnect(DS_STDIO,DS_UART0)
         
 
     

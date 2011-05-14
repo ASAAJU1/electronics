@@ -36,12 +36,16 @@ jcdebug = False
 #These are the GPIO pins used on the SNARF-BASE v3.h
 VAUX = GPIO_5
 RTC_INT = GPIO_10
-LED1 = GPIO_0
+LED1 = GPIO_18
 
 @setHook(HOOK_STARTUP)
 def start():    
     global devName
     global taddress
+    NeedRestart=SetParam(53, 0, NeedRestart)
+    if NeedRestart:
+        reboot()
+        
     devName = str(loadNvParam(8))
     setPinDir(LED1, True)
     # Setup the Auxilary Regulator for sensors:
@@ -63,25 +67,19 @@ def start():
     # Go ahead and redirect STDOUT to Portal now
     #ucastSerial(portal_addr) # put your correct Portal address here!
     getPortalTime()
-    initUart(1,9600)
-    flowControl(1,False)
-    crossConnect(DS_STDIO,DS_UART1)
-    
-    # send errors to portal
-    #uniConnect(DS_PACKET_SERIAL, DS_ERROR)
-    
-    
-    #Test to try and catch any output/errors from addon
-    #possible future addon for 2way comm
-    stdinMode(0, False)      # Line Mode, Echo Off
+    initUart(0,9600)
+    flowControl(0,False)
+    crossConnect(DS_STDIO,DS_UART0)
     
     #taddress = int(readEEPROM(59,5))
+    eventstring = devName + ": Last save address: " + str(readEEPROM(59,5))
+    rpc(portalAddr, "logEvent", eventstring)
     #sleep(1,3)
     #Check if rtc has invalid year, if so, automatically update rtc from portal
     #This is not a very robust check, but work for testing.
     checkClockYear()
-    
-    #print "Startup Done!"
+    print chr(0xFE) + chr(0x01),
+    print "Startup Done!",
     
 @setHook(HOOK_100MS)
 def timer100msEvent(msTick):
@@ -90,31 +88,36 @@ def timer100msEvent(msTick):
     #pulsePin(LED1, 5, True)
     secondCounter += 1
     pulsePin(LED1, 50, True)
-    if secondCounter >= 10:
+    if secondCounter == 10:
         doEverySecond()
-    if secondCounter >= 600:
-        minuteCounter += 1
-        secondCounter = 0
         doEveryMinute()
-    #if secondCounter == 70:
-    #    zCalcWakeTime10info()
-    #    savelastwritelocation()
-    #if secondCounter == 100:
-    #    tt = str(readEEPROM(59,5))
-    #    rpc(portalAddr, "dispayLastWriteAddress", tt)
-    #if secondCounter >= 300:
-    #    secondCounter = 0
-    #     writePin(LED1, False)
-    #     sleep(0,0)
-    
+    if secondCounter == 70:
+        zCalcWakeTime2info()
+        #savelastwritelocation()
+    if secondCounter == 200:
+        tt = str(readEEPROM(59,5))
+        rpc(portalAddr, "dispayLastWriteAddress", tt)
+    if secondCounter >= 600:
+        secondCounter = 0
+        writePin(LED1, False)
+        turnOFFVAUX()
+        sleep(0,0)
+        turnONVAUX()
+        #minuteCounter += 1
+        #if minuteCounter >= 600:
+        #    doEveryMinute()
+        #    minuteCounter = 0
     
 def doEverySecond():
-    pass
+    #pass
     #Since the uart is crossconnected, this goes out over the uart
-    #global taddress
-    #dts = str(displayClockDT())
+    global taddress
+    dts = str(displayClockDT())
     #eventString = devName + ":" + dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
-    #print eventString
+    #eventString = devName + ":" + dts + chr(0xFE) + chr(192) + "F:" + str(displayLMTempF()) + " C:" + str(displayLMTemp())
+    eventString = devName + ": " + str(displayLMTempF()) + chr(0xFE) + chr(192) + dts
+    print chr(0xFE) + chr(0x01),
+    print eventString,
     #rpc(portalAddr, "plotlq", loadNvParam(8), getLq(), dts)
     #rpc(portalAddr, "infoDT", displayClockDT())
     #print displayClockDT()
@@ -122,9 +125,6 @@ def doEverySecond():
     
     
 def doEveryMinute():
-    pass
-
-def logLocal():
     global datablock
     #address = datablock * 64
     global taddress
@@ -193,14 +193,12 @@ def savelastwritelocation():
     writeEEblock(59, tt)
     return tt
 
-def echo(text):
-    print str(text)
-    
-@setHook(HOOK_STDIN)    
-def stdinEventd(data):
-    ''' Process command line input '''
-    c = data[0]
-    if c == 'r':
-        print "rrrr"
+def SetParam(ID, Value, Pass):
+    """code from reblli1 to set NV Parameters if different"""
+    if loadNvParam(ID) != Value:
+        saveNvParam(ID, Value)
+        return True
     else:
-        rpc(portalAddr, "logEvent", data)
+        return Pass
+    
+   
