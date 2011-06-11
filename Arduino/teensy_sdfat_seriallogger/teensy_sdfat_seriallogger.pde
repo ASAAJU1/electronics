@@ -14,6 +14,10 @@ HardwareSerial Uart = HardwareSerial();
 #include <SdFatUtil.h>
 #include <Wire.h>
 
+//#include <LiquidCrystal.h>
+// Connect via i2c, default address #0 (A0-A2 not jumpered)
+//LiquidCrystal lcd(0);
+
 Sd2Card card;
 SdVolume volume;
 SdFile root;
@@ -28,12 +32,7 @@ int ledr = 4;
 int ledg = 14;
 int ledb = 15;
 
-
-int ledblevel = 0;
-
-int powersave = 0;
-int ledson = 0;
-
+//Revision 2 of PCB
 int led1 = 4; // B7
 int led2 = 15; //B6
 int led3 = 14; //B5
@@ -41,6 +40,11 @@ int led4 = 13; //B4
 int led7 = 24; //PE6
 int led8 = 9; //PC6
 int led9 = 10; //PC7
+
+int ledblevel = 0;
+
+int powersave = 0;
+int ledson = 1;
 
 // store error strings in flash to save RAM
 #define error(s) error_P(PSTR(s))
@@ -62,9 +66,9 @@ void error_P(const char* str) {
 		Uart.println(card.errorData(), HEX);
 	}
 	while(1){
-		digitalWrite(led1,LOW);
+		digitalWrite(led4,LOW);
 		delay(500);
-		digitalWrite(led1,HIGH);
+		digitalWrite(led4,HIGH);
 		delay(500);
 		PgmPrint("SD error: ");
 		Serial.print(card.errorCode(), HEX);
@@ -85,11 +89,15 @@ void error_P(const char* str) {
 void setup(void) {
 	Uart.begin(9600);
 	pinMode(led8,OUTPUT);
-	digitalWrite(led8, HIGH);
+	digitalWrite(led8, LOW);
 	//DDRD &= ~((0<<0) | (0<<1));
 	//PORTD |= (1<<0) | (1<<1);
-	Wire.begin(0x50);                // join i2c bus with address #2
-	Wire.onRequest(requestEvent); // register event
+	//Wire.begin(0x50);                // join i2c bus with address #2
+	//Wire.onRequest(requestEvent); // register event
+	Wire.begin();
+	//lcd.begin(16, 2);
+	//lcd.setBacklight(LOW);
+
 	Serial.begin(9600);
 	Serial.println();
 	pinMode(led1,OUTPUT);
@@ -97,13 +105,14 @@ void setup(void) {
 	pinMode(led3,OUTPUT);
 	pinMode(led4,OUTPUT);
 	pinMode(led7,OUTPUT);
-	//  pinMode(led8,OUTPUT);
+	pinMode(led8,OUTPUT);
 	pinMode(led9,OUTPUT);
 	digitalWrite(led1, LOW);
 	digitalWrite(led2, LOW);
 	digitalWrite(led3, LOW);
 	digitalWrite(led4, LOW);
 	digitalWrite(led7, LOW);
+	digitalWrite(led8, LOW);
 	digitalWrite(led9, LOW);
 
 
