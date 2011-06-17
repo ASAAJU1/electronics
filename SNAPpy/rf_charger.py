@@ -47,7 +47,7 @@ def start():
     #crossConnect(DS_STDIO,DS_TRANSPARENT)
         
     # I2C GPIO_17/18 used for MCP3424
-    i2cInit(False)
+    i2cInit(True)
     
     chgStatusBlinkTimer = getMs()
     
@@ -114,7 +114,7 @@ def trigger():
     
     # Only sample once per wakeup period
     if timeCount == 1:
-        rpc('\x4C\x6B\x91', "Debug.log", getMyAddress()+","+getDateTime()+","+str(getDSVoltage())+","+str(getDSTemperature())+","+str(getDSCurrent())+","+str(getDSACurrent()))
+        rpc('\x4C\x70\xBD', "Debuglog", getMyAddress()+","+str(getDSVoltage())+","+str(getDSTemperature())+","+str(getDSCurrent())+","+str(getDSACurrent()))
         print str(getDSVoltage())+","+str(getDSTemperature())+","+str(getDSCurrent())+","+str(getDSACurrent())
         
     # when in nosleep mode send data every 180 seconds
