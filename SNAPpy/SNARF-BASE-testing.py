@@ -11,6 +11,7 @@ v201103171943 - Set initial Portal Address to none. Add set_portal_addr() functi
 v201103191511 - Would not compile without a portalAddr. So set portal as 1 and left
                 Function to change portal addr.
 v201103272322 - testing plotlq rpc call, modfied arguments
+v201105311415 - modified for quick automated teasting
 
 """
 
@@ -32,10 +33,18 @@ taddress = 64
 #These are the GPIO pins used on the SNARF-BASE v3.h
 VAUX = GPIO_5
 RTC_INT = GPIO_10
-
+LED1 = GPIO_0
 
 @setHook(HOOK_STARTUP)
 def start():    
+    global devName
+    global taddress
+    global Dname, Dtype
+    Dtype = str(loadNvParam(10))
+    Dname = str(loadNvParam(8))
+    devName = str(loadNvParam(8))
+    setPinDir(LED1, True)
+
     # Setup the Auxilary Regulator for sensors:
     setPinDir(VAUX, True)       #output
     writePin(VAUX, True)       #Turn off aux power
@@ -77,7 +86,7 @@ def timer100msEvent(msTick):
         doEverySecond()      
         secondCounter = 0
         minuteCounter += 1
-        if minuteCounter >= 600:
+        if minuteCounter >= 60:
             doEveryMinute()
             minuteCounter = 0
     
@@ -87,7 +96,7 @@ def doEverySecond():
     dts = str(displayClockDT())
     eventString = dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
     print eventString
-    rpc(portalAddr, "plotlq", loadNvParam(8), getLq(), dts)
+    rpc(portalAddr, "plotlq", devName, getLq(), dts)
     #rpc(portalAddr, "infoDT", displayClockDT())
     #print displayClockDT()
     #sleep(0,1)

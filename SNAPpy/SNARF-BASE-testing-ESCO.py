@@ -31,7 +31,7 @@ secondCounter = 0
 minuteCounter = 0
 datablock = 1
 taddress = 64
-jcdebug = False
+jcdebug = True
 
 #These are the GPIO pins used on the SNARF-BASE v3.h
 VAUX = GPIO_5
@@ -42,6 +42,9 @@ LED1 = GPIO_0
 def start():    
     global devName
     global taddress
+    global Dname, Dtype
+    Dtype = str(loadNvParam(10))
+    Dname = str(loadNvParam(8))
     devName = str(loadNvParam(8))
     setPinDir(LED1, True)
     # Setup the Auxilary Regulator for sensors:
@@ -61,14 +64,17 @@ def start():
     #else:
     #    getPortalTime()
     # Go ahead and redirect STDOUT to Portal now
-    #ucastSerial(portal_addr) # put your correct Portal address here!
-    getPortalTime()
-    initUart(1,9600)
-    flowControl(1,False)
-    crossConnect(DS_STDIO,DS_UART1)
-    
+    ucastSerial(portalAddr) # put your correct Portal address here!
     # send errors to portal
-    #uniConnect(DS_PACKET_SERIAL, DS_ERROR)
+    uniConnect(DS_PACKET_SERIAL, DS_ERROR)
+    
+    getPortalTime()
+    
+    initUart(0,1)
+    flowControl(0,False)
+    crossConnect(DS_STDIO,DS_UART0)
+    
+ 
     
     
     #Test to try and catch any output/errors from addon
@@ -89,13 +95,22 @@ def timer100msEvent(msTick):
     global secondCounter, minuteCounter
     #pulsePin(LED1, 5, True)
     secondCounter += 1
-    pulsePin(LED1, 50, True)
-    if secondCounter >= 10:
+    #pulsePin(LED1, 50, True)
+    if secondCounter == 2:
         doEverySecond()
-    if secondCounter >= 600:
-        minuteCounter += 1
+        #secondCounter = 0
+        #minuteCounter += 1
+        zCalcWakeTime1()
+    if secondCounter >= 50:
+        turnOFFVAUX()
+        #sleep(0,0)
+        turnONVAUX()
+        rpc(portalAddr, "logEvent", "AWAKE")
         secondCounter = 0
+        minuteCounter += 1
+    if minuteCounter >= 60:
         doEveryMinute()
+        minuteCounter = 0
     #if secondCounter == 70:
     #    zCalcWakeTime10info()
     #    savelastwritelocation()
@@ -112,17 +127,21 @@ def doEverySecond():
     pass
     #Since the uart is crossconnected, this goes out over the uart
     #global taddress
-    #dts = str(displayClockDT())
+    dts = displayClockDT()
     #eventString = devName + ":" + dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
-    #print eventString
-    #rpc(portalAddr, "plotlq", loadNvParam(8), getLq(), dts)
+    eventString = "C" + dts + "," + str(displayLMTempF())
+    print eventString
+    #rpc(portalAddr, "plotlqwx", Dname, getLq(), displayClockDT())
     #rpc(portalAddr, "infoDT", displayClockDT())
     #print displayClockDT()
     #sleep(0,1)
     
     
 def doEveryMinute():
-    pass
+    dts = str(displayClockDT())
+    eventString = devName + ":" + dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp())
+    rpc(e10Addr, "reportJC", Dname, Dtype, eventString)
+    
 
 def logLocal():
     global datablock

@@ -43,10 +43,15 @@ def zCalcWakeTime1():
     """Set the RTC INT to triger in one minute, then goto sleep"""
     # This is an abbreviated part of displayClockTime retrieving
     # only the current seconds and minutes.
-    buff = readPCF2129(0x03,2)
+    buff = readPCF2129(0x03,7)
     
     Seconds = bcdToDec(ord(buff[0]) & 0x7F)
     Minutes = bcdToDec(ord(buff[1]) & 0x7F)
+    Hours = bcdToDec(ord(buff[2]) & 0x3F)
+    Days = bcdToDec(ord(buff[3]) & 0x3F)
+    DOW = bcdToDec(ord(buff[4]) & 0x07)
+    Months = bcdToDec(ord(buff[5]) & 0x1F)
+    Years = bcdToDec(ord(buff[6]))
     
     Minutes += 1
     #Minutes = Minutes / 10
@@ -54,11 +59,11 @@ def zCalcWakeTime1():
     if (Minutes > 59):
         Minutes = 0
     writeClockAlarm(Minutes, Seconds)
-    eventString = "Going to sleep, wake at: " + str(Minutes) + ":" + str(Seconds)
+    eventString = str(loadNvParam(8)) + " to sleep, wakeup: " + str(Hours) + ":" + str(Minutes) + ":" + str(Seconds)
     rpc(portalAddr, "logEvent", eventString)
     writeClockAlarm(Minutes, Seconds)
-    rpc(portalAddr, "WakeAlert", Minutes, Seconds)
-    return eventString
+    rpc(portalAddr, "WakeDisplay", Years,Months,Days,DOW,Hours,Minutes,Seconds)
+    return str(Minutes)
 
 def zCalcWakeTime5():
     """Set the RTC INT to triger in five minute, then goto sleep"""
@@ -108,7 +113,7 @@ def zCalcWakeTime10info():
         DOW += 1
     Seconds = 0
     writeClockAlarm(Minutes, Seconds)
-    eventString = "Going to sleep, wake at: " + str(Hours) + ":" + str(Minutes) + ":" + str(Seconds)
+    eventString = str(loadNvParam(8)) + " to sleep, wake at: " + str(Hours) + ":" + str(Minutes) + ":" + str(Seconds)
     rpc(portalAddr, "logEvent", eventString)
     writeClockAlarm(Minutes, Seconds)
     rpc(portalAddr, "WakeDisplay", Years,Months,Days,DOW,Hours,Minutes,Seconds)
@@ -140,7 +145,7 @@ def zCalcWakeTime2info():
         DOW += 1
     Seconds = 0
     writeClockAlarm(Minutes, Seconds)
-    eventString = "Going to sleep, wake at: " + str(Hours) + ":" + str(Minutes) + ":" + str(Seconds)
+    eventString = str(loadNvParam(8)) + " to sleep, wake at: " + str(Hours) + ":" + str(Minutes) + ":" + str(Seconds)
     rpc(portalAddr, "logEvent", eventString)
     writeClockAlarm(Minutes, Seconds)
     rpc(portalAddr, "WakeDisplay", Years,Months,Days,DOW,Hours,Minutes,Seconds)

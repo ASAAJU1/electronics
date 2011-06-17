@@ -13,7 +13,7 @@ at this point, many other synapse example functions added
     Makes use of the standard logging capabilities of Python
 """
 
-import logging, logging.handlers, datetime, time, codecs, os
+import logging, logging.handlers, datetime, time, codecs, os, math
 
 
 import binascii
@@ -21,8 +21,10 @@ import time
 
 #import thermistor
 import wx
+import wx.grid
 buttonCount = 0
 frame = None
+frame2 = None
 
 CSV_FILENAME = "tempDataLog.csv"
 
@@ -48,7 +50,19 @@ def setRFPCF2129Time():
     Second = int(time.strftime('%S'))
     DOW = int(time.strftime('%w'))
     
-    mcastrpc(1, 3, "writeClockTime", Year, Month, Date, DOW, Hour, Minute, Second)
+    if (Months < 10):
+        Months = str(0) + str(Months)
+    if (Days < 10):
+        Days = str(0) + str(Days)
+    if (Hours < 10):
+        Hours = str(0) + str(Hours)
+    if (Minutes < 10):
+        Minutes = str(0) + str(Minutes)    
+    if (Seconds < 10):
+        Seconds = str(0) + str(Seconds)
+    #eventString = str(displayDOW(DOW)) + " 20" + str(Years) + "." + str(Months) + "." + str(Days) + " " + str(Hours) + ":" +  str(Minutes) + ":" + str(Seconds)
+    print "mcastRpc Called at: " #+ eventString
+    #mcastRpc(1, 3, "writeClockTime", Year, Month, Date, DOW, Hour, Minute, Second)
     
 def pingESCO():
     rpc("\x00\x31\x56", "vmStat", 10)
@@ -95,8 +109,28 @@ def displayDOW(DOW):
         Day = "Sat"
     if (DOW == 7):
         Day = "Sun"
+    print Day
     return Day
-    
+
+def convertTMP36200(adc):
+    #print adc,
+    miiil = (adc) * (1600.0000/1024.0000)
+    #print miiil
+    tempc = (miiil - 500) / 10
+    print tempc
+    convertTMP36200f(tempc)
+    #return tempc
+def convertTMP36200f(val):
+    tempf = val * 1.8 + 32
+    print tempf
+    return tempf
+###############################################################################
+## Various Test function to help people on forums #############################
+###############################################################################
+###############################################################################
+
+def printValue(value):
+    print value
 ###############################################################################
 ## Below is from Synapse Wireless    ##########################################
 ## Some are modified  #########################################################
@@ -173,66 +207,96 @@ def logToFile(this, baseName, logInfo):
         log.addHandler(handler)
         this.logSetup = True
     log.info(logInfo)
-    
-def setButtonCount(newCount):
+
+def plotlqwx(who, lq, dts): 
     """Called by multicastCounter nodes to set new count"""
-    global frame
+    data = str(who) + " " + str(lq) + " " + str(dts)
+    logData(who,lq,128)
+    remoteNode.setColumn("Link", lq)
+    remoteNode.setColumn("DT", dts)
+    global frame2
     
-    if not frame:
-        frame = McastFrame(root)
+    if not frame2:
+        frame2 = LinkDQFrame(root)
 
-    frame.displayButtonCount(newCount)
-    
-    
-class McastFrame(wx.Frame):
-    """Main window frame"""
-    def __init__(self, parent):
-        wx.Frame.__init__(self, parent, -1, "Synapse Multicast Counter", style = wx.DEFAULT_FRAME_STYLE | wx.STAY_ON_TOP)
-        self.Bind(wx.EVT_CLOSE, self.onClose)
-        self.panel = McastPanel(self)
-        self.Show(True)
+    frame2.addRawData(data)
 
-    def onClose(self, event):
-        self.Destroy()
 
-    def displayButtonCount(self, newCount):
-        self.panel.sc.SetValue(newCount)
-        self.panel.text.SetLabel('%d' % newCount)
-        self.Refresh()
-        
-        
-class McastPanel(wx.Panel):
-    def __init__(self, parent):
-        wx.Panel.__init__(self, parent, -1)
-        self.mcastFrame = parent
-        box = wx.BoxSizer(wx.VERTICAL)
-        self.SetSizer(box)
-        
-        self.text = wx.StaticText(self, -1, "0", (30, 40))
-        font = wx.Font(72, wx.DEFAULT, wx.NORMAL, wx.BOLD, False, "Courier New")
-        self.text.SetFont(font)
-        box.Add(self.text, 1, wx.ALIGN_CENTER)
-        
-        self.sc = wx.SpinCtrl(self, -1, "", (30, 40), style = wx.SP_ARROW_KEYS | wx.SP_WRAP)
-        self.sc.SetRange(0,99)
-        self.Bind(wx.EVT_SPINCTRL, self.OnSpin, self.sc)
-        box.Add(self.sc, 0, wx.ALIGN_CENTER)
+class LinkDQFrame ( wx.Frame ):
+	
+	def __init__( self, parent ):
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		
+		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
+		
+		bSizer7 = wx.BoxSizer( wx.VERTICAL )
+		
+		sbSizer2 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Raw Data" ), wx.HORIZONTAL )
+		
+		self.m_textCtrl3 = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_MULTILINE|wx.TE_READONLY )
+		sbSizer2.Add( self.m_textCtrl3, 1, wx.ALL|wx.EXPAND, 5 )
+		
+		bSizer7.Add( sbSizer2, 1, wx.EXPAND, 5 )
+		
+		gbSizer2 = wx.GridBagSizer( 0, 0 )
+		gbSizer2.SetFlexibleDirection( wx.BOTH )
+		gbSizer2.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+		
+		self.m_grid2 = wx.grid.Grid( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
+		
+		# Grid
+		self.m_grid2.CreateGrid( 5, 5 )
+		self.m_grid2.EnableEditing( False )
+		self.m_grid2.EnableGridLines( True )
+		self.m_grid2.EnableDragGridSize( False )
+		self.m_grid2.SetMargins( 0, 0 )
+		
+		# Columns
+		self.m_grid2.EnableDragColMove( False )
+		self.m_grid2.EnableDragColSize( True )
+		self.m_grid2.SetColLabelSize( 30 )
+		self.m_grid2.SetColLabelAlignment( wx.ALIGN_CENTRE, wx.ALIGN_CENTRE )
+		
+		# Rows
+		self.m_grid2.EnableDragRowSize( True )
+		self.m_grid2.SetRowLabelSize( 80 )
+		self.m_grid2.SetRowLabelAlignment( wx.ALIGN_CENTRE, wx.ALIGN_CENTRE )
+		
+		# Label Appearance
+		
+		# Cell Defaults
+		self.m_grid2.SetDefaultCellAlignment( wx.ALIGN_LEFT, wx.ALIGN_TOP )
+		gbSizer2.Add( self.m_grid2, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
+		
+		bSizer7.Add( gbSizer2, 2, wx.EXPAND, 5 )
+		
+		self.SetSizer( bSizer7 )
+		self.Layout()
+		self.m_statusBar3 = self.CreateStatusBar( 4, wx.ST_SIZEGRIP, wx.ID_ANY )
+		
+		self.Centre( wx.BOTH )
+		
+		# Connect Events
+		self.Bind( wx.EVT_CLOSE, self.onClose )
+	
 
-    def OnSpin(self, event):
-        global buttonCount
-        buttonCount = event.Selection
-        self.text.SetLabel('%d' % buttonCount)
-        multicastRpc(1, 2, 'setButtonCount', buttonCount)
-    
+        def addRawData(self, data):
+            print data
+            self.m_textCtrl3.ChangeValue = str(data)
+
+	# Virtual event handlers, overide them in your derived class
+	def onClose( self, event ):
+		self.Destroy()
 
 if __name__ == '__main__':
     """Mcast Test""" 
     class MyApp(wx.App):
         def OnInit(self):
-            self.frame = McastFrame(None)
-            self.SetTopWindow(self.frame)
+            #self.frame = McastFrame(None)
+            #self.SetTopWindow(self.frame)
+            self.frame2 = LinkDQFrame(None)
+            self.frame2.Show(True)
             return True
-
 
     app = MyApp(0)
     app.MainLoop()

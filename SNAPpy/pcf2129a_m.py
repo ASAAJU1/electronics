@@ -111,7 +111,7 @@ def writeClockAlarm(Minute,Second):
     return getI2cResult()
 
 def displayClockDT():
-    """returns a string of length12 YYMMDDHHmmSS"""
+    """returns a string of length 12 YYMMDDHHmmSS"""
     buff = readPCF2129(0x03,7)
     
     Seconds = bcdToDec(ord(buff[0]) & 0x7F)
@@ -132,7 +132,7 @@ def displayClockDT():
         Minutes = str(0) + str(Minutes)    
     if (Seconds < 10):
         Seconds = str(0) + str(Seconds)
-    eventString = str(Years) + str(Months) + str(Days) + str(Hours) +  str(Minutes) + str(Seconds)
+    eventString = str(Years) + str(Months) + str(Days) + str(Hours) + str(Minutes) + str(Seconds)
     #rpc(portalAddr, "logEvent", eventString)
     return eventString
 

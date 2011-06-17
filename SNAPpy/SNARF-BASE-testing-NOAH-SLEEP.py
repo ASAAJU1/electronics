@@ -13,6 +13,7 @@ v201103191511 - Would not compile without a portalAddr. So set portal as 1 and l
 v201103272322 - testing plotlq rpc call, modfied arguments
 v201104021650 - Branch SNARF-BASE-testing, modify for LOCATION at ESCO With ATMEGA
 v201104041240 - Added devname everywhere. modified jc_m and portal to diplay more info about when it will wakeup
+v201106132347 - deviated from snarf-base-testing-esco.
 
 """
 
@@ -48,9 +49,6 @@ def start():
     #    
     devName = str(loadNvParam(8))
     setPinDir(LED1, True)
-    setPinDir(GPIO_17, True)
-    setPinDir(GPIO_18, False)
-    writePin(GPIO_17, False)
     # Setup the Auxilary Regulator for sensors:
     setPinDir(VAUX, True)       #output
     writePin(VAUX, False)        #Turn on aux power
@@ -94,14 +92,13 @@ def timer100msEvent(msTick):
     if secondCounter == 10:
         doEverySecond()
         doEveryMinute()
-        readTMP36(7)
     if secondCounter == 50:
         zCalcWakeTime2info()
         savelastwritelocation()
     if secondCounter == 80:
         tt = str(readEEPROM(59,5))
         rpc(portalAddr, "dispayLastWriteAddress", tt)
-    if secondCounter >= 600:
+    if secondCounter >= 100:
         secondCounter = 0
         writePin(LED1, False)
         turnOFFVAUX()
@@ -154,10 +151,6 @@ def doEveryMinute():
     datablock += 1
     
     return getI2cResult()
-
-def readTMP36(adc):
-    ref = readAdc(adc)
-    rpc(portalAddr, "convertTMP36200", int(ref))
     
 @setHook(HOOK_GPIN)
 def buttonEvent(pinNum, isSet):
@@ -212,10 +205,10 @@ def SetParam(ID, Value, Pass):
         return Pass
     
 def turnoffjcdebug():
-    global jcdebug
-    jcdebug = False
+    jcdebug
+    jcdebug = True
     
 def turnonjcdebug():
-    global jcdebug
+    jcdebug
     jcdebug = True
     

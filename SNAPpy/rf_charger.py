@@ -30,6 +30,9 @@ noChgError = False
 @setHook(HOOK_STARTUP)
 def start():    
     global noChgError, chgStatusBlinkTimer, isChargingPreviousState
+    global Dname, Dtype
+    Dtype = str(loadNvParam(10))
+    Dname = str(loadNvParam(8))
     setPinDir(CHG_ERROR, False)
     setPinDir(CHG_STATUS, False)
     monitorPin(CHG_ERROR, True)
@@ -114,8 +117,11 @@ def trigger():
     
     # Only sample once per wakeup period
     if timeCount == 1:
-        rpc('\x4C\x70\xBD', "Debuglog", getMyAddress()+","+str(getDSVoltage())+","+str(getDSTemperature())+","+str(getDSCurrent())+","+str(getDSACurrent()))
+        eventString = getMyAddress()+","+str(getDSVoltage())+","+str(getDSTemperature())+","+str(getDSCurrent())+","+str(getDSACurrent())
+        #rpc('\x4C\x70\xBD', "debuglog", eventString)
+        rpc('\x4C\x70\xBD', "reportJC", Dname, Dtype, eventString)
         print str(getDSVoltage())+","+str(getDSTemperature())+","+str(getDSCurrent())+","+str(getDSACurrent())
+        rpc(portalAddr, "setButtonCount", getDSCurrent())
         
     # when in nosleep mode send data every 180 seconds
     if (noSleep and timeCount >= 300):
