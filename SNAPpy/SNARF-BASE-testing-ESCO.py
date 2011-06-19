@@ -34,17 +34,16 @@ taddress = 64
 jcdebug = True
 
 #These are the GPIO pins used on the SNARF-BASE v3.h
-VAUX = GPIO_5
-RTC_INT = GPIO_10
+VAUX = GPIO_15
+RTC_INT = GPIO_2
 LED1 = GPIO_0
 
 @setHook(HOOK_STARTUP)
 def start():    
-    global devName
+    global devName, devType
     global taddress
-    global Dname, Dtype
-    Dtype = str(loadNvParam(10))
-    Dname = str(loadNvParam(8))
+    #global Dname, Dtype
+    devType = str(loadNvParam(10))
     devName = str(loadNvParam(8))
     setPinDir(LED1, True)
     # Setup the Auxilary Regulator for sensors:
@@ -64,22 +63,22 @@ def start():
     #else:
     #    getPortalTime()
     # Go ahead and redirect STDOUT to Portal now
-    ucastSerial(portalAddr) # put your correct Portal address here!
+    #ucastSerial(portalAddr) # put your correct Portal address here!
     # send errors to portal
-    uniConnect(DS_PACKET_SERIAL, DS_ERROR)
+    #uniConnect(DS_PACKET_SERIAL, DS_ERROR)
     
     getPortalTime()
     
-    initUart(0,1)
+    initUart(0,9600)
     flowControl(0,False)
-    crossConnect(DS_STDIO,DS_UART0)
+    crossConnect(DS_UART0,DS_STDIO)
     
  
     
     
     #Test to try and catch any output/errors from addon
     #possible future addon for 2way comm
-    stdinMode(0, False)      # Line Mode, Echo Off
+    stdinMode(0, True)      # Line Mode, Echo Off
     
     #taddress = int(readEEPROM(59,5))
     #sleep(1,3)
@@ -87,25 +86,25 @@ def start():
     #This is not a very robust check, but work for testing.
     checkClockYear()
     
-    #print "Startup Done!"
+    print "Startup Done!"
     
 @setHook(HOOK_100MS)
 def timer100msEvent(msTick):
     """Hooked into the HOOK_100MS event"""
     global secondCounter, minuteCounter
-    #pulsePin(LED1, 5, True)
+    pulsePin(LED1, 50, True)
     secondCounter += 1
     #pulsePin(LED1, 50, True)
     if secondCounter == 2:
         doEverySecond()
         #secondCounter = 0
         #minuteCounter += 1
-        zCalcWakeTime1()
-    if secondCounter >= 50:
-        turnOFFVAUX()
+        #zCalcWakeTime1()
+    if secondCounter >= 10:
+        #turnOFFVAUX()
         #sleep(0,0)
-        turnONVAUX()
-        rpc(portalAddr, "logEvent", "AWAKE")
+        #turnONVAUX()
+        #rpc(portalAddr, "logEvent", "AWAKE")
         secondCounter = 0
         minuteCounter += 1
     if minuteCounter >= 60:
@@ -127,9 +126,9 @@ def doEverySecond():
     pass
     #Since the uart is crossconnected, this goes out over the uart
     #global taddress
-    dts = displayClockDT()
-    #eventString = devName + ":" + dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
-    eventString = "C" + dts + "," + str(displayLMTempF())
+    dts = str(displayClockDT())
+    eventString = devName + ":" + dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
+    #eventString = dts + "," + str(displayLMTempF())
     print eventString
     #rpc(portalAddr, "plotlqwx", Dname, getLq(), displayClockDT())
     #rpc(portalAddr, "infoDT", displayClockDT())
@@ -140,7 +139,7 @@ def doEverySecond():
 def doEveryMinute():
     dts = str(displayClockDT())
     eventString = devName + ":" + dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp())
-    rpc(e10Addr, "reportJC", Dname, Dtype, eventString)
+    rpc(e10Addr, "reportJC", devName, devType, eventString)
     
 
 def logLocal():

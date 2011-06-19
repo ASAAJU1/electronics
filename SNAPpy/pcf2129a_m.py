@@ -85,9 +85,11 @@ def writeClockTime(Year,Month,Day,DOW,Hour,Minute,Second):
     cmd += chr(decToBcd(int(Year)))
     #dumpHex(cmd)
     i2cWrite(cmd, retries, False)
-    return getI2cResult()
-    displayClockDate()
-
+    t = getI2cResult()
+    if (jcdebug):
+        if t == 1:
+            displayClockDate()
+    return t
 
 def writeClockAlarm(Minute,Second):
     # This section clears the Alarm INT and programs
@@ -133,7 +135,9 @@ def displayClockDT():
     if (Seconds < 10):
         Seconds = str(0) + str(Seconds)
     eventString = str(Years) + str(Months) + str(Days) + str(Hours) + str(Minutes) + str(Seconds)
-    #rpc(portalAddr, "logEvent", eventString)
+    if (jcdebug):
+        te = str(loadNvParam(8)) +":" + eventString
+        rpc(portalAddr, "logEvent", te)
     return eventString
 
 def displayDOW(DOW):
