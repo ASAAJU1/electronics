@@ -75,7 +75,8 @@ def writeEEblock(memoryAddress, data):
     #dumpHex(cmd)
 
     i2cWrite(cmd, retries, False)
-    
+    return getI2cResult()
+"""    
 def eraseEEProm():
     String2 = ""
     index = 0
@@ -102,4 +103,5 @@ def eraseEEProm():
                 
                 
             
+"""
         

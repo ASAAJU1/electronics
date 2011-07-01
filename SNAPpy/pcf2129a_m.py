@@ -135,9 +135,9 @@ def displayClockDT():
     if (Seconds < 10):
         Seconds = str(0) + str(Seconds)
     eventString = str(Years) + str(Months) + str(Days) + str(Hours) + str(Minutes) + str(Seconds)
-    if (jcdebug):
-        te = str(loadNvParam(8)) +":" + eventString
-        rpc(portalAddr, "logEvent", te)
+    #if (jcdebug):
+    #    te = str(loadNvParam(8)) +":" + eventString
+    #    rpc(portalAddr, "logEvent", te)
     return eventString
 
 def displayDOW(DOW):
