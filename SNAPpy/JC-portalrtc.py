@@ -65,6 +65,17 @@ def setRFPCF2129Time():
     #eventString = str(displayDOW(DOW)) + " 20" + str(Years) + "." + str(Months) + "." + str(Days) + " " + str(Hours) + ":" +  str(Minutes) + ":" + str(Seconds)
     print "mcastRpc Called at: " #+ eventString
     #mcastRpc(1, 3, "writeClockTime", Year, Month, Date, DOW, Hour, Minute, Second)
+
+def getcmd2x():
+    """Called from node, pase file and rpc commands back to node"""
+    f_cmds = open('C:/jc/jcCMDS.txt')
+    #eventString = str(convertAddr(remoteAddr))
+    for line in f_cmds.readlines():
+        linefields = line.strip().split(',')
+        if (linefields[0] == convertAddr(remoteAddr)):
+            print linefields
+            rpc(remoteAddr, *linefields[1:])
+    f_cmds.close()
     
 def pingESCO():
     rpc("\x00\x31\x56", "vmStat", 10)
@@ -283,4 +294,5 @@ def logToCSV(name, logInfo):
     #rpc(remoteAddr, "tACKl", 1)
 
 def convertAddr(addr):
+    """Converts binary address string to a more readable hex-ASCII address string"""
     return binascii.hexlify(addr)
