@@ -36,21 +36,22 @@ jcdebug = False
 #These are the GPIO pins used on the SNARF-BASE v3.h
 VAUX = GPIO_5
 RTC_INT = GPIO_10
-LED1 = GPIO_18
+LED1 = GPIO_0
 
 @setHook(HOOK_STARTUP)
 def start():    
-    global devName
+    global devName, devType
     global taddress
     #NeedRestart=SetParam(53, 0, NeedRestart)
     #if NeedRestart:
     #    reboot()
     #    
     devName = str(loadNvParam(8))
+    devType = str(loadNvParam(8))
     setPinDir(LED1, True)
-    setPinDir(GPIO_17, True)
-    setPinDir(GPIO_18, False)
-    writePin(GPIO_17, False)
+    #setPinDir(GPIO_17, True)
+    #setPinDir(GPIO_18, False)
+    #writePin(GPIO_17, False)
     # Setup the Auxilary Regulator for sensors:
     setPinDir(VAUX, True)       #output
     writePin(VAUX, False)        #Turn on aux power
@@ -70,7 +71,7 @@ def start():
     # Go ahead and redirect STDOUT to Portal now
     #ucastSerial(portal_addr) # put your correct Portal address here!
     getPortalTime()
-    initUart(0,9600)
+    initUart(0,1)
     flowControl(0,False)
     crossConnect(DS_STDIO,DS_UART0)
     

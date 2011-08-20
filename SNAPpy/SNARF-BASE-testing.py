@@ -29,6 +29,7 @@ secondCounter = 0
 minuteCounter = 0
 datablock = 1
 taddress = 64
+jcdebug = False
 
 #These are the GPIO pins used on the SNARF-BASE v3.h
 VAUX = GPIO_5
@@ -39,10 +40,11 @@ LED1 = GPIO_0
 def start():    
     global devName
     global taddress
-    global Dname, Dtype
+    global Dname, Dtype, devType
     Dtype = str(loadNvParam(10))
     Dname = str(loadNvParam(8))
     devName = str(loadNvParam(8))
+    devType = str(loadNvParam(10))
     setPinDir(LED1, True)
 
     # Setup the Auxilary Regulator for sensors:
@@ -53,6 +55,7 @@ def start():
     setPinPullup(RTC_INT, True) #Turn on pullup
     monitorPin(RTC_INT, True)   #monitor changes to this pin. Will go low on int
     wakeupOn(RTC_INT, True, False)  #Wake from sleep when pin goes low
+    setPinDir(GPIO_9, False)
     
     # I2C GPIO_17/18 rf100. rf200 needs external pullups.
     i2cInit(True)
@@ -62,11 +65,11 @@ def start():
     else:
         getPortalTime()
     # Go ahead and redirect STDOUT to Portal now
-    #ucastSerial(portal_addr) # put your correct Portal address here!
+    ucastSerial(portalAddr) # put your correct Portal address here!
     getPortalTime()
-    initUart(0,9600)
+    initUart(0,38400)
     flowControl(0,False)
-    crossConnect(DS_STDIO,DS_UART0)
+    crossConnect(DS_STDIO,DS_TRANSPARENT)
         
 
     
@@ -74,8 +77,9 @@ def start():
     #Check if rtc has invalid year, if so, automatically update rtc from portal
     #This is not a very robust check, but work for testing.
     checkClockYear()
-    
+    #crossConnect(DS_STDIO,DS_TRANSPARENT)
     print "Startup Done!"
+    crossConnect(DS_STDIO,DS_UART0)
     
 @setHook(HOOK_100MS)
 def timer100msEvent(msTick):

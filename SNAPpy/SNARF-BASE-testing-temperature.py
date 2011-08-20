@@ -1,6 +1,7 @@
 """
-SNARF-BASE-testing.py   - Main script to test built in devices on board and
-                        - pinwake by rtc on RF100/200
+SNARF-BASE-testing-temperature.py   
+                - Main script to test built in devices on board and
+                - pinwake by rtc on RF100/200
 
 CC BY 3.0  J.C. Woltz
 http://creativecommons.org/licenses/by/3.0/
@@ -11,8 +12,9 @@ v201103171943 - Set initial Portal Address to none. Add set_portal_addr() functi
 v201103191511 - Would not compile without a portalAddr. So set portal as 1 and left
                 Function to change portal addr.
 v201103272322 - testing plotlq rpc call, modfied arguments
-v201104021650 - Branch SNARF-BASE-testing, modify for LOCATION at ESCO With ATMEGA
-v201104041240 - Added devname everywhere. modified jc_m and portal to diplay more info about when it will wakeup
+v201105311415 - modified for quick automated teasting
+v201108181746 - modified for using snap connect and a commmand and control to request
+                work to do when woke up.
 
 """
 
@@ -26,12 +28,14 @@ from jc_m import *
 
 portalAddr = '\x00\x00\x01' # hard-coded address for Portal <------------<<<<<<<<
 e10Addr = '\x4c\x70\xbd'
-#portal_addr = None
+snapc = '\xaa\xbb\xcc'
 secondCounter = 0 
 minuteCounter = 0
 datablock = 1
-taddress = 8000
-jcdebug = True
+taddress = 64
+jcdebug = False
+contactPortal = True
+allowSleep = True
 
 #These are the GPIO pins used on the SNARF-BASE v3.h
 VAUX = GPIO_5
@@ -42,99 +46,100 @@ LED1 = GPIO_0
 def start():    
     global devName, devType
     global taddress
-    #global Dname, Dtype
-    devType = str(loadNvParam(10))
     devName = str(loadNvParam(8))
+    devType = str(loadNvParam(10))
     setPinDir(LED1, True)
+
     # Setup the Auxilary Regulator for sensors:
     setPinDir(VAUX, True)       #output
-    writePin(VAUX, True)        #Turn on aux power
+    writePin(VAUX, False)       #Turn off aux power
     # Setup the RTC Interrupt pin
     setPinDir(RTC_INT, False)   #Input
     setPinPullup(RTC_INT, True) #Turn on pullup
     monitorPin(RTC_INT, True)   #monitor changes to this pin. Will go low on int
     wakeupOn(RTC_INT, True, False)  #Wake from sleep when pin goes low
+    setPinDir(GPIO_9, False)
     
     # I2C GPIO_17/18 rf100. rf200 needs external pullups.
     i2cInit(True)
+    initLM75A()
     # On startup try to get the portal address. 
-    #if portalAddr is None:
-    #    mcastRpc(1, 5, "get_portal_logger")
-    #else:
-    #    getPortalTime()
+    if portalAddr is None:
+        mcastRpc(1, 5, "get_portal_logger")
+    else:
+        getPortalTime()
     # Go ahead and redirect STDOUT to Portal now
     ucastSerial(portalAddr) # put your correct Portal address here!
-    # send errors to portal
-    uniConnect(DS_PACKET_SERIAL, DS_ERROR)
-    
     getPortalTime()
+    #initUart(0,38400)
+    #flowControl(0,False)
+    crossConnect(DS_STDIO,DS_TRANSPARENT)
     
-    initUart(1,38400)
-    flowControl(1,False)
-    stdinMode(0, False)      # Line Mode, Echo Off
-    crossConnect(DS_UART1,DS_STDIO)
-    #taddress = int(readEEPROM(59,5))
     #sleep(1,3)
     #Check if rtc has invalid year, if so, automatically update rtc from portal
     #This is not a very robust check, but work for testing.
     checkClockYear()
-    
-    #print "Startup Done!"
+    #crossConnect(DS_STDIO,DS_TRANSPARENT)
+    print "Startup Done!"
+    #crossConnect(DS_STDIO,DS_UART0)
     
 @setHook(HOOK_100MS)
 def timer100msEvent(msTick):
     """Hooked into the HOOK_100MS event"""
     global secondCounter, minuteCounter
-    pulsePin(LED1, 50, True)
     secondCounter += 1
-    #pulsePin(LED1, 50, True)
-    if secondCounter >= 100:
-        doEverySecond()
-        secondCounter = 0
-        minuteCounter += 1
-        #zCalcWakeTime1()
-    if minuteCounter >= 60:
+    #if secondCounter == 1:
+    #    rpc(portalAddr, "plotlq", devName, getLq(), str(displayClockDT()))
+    if secondCounter == 3:
+        rpc(snapc, "getcmd2x")
+    if secondCounter == 4:
+        rpc(snapc, "getcmd2x")
+    if secondCounter == 5:
+        rpc(snapc, "getcmd2x")
+    if secondCounter == 8:
+        zCalcWakeTime2info()
+    if secondCounter == 10:
         doEveryMinute()
-        minuteCounter = 0
-    #if secondCounter == 70:
-    #    zCalcWakeTime10info()
-    #    savelastwritelocation()
-    #if secondCounter == 100:
-    #    tt = str(readEEPROM(59,5))
-    #    rpc(portalAddr, "dispayLastWriteAddress", tt)
-    #if secondCounter >= 300:
-    #    secondCounter = 0
-    #     writePin(LED1, False)
-    #     sleep(0,0)
-    
+    #if secondCounter > 5 and secondCounter < 20:
+    #    rpc(portalAddr, "logEvent", secondCounter)
+    if secondCounter >= 20 and allowSleep == True:
+        #doEverySecond()    
+        rpc(portalAddr, "logEvent", secondCounter)  
+        secondCounter = 0
+        sleep(1,180)
+    if secondCounter >= 30 and secondCounter %10 == 0:
+        rpc(snapc, "getcmd2x")
+        if (contactPortal):
+            rpc(portalAddr, "getcmd2x")
+    if secondCounter >= 1200:
+        secondCounter = 0
+        #minuteCounter += 1
+        #if minuteCounter >= 60:
+        #    doEveryMinute()
+        #    minuteCounter = 0
     
 def doEverySecond():
-    #Since the uart is crossconnected, this goes out over the uart
+    #pass
     global taddress
     dts = str(displayClockDT())
-    eventString = devName + "," + dts + "," + str(taddress)  #+ str(displayLMTempF()) #+ chr(0x03) + dts #"," + str(displayLMTemp()) + "," + str(taddress)
-    #eventString = dts + "," + str(displayLMTempF())
+    eventString = dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
     print eventString
-    taddress += 1
-    #rpc(portalAddr, "plotlqwx", Dname, getLq(), displayClockDT())
+    rpc(portalAddr, "plotlq", devName, getLq(), dts)
     #rpc(portalAddr, "infoDT", displayClockDT())
     #print displayClockDT()
     #sleep(0,1)
     
     
 def doEveryMinute():
-    dts = str(displayClockDT())
-    eventString = devName + ":" + dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp())
-    rpc(e10Addr, "reportJC", devName, devType, eventString)
-    
-
-def logLocal():
     global datablock
     #address = datablock * 64
     global taddress
     
     #For testing, we log clockdate and time, temp C, temp F to half a page of eeprom
-    eventString = str(displayClockDT()) + "," + str(displayLMTemp()) + "," + str(displayLMTempF()) + ",EOB"
+    dts = str(displayClockDT())
+    buffer = readLM75(0,2)
+    lm75a = (ord(buffer[0])) << 8 | ord(buffer[1])
+    eventString = dts + "," + str(displayLMTemp()) + "," + str(displayLMTempF()) + ",EOB"
     t = len(eventString)
     if (t < 32):
         index = t
@@ -142,10 +147,14 @@ def logLocal():
             eventString = eventString + "0"
             index += 1
     tt = len(eventString)
-    writeEEblock(taddress, eventString)
+    #writeEEblock(taddress, eventString)
 
-    eventString = devName + ": " + eventString + " " + str(t) + " " + str(taddress) + " " + str(tt)
-    rpc(portalAddr, "logEvent", eventString)
+    eventString2 = loadNvParam(8) + ": " + eventString + " " + str(t) + " " + str(taddress) + " " + str(tt)
+    rpc(portalAddr, "logEvent", eventString2)
+    rpc(portalAddr, 'graph_generic_lqdts', devName, displayLMTempF(), getLq(), dts)
+    
+    rpc(snapc, "logToCSV", devName, eventString)
+    rpc(snapc, "loglm75aRawCalc", devName, str(lm75a))
     #if (t < 32):
     #    t = 32
     taddress += tt
@@ -157,14 +166,13 @@ def logLocal():
 def buttonEvent(pinNum, isSet):
     """Hooked into the HOOK_GPIN event"""
     #mostly debug and pointless irw
-    if (jcdebug):
-        print str(pinNum),
-        print str(isSet)
-        eventString = devName + ": HOOK_GPIN: " + str(pinNum) + " " + str(isSet)
-        rpc(portalAddr, "logEvent", eventString)
+    print str(pinNum),
+    print str(isSet)
+    eventString = "HOOK_GPIN " + str(pinNum) + str(isSet)
+    #rpc(portalAddr, "logEvent", eventString)
     
 def testLogE():
-    eventString = devName + " Start: " + str(displayClockDT()) + ",EOB"
+    eventString = "Config: " + str(displayClockDT()) + ",EOB"
     t = len(eventString)
     #writeEEblock(taddress, eventString)
     writeEEblock(0, eventString)
@@ -183,27 +191,17 @@ def set_portal_addr():
     global portalAddr
     portalAddr = rpcSourceAddr()
     getPortalTime()
-
-def savelastwritelocation():
-    global taddress
-    if (taddress < 100):
-        tt = "000" + str(taddress)
-    elif (taddress < 1000):
-        tt = "00" + str(taddress)
-    elif (taddress < 10000):
-        tt = "0" + str(taddress)
-    else:
-        tt = str(taddress)
-    writeEEblock(59, tt)
-    return tt
-
-def echo(text):
-    print str(text)
-    
-@setHook(HOOK_STDIN)
-def getInput(data):
-    ''' Process command line input '''
-    c = data[0]
-    if c == 'r':
-        print "rrrr"
-    rpc(portalAddr, "logEvent", data)
+def contactportalEnable():
+    global contactPortal
+    contactPortal = True
+def contactportalDisable():
+    global contactPortal
+    contactPortal = False
+def allowSleepEnable():
+    global allowSleep
+    allowSleep = True
+def allowSleepDisable():
+    global allowSleep
+    allowSleep = False    
+def csleep(a,b):
+    sleep(int(a),int(b))

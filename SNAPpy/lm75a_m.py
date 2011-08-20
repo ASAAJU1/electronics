@@ -23,6 +23,23 @@ def readLM75(firstReg, numRegs):
     #dumpHex(result)
     return result
 
+def shutdownLM75A():
+    cmd = buildTWICmd(LM75_ADDRESS, 1, False)
+    cmd += chr(1)
+    #dumpHex(cmd)
+    result = i2cWrite(cmd, retries, False)
+    eventSting = "ShutdownLM75a: result:" + str(result) + " i2ccode:" + str(getI2cResult())
+    #print eventSting
+    return eventSting
+def initLM75A():
+    cmd = buildTWICmd(LM75_ADDRESS, 1, False)
+    cmd += chr(0)
+    #dumpHex(cmd)
+    result = i2cWrite(cmd, retries, False)
+    eventSting = "initLM75a: result:" + str(result) + " i2ccode:" + str(getI2cResult())
+    #print eventSting
+    return eventSting
+    
 def displayLMTemp():
     buffer = readLM75(0,2)
     t = (ord(buffer[0])) << 8 | ord(buffer[1])

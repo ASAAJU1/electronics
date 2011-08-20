@@ -157,6 +157,22 @@ def convertTMP36200f(val):
     tempf = val * 1.8 + 32
     print tempf
     return tempf
+
+def graph_generic(who, data):
+    remoteNode.setColumn(who, data)
+    logData(who, data)
+    logToCSV(who, str(data))
+
+def graph_generic_lqdts(who, data, lq, dts): 
+    if who == None:
+        who = convertAddr(remoteAddr)
+    whoLQ = str(who) + "-LQ"
+    logData(whoLQ,lq,128)
+    logData(who, data)
+    logToCSV(who, str(data))
+    remoteNode.setColumn("Link", lq)
+    remoteNode.setColumn("DT", dts)
+
 ###############################################################################
 ## Various Test function to help people on forums #############################
 ###############################################################################
@@ -241,7 +257,7 @@ def logToFile(this, baseName, logInfo):
         this.logSetup = True
     log.info(logInfo)
 
-def logToCSV(name, logInfo):
+def logToCSVEEPROM(name, logInfo):
     if name == None:
         name = convertAddr(remoteAddr)
     #formattedadcValue = strftime("%m/%d/%Y %I:%M:%S %p") + "," + name + "," + "%.2f" % batt + "," + signal
@@ -253,6 +269,18 @@ def logToCSV(name, logInfo):
     f.close()
     #rpc(remoteAddr, "tACKl", 1)
 
+def logToCSV(name, logInfo):
+    if name == None:
+        name = convertAddr(remoteAddr)
+    #formattedadcValue = strftime("%m/%d/%Y %I:%M:%S %p") + "," + name + "," + "%.2f" % batt + "," + signal
+    #toLog = logInfo.split(',EOB')
+    #formattedString = time.strftime("%m/%d/%Y %I:%M:%S %p") + "," + name + "," + toLog[0]
+    formattedString = time.strftime("%m/%d/%Y %I:%M:%S %p") + "," + convertAddr(remoteAddr) + "," + name + "," + logInfo
+    print formattedString
+    f = open('C:/jc/jcCSV.txt', 'a')
+    f.write(formattedString + '\n')
+    f.close()
+    #rpc(remoteAddr, "tACKl", 1)
+
 def convertAddr(addr):
-    """Converts binary address string to a more readable hex-ASCII address string"""
     return binascii.hexlify(addr)

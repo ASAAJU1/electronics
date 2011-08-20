@@ -30,13 +30,15 @@ e10Addr = '\x4c\x70\xbd'
 secondCounter = 0 
 minuteCounter = 0
 datablock = 1
-taddress = 8000
+taddress = 64
 jcdebug = True
 
 #These are the GPIO pins used on the SNARF-BASE v3.h
-VAUX = GPIO_5
-RTC_INT = GPIO_10
+VAUX = GPIO_16
+RS232_SHTDN = GPIO_15
+RTC_INT = GPIO_2
 LED1 = GPIO_0
+LED2 = GPIO_1
 
 @setHook(HOOK_STARTUP)
 def start():    
@@ -46,9 +48,13 @@ def start():
     devType = str(loadNvParam(10))
     devName = str(loadNvParam(8))
     setPinDir(LED1, True)
+    setPinDir(LED2, True)
     # Setup the Auxilary Regulator for sensors:
     setPinDir(VAUX, True)       #output
-    writePin(VAUX, True)        #Turn on aux power
+    writePin(VAUX, False)        #Turn on aux power
+    # Setup the shutdown circtuiy for the rs232
+    setPinDir(RS232_SHTDN, True)       #output
+    writePin(RS232_SHTDN, True)        #Turn on aux power
     # Setup the RTC Interrupt pin
     setPinDir(RTC_INT, False)   #Input
     setPinPullup(RTC_INT, True) #Turn on pullup
@@ -63,23 +69,33 @@ def start():
     #else:
     #    getPortalTime()
     # Go ahead and redirect STDOUT to Portal now
-    ucastSerial(portalAddr) # put your correct Portal address here!
+    #ucastSerial(portalAddr) # put your correct Portal address here!
     # send errors to portal
-    uniConnect(DS_PACKET_SERIAL, DS_ERROR)
+    #uniConnect(DS_PACKET_SERIAL, DS_ERROR)
     
     getPortalTime()
     
-    initUart(1,38400)
-    flowControl(1,False)
-    stdinMode(0, False)      # Line Mode, Echo Off
+    initUart(0,9600)
+    flowControl(0,False)
+    initUart(1,9600)
+    flowControl(1, False)
     crossConnect(DS_UART1,DS_STDIO)
+    
+ 
+    
+    
+    #Test to try and catch any output/errors from addon
+    #possible future addon for 2way comm
+    stdinMode(0, True)      # Line Mode, Echo Off
+    
     #taddress = int(readEEPROM(59,5))
     #sleep(1,3)
     #Check if rtc has invalid year, if so, automatically update rtc from portal
     #This is not a very robust check, but work for testing.
     checkClockYear()
     
-    #print "Startup Done!"
+    print "Startup Done!"
+    rpc(portalAddr, "logEvent", "Startup Done!")
     
 @setHook(HOOK_100MS)
 def timer100msEvent(msTick):
@@ -88,11 +104,18 @@ def timer100msEvent(msTick):
     pulsePin(LED1, 50, True)
     secondCounter += 1
     #pulsePin(LED1, 50, True)
-    if secondCounter >= 100:
+    if secondCounter == 2:
         doEverySecond()
+        #secondCounter = 0
+        #minuteCounter += 1
+        #zCalcWakeTime1()
+    if secondCounter >= 10:
+        #turnOFFVAUX()
+        #sleep(0,0)
+        #turnONVAUX()
+        #rpc(portalAddr, "logEvent", "AWAKE")
         secondCounter = 0
         minuteCounter += 1
-        #zCalcWakeTime1()
     if minuteCounter >= 60:
         doEveryMinute()
         minuteCounter = 0
@@ -109,13 +132,15 @@ def timer100msEvent(msTick):
     
     
 def doEverySecond():
+    pass
     #Since the uart is crossconnected, this goes out over the uart
-    global taddress
+    #global taddress
     dts = str(displayClockDT())
-    eventString = devName + "," + dts + "," + str(taddress)  #+ str(displayLMTempF()) #+ chr(0x03) + dts #"," + str(displayLMTemp()) + "," + str(taddress)
+    eventString = devName + ":" + dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
     #eventString = dts + "," + str(displayLMTempF())
     print eventString
-    taddress += 1
+    print eventString
+    print "UART1"
     #rpc(portalAddr, "plotlqwx", Dname, getLq(), displayClockDT())
     #rpc(portalAddr, "infoDT", displayClockDT())
     #print displayClockDT()
@@ -125,7 +150,8 @@ def doEverySecond():
 def doEveryMinute():
     dts = str(displayClockDT())
     eventString = devName + ":" + dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp())
-    rpc(e10Addr, "reportJC", devName, devType, eventString)
+    #rpc(e10Addr, "reportJC", devName, devType, eventString)
+    print eventString
     
 
 def logLocal():
@@ -200,10 +226,26 @@ def savelastwritelocation():
 def echo(text):
     print str(text)
     
-@setHook(HOOK_STDIN)
-def getInput(data):
+@setHook(HOOK_STDIN)    
+def stdinEventd(data):
     ''' Process command line input '''
     c = data[0]
     if c == 'r':
         print "rrrr"
-    rpc(portalAddr, "logEvent", data)
+    else:
+        rpc(portalAddr, "logEvent", data)
+        
+def activateuart0():
+    initUart(0, 9600)
+    flowControl(0, False)
+    crossConnect(DS_STDIO, DS_UART0)
+    print "UART0 Active"
+    writePin(LED2, True)
+    
+def activateuart1():
+    initUart(1, 9600)
+    flowControl(1, False)
+    crossConnect(DS_STDIO, DS_UART1)
+    print "UART1 Active"
+    writePin(LED2, False)
+    

@@ -30,12 +30,12 @@ e10Addr = '\x4c\x70\xbd'
 secondCounter = 0 
 minuteCounter = 0
 datablock = 1
-taddress = 8000
+taddress = 64
 jcdebug = True
 
 #These are the GPIO pins used on the SNARF-BASE v3.h
-VAUX = GPIO_5
-RTC_INT = GPIO_10
+VAUX = GPIO_15
+RTC_INT = GPIO_2
 LED1 = GPIO_0
 
 @setHook(HOOK_STARTUP)
@@ -63,23 +63,30 @@ def start():
     #else:
     #    getPortalTime()
     # Go ahead and redirect STDOUT to Portal now
-    ucastSerial(portalAddr) # put your correct Portal address here!
+    #ucastSerial(portalAddr) # put your correct Portal address here!
     # send errors to portal
-    uniConnect(DS_PACKET_SERIAL, DS_ERROR)
+    #uniConnect(DS_PACKET_SERIAL, DS_ERROR)
     
     getPortalTime()
     
-    initUart(1,38400)
-    flowControl(1,False)
-    stdinMode(0, False)      # Line Mode, Echo Off
-    crossConnect(DS_UART1,DS_STDIO)
+    initUart(0,9600)
+    flowControl(0,False)
+    crossConnect(DS_UART0,DS_STDIO)
+    
+ 
+    
+    
+    #Test to try and catch any output/errors from addon
+    #possible future addon for 2way comm
+    stdinMode(0, True)      # Line Mode, Echo Off
+    
     #taddress = int(readEEPROM(59,5))
     #sleep(1,3)
     #Check if rtc has invalid year, if so, automatically update rtc from portal
     #This is not a very robust check, but work for testing.
     checkClockYear()
     
-    #print "Startup Done!"
+    print "Startup Done!"
     
 @setHook(HOOK_100MS)
 def timer100msEvent(msTick):
@@ -88,11 +95,18 @@ def timer100msEvent(msTick):
     pulsePin(LED1, 50, True)
     secondCounter += 1
     #pulsePin(LED1, 50, True)
-    if secondCounter >= 100:
+    if secondCounter == 2:
         doEverySecond()
+        #secondCounter = 0
+        #minuteCounter += 1
+        #zCalcWakeTime1()
+    if secondCounter >= 10:
+        #turnOFFVAUX()
+        #sleep(0,0)
+        #turnONVAUX()
+        #rpc(portalAddr, "logEvent", "AWAKE")
         secondCounter = 0
         minuteCounter += 1
-        #zCalcWakeTime1()
     if minuteCounter >= 60:
         doEveryMinute()
         minuteCounter = 0
@@ -109,13 +123,13 @@ def timer100msEvent(msTick):
     
     
 def doEverySecond():
+    pass
     #Since the uart is crossconnected, this goes out over the uart
-    global taddress
+    #global taddress
     dts = str(displayClockDT())
-    eventString = devName + "," + dts + "," + str(taddress)  #+ str(displayLMTempF()) #+ chr(0x03) + dts #"," + str(displayLMTemp()) + "," + str(taddress)
+    eventString = devName + ":" + dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
     #eventString = dts + "," + str(displayLMTempF())
     print eventString
-    taddress += 1
     #rpc(portalAddr, "plotlqwx", Dname, getLq(), displayClockDT())
     #rpc(portalAddr, "infoDT", displayClockDT())
     #print displayClockDT()
@@ -200,10 +214,11 @@ def savelastwritelocation():
 def echo(text):
     print str(text)
     
-@setHook(HOOK_STDIN)
-def getInput(data):
+@setHook(HOOK_STDIN)    
+def stdinEventd(data):
     ''' Process command line input '''
     c = data[0]
     if c == 'r':
         print "rrrr"
-    rpc(portalAddr, "logEvent", data)
+    else:
+        rpc(portalAddr, "logEvent", data)

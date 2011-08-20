@@ -15,7 +15,8 @@ chgStatusBlinkCounter = 0
 
 timeCount = 0
 noSleep = True
-
+jcdebug = False
+secondCounter = 0
 """ 
 valid options for this are 
 N - Not charging 
@@ -46,8 +47,8 @@ def start():
     flowControl(0, False)
     crossConnect(DS_STDIO, DS_UART0)
     
-    #ucastSerial("\x00\x00\x01") # put your correct Portal address here!
-    #crossConnect(DS_STDIO,DS_TRANSPARENT)
+    ucastSerial("\x00\x00\x01") # put your correct Portal address here!
+    crossConnect(DS_STDIO,DS_TRANSPARENT)
         
     # I2C GPIO_17/18 used for MCP3424
     i2cInit(True)
@@ -85,13 +86,17 @@ def dontSleep():
                 
 @setHook(HOOK_100MS)
 def triggeredAt100ms():
-    global chargeStatus
+    global chargeStatus, secondCounter
     DS2764FetchBasic()
+    secondCounter += 1
     
     # manage the charge status indicator timer    
     t = getMs()
     if (t > chgStatusBlinkTimer + 2500):      
         chargeStatus = 'N' if (readPin(CHG_STATUS)) else 'C'
+    if secondCounter >= 10:
+        doEverySecond()      
+        secondCounter = 0
     
 def getChargeError():
     return True if (not noChgError) else False
@@ -107,8 +112,8 @@ def byteToHex(byte):
     value = str(hexNibble(byte >> 4)) + str(hexNibble(byte))
     return value
     
-@setHook(HOOK_1S)
-def trigger():
+#@setHook(HOOK_1S)
+def doEverySecond():
     global timeCount
     timeCount += 1
     cur = getDSCurrent()
@@ -118,10 +123,10 @@ def trigger():
     # Only sample once per wakeup period
     if timeCount == 1:
         eventString = getMyAddress()+","+str(getDSVoltage())+","+str(getDSTemperature())+","+str(getDSCurrent())+","+str(getDSACurrent())
-        #rpc('\x4C\x70\xBD', "debuglog", eventString)
-        rpc('\x4C\x70\xBD', "reportJC", Dname, Dtype, eventString)
+        rpc('\x4C\x70\xBD', "debuglog", eventString)
+        #rpc('\x4C\x70\xBD', "reportJC", Dname, Dtype, eventString)
         print str(getDSVoltage())+","+str(getDSTemperature())+","+str(getDSCurrent())+","+str(getDSACurrent())
-        rpc(portalAddr, "setButtonCount", getDSCurrent())
+        #rpc(portalAddr, "setButtonCount", getDSCurrent())
         
     # when in nosleep mode send data every 180 seconds
     if (noSleep and timeCount >= 300):
@@ -138,4 +143,40 @@ def trigger():
     #print "Lipo mAh -> " + str(getDSACurrent()) + "mAh"    
     #print "Charging -> " + str(readPin(CHG_STATUS))
     #print "Charging error " + str(chg_error)
+    
+def m17config():
+    """Write config register MAX17043"""
+    cmd = ""
+    cmd += chr(0x6C)
+    cmd += chr(0x0C)
+    cmd += chr(0x97)
+    cmd += chr(0x00) #Set alert to 32 percent
+    i2cWrite(cmd, retries, False)
+    rpc(portalAddr,"logEvent",getI2cResult())
+    cmd = ""
+    cmd += chr(0x6C)
+    cmd += chr(0xFE)
+    cmd += chr(0x54)
+    cmd += chr(0x00) 
+    i2cWrite(cmd, retries, False)
+    rpc(portalAddr,"logEvent",getI2cResult())
+    
+def m17read():
+    cmd = ""
+    cmd += chr(0x6C)
+    cmd += chr(0x02)
+    i2cWrite(cmd, retries, False)
+    rpc(portalAddr,"logEvent",getI2cResult())
+    x = i2cRead(chr(0x6D),4,retries,False)
+    dumpHex(x)
+    v = (ord(x[0])) << 8 | ord(x[1])
+    v = v >> 4
+    if (v < 0):
+        v *= -1
+    v = v / 4
+    v = v * 5
+    rpc(portalAddr,"logEvent",v)
+    p = ord(x[2])
+    rpc(portalAddr,"logEvent",p)
+    
     

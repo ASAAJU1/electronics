@@ -7,6 +7,7 @@ http://creativecommons.org/licenses/by/3.0/
 
 v201103061848   writeClockAlarm(Minute,Second) Sets the control register for an interrupt 
                 to trigger at that time. Easily expandable to hours and date.
+v201108181655   little updates
 
 -------------------------------------------------------------------------------------------------
 """
@@ -19,8 +20,7 @@ def buildTWICmd(slaveAddress, registerAddress, isRead):
     if isRead:
         slaveAddress |= 1 # read        
  
-    cmd = ""
-    cmd += chr( slaveAddress )
+    cmd = chr( slaveAddress )
     cmd += chr( registerAddress )
     return cmd
  
@@ -39,7 +39,7 @@ def readPCF2129(firstReg, numRegs):
     return result
 
 def displayClockTime():
-    """example routine to RPC to Portal the Time from RTC, can be modified to return string"""
+    """example routine to RPC to Portal logEvent the Time from RTC, can be modified to return string"""
     buff = readPCF2129(0x03,7)
     
     Seconds = bcdToDec(ord(buff[0]) & 0x7F)
@@ -86,9 +86,28 @@ def writeClockTime(Year,Month,Day,DOW,Hour,Minute,Second):
     #dumpHex(cmd)
     i2cWrite(cmd, retries, False)
     t = getI2cResult()
-    if (jcdebug):
-        if t == 1:
-            displayClockDate()
+    if t == 1:
+        buff = readPCF2129(0x03,7)
+        Seconds = bcdToDec(ord(buff[0]) & 0x7F)
+        Minutes = bcdToDec(ord(buff[1]) & 0x7F)
+        Hours = bcdToDec(ord(buff[2]) & 0x3F)
+        Days = bcdToDec(ord(buff[3]) & 0x3F)
+        DOW = bcdToDec(ord(buff[4]) & 0x07)
+        Months = bcdToDec(ord(buff[5]) & 0x1F)
+        Years = bcdToDec(ord(buff[6]))
+        rpc(rpcSourceAddr(), "GClockDisplay", "NodeClock Set", Years, Months, Days, DOW, Hours, Minutes, Seconds)
+    if t == 2:
+        #I2C Bus Busy
+        getPortalTime()
+    if t == 3:
+        #I2C Bus Lost means some other device stole the I2C bus
+        pass
+    if t == 4:
+        #I2C_BUS_STUCK means there is some sort of hardware or configuration problem
+        pass
+    if t == 5:
+        #I2C_NO_ACK means the slave device did not respond properly
+        pass
     return t
 
 def writeClockAlarm(Minute,Second):
@@ -166,6 +185,7 @@ def bcdToDec(val):
 def getPortalTime():
     """ Call This to have Portal Set RTC"""
     #portalAddr = "\x4c\x70\xbd"
+    #portalAddr = snap
     rpc(portalAddr, "setRFTime", localAddr())
     
     
