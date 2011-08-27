@@ -39,8 +39,9 @@ def setRFTime(nodeAddr):
     DOW = int(time.strftime('%w'))
     
     rpc(nodeAddr, "writeClockTime", Year, Month, Date, DOW, Hour, Minute, Second)
-    eventString = str(displayDOW(DOW)) + " 20" + str(Year) + "." + str(Month) + "." + str(Date) + " " + str(Hour) + ":" +  str(Minute) + ":" + str(Second)
-    remoteNode.setColumn("Clock set at", eventString)
+    #eventString = str(displayDOW(DOW)) + " 20" + str(Year) + "." + str(Month) + "." + str(Date) + " " + str(Hour) + ":" +  str(Minute) + ":" + str(Second)
+    GClockDisplay("Clock set at", Year, Month, Date, DOW, Hour, Minute, Second)
+    #remoteNode.setColumn("Clock set at", eventString)
     
 def setRFPCF2129Time():
     """Call with nodeAddr to set the time on that node"""
@@ -69,7 +70,8 @@ def setRFPCF2129Time():
 def getcmd2x():
     """Called from node, pase file and rpc commands back to node"""
     f_cmds = open('C:/jc/jcCMDS.txt')
-    #eventString = str(convertAddr(remoteAddr))
+    eventString = "getcmd2x called from: " + str(convertAddr(remoteAddr)) 
+    print eventString
     for line in f_cmds.readlines():
         linefields = line.strip().split(',')
         if (linefields[0] == convertAddr(remoteAddr)):
@@ -105,7 +107,7 @@ def WakeDisplay(Years, Months, Days, DOW, Hours, Minutes, Seconds):
     #rpc(remoteAddr, "portalcmdsleep")
 
 def GClockDisplay(Column, Years, Months, Days, DOW, Hours, Minutes, Seconds):
-    
+    """Generic display of clock info"""
     if (Months < 10):
         Months = str(0) + str(Months)
     if (Days < 10):

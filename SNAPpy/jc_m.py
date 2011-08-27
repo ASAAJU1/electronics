@@ -18,6 +18,8 @@ def zQuickSleepTest(Minute,Second):
     rpc(portalAddr, "logEvent", eventString)
     writeClockAlarm(Minute,Second)
     sleep(0,600)    #Wake radio in 10 minutes in case rtc fails
+    eventString = str(devName) + ":" + str(devType) + ":" + "Now Awake"
+    rpc(portalAddr, "logEvent", eventString)
     
 def zCalcWakeTime10():
     """Set the RTC INT to triger at the next 10 minute interval"""
@@ -131,32 +133,70 @@ def zCalcWakeTime2info():
     # only the current seconds and minutes.
     buff = readPCF2129(0x03,7)
     
-    Seconds = bcdToDec(ord(buff[0]) & 0x7F)
-    Minutes = bcdToDec(ord(buff[1]) & 0x7F)
-    Hours = bcdToDec(ord(buff[2]) & 0x3F)
-    Days = bcdToDec(ord(buff[3]) & 0x3F)
-    DOW = bcdToDec(ord(buff[4]) & 0x07)
-    Months = bcdToDec(ord(buff[5]) & 0x1F)
-    Years = bcdToDec(ord(buff[6]))
+    if (getI2cResult() == 1):
+        Seconds = bcdToDec(ord(buff[0]) & 0x7F)
+        Minutes = bcdToDec(ord(buff[1]) & 0x7F)
+        Hours = bcdToDec(ord(buff[2]) & 0x3F)
+        Days = bcdToDec(ord(buff[3]) & 0x3F)
+        DOW = bcdToDec(ord(buff[4]) & 0x07)
+        Months = bcdToDec(ord(buff[5]) & 0x1F)
+        Years = bcdToDec(ord(buff[6]))
     
-    Minutes += 2
-    if (Minutes > 59):
-        Minutes = Minutes - 60
-        Hours += 1
-    if (Hours > 23):
-        Hours = 0
-        Days += 1
-        DOW += 1
-    Seconds = 0
+        Minutes += 2
+        if (Minutes > 59):
+            Minutes = Minutes - 60
+            Hours += 1
+        if (Hours > 23):
+            Hours = 0
+            Days += 1
+            DOW += 1
+        Seconds = 0
     
-    writeClockAlarm(Minutes, Seconds)
-    reportWakeTime(Years,Months,Days,DOW,Hours,Minutes,Seconds)    
-    writeClockAlarm(Minutes, Seconds)
+        if (writeClockAlarm(Minutes, Seconds) == 1):
+            reportWakeTime(Years,Months,Days,DOW,Hours,Minutes,Seconds)
+        else:
+            writeClockAlarm(Minutes, Seconds)
     
-    return str(Minutes)
+        return str(Minutes)
+    else:
+        eventString = "Failed: " + str(getI2cResult())
+        return eventString
+
+def zCalcWakeTimeinfo(pMinutes):
+    """Set the RTC INT to triger at the next pMinutes interval"""
+    buff = readPCF2129(0x03,7)
+    
+    if (getI2cResult() == 1):
+        Seconds = bcdToDec(ord(buff[0]) & 0x7F)
+        Minutes = bcdToDec(ord(buff[1]) & 0x7F)
+        Hours = bcdToDec(ord(buff[2]) & 0x3F)
+        Days = bcdToDec(ord(buff[3]) & 0x3F)
+        DOW = bcdToDec(ord(buff[4]) & 0x07)
+        Months = bcdToDec(ord(buff[5]) & 0x1F)
+        Years = bcdToDec(ord(buff[6]))
+    
+        Minutes += pMinutes
+        if (Minutes > 59 and Minutes < 120):
+            Minutes = Minutes - 60
+            Hours += 1
+        if (Hours > 23):
+            Hours = 0
+            Days += 1
+            DOW += 1
+        Seconds = 0
+    
+        if (writeClockAlarm(Minutes, Seconds) == 1):
+            reportWakeTime(Years,Months,Days,DOW,Hours,Minutes,Seconds)
+        else:
+            writeClockAlarm(Minutes, Seconds)
+        return str(Minutes)
+    else:
+        eventString = "Failed: " + str(getI2cResult())
+        return eventString
 
 def reportWakeTime(Years,Months,Days,DOW,Hours,Minutes,Seconds):
-    eventString = str(loadNvParam(8)) + ": wake at: " + str(Hours) + ":" + str(Minutes) + ":" + str(Seconds)
-    rpc(portalAddr, "logEvent", eventString)
-    rpc(portalAddr, "WakeDisplay", Years,Months,Days,DOW,Hours,Minutes,Seconds)
+    """Internal Function used to report to portal when RTC Alarm will trigger wakeup"""
+    #eventString = str(loadNvParam(8)) + ": wake at: " + str(Hours) + ":" + str(Minutes) + ":" + str(Seconds)
+    #rpc(portalAddr, "logEvent", eventString)
+    rpc(portalAddr, "GClockDisplay", "WakeAt",Years,Months,Days,DOW,Hours,Minutes,Seconds)
     

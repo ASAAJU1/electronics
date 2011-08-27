@@ -25,6 +25,7 @@ from pcf2129a_m import *
 from lm75a_m import *
 from m24lc256_m import *
 from jc_m import *
+from jc_cnc_m import *
 
 portalAddr = '\x00\x00\x01' # hard-coded address for Portal <------------<<<<<<<<
 e10Addr = '\x4c\x70\xbd'
@@ -34,8 +35,8 @@ minuteCounter = 0
 datablock = 1
 taddress = 64
 jcdebug = False
-contactPortal = True
-allowSleep = True
+timeSynced = False
+verboseM = True
 
 #These are the GPIO pins used on the SNARF-BASE v3.h
 VAUX = GPIO_5
@@ -51,16 +52,16 @@ def start():
     setPinDir(LED1, True)
 
     # Setup the Auxilary Regulator for sensors:
-    setPinDir(VAUX, True)       #output
-    writePin(VAUX, False)       #Turn off aux power
+    setPinDir(VAUX, True)           #Output
+    writePin(VAUX, False)           #Turn off aux power
     # Setup the RTC Interrupt pin
-    setPinDir(RTC_INT, False)   #Input
-    setPinPullup(RTC_INT, True) #Turn on pullup
-    monitorPin(RTC_INT, True)   #monitor changes to this pin. Will go low on int
+    setPinDir(RTC_INT, False)       #Input
+    setPinPullup(RTC_INT, True)     #Turn on pullup
+    monitorPin(RTC_INT, True)       #monitor changes to this pin. Will go low on int
     wakeupOn(RTC_INT, True, False)  #Wake from sleep when pin goes low
-    setPinDir(GPIO_9, False)
+    #setPinDir(GPIO_9, False)
     
-    # I2C GPIO_17/18 rf100. rf200 needs external pullups.
+    # I2C GPIO_17/18 rf100.
     i2cInit(True)
     initLM75A()
     # On startup try to get the portal address. 
@@ -88,8 +89,10 @@ def timer100msEvent(msTick):
     """Hooked into the HOOK_100MS event"""
     global secondCounter, minuteCounter
     secondCounter += 1
-    #if secondCounter == 1:
-    #    rpc(portalAddr, "plotlq", devName, getLq(), str(displayClockDT()))
+    if timeSynced == False:
+        getPortalTime()
+    if secondCounter == 2:
+        rpc(portalAddr, "plotlq", devName, getLq(), str(displayClockDT()))
     if secondCounter == 3:
         rpc(snapc, "getcmd2x")
     if secondCounter == 4:
@@ -97,17 +100,20 @@ def timer100msEvent(msTick):
     if secondCounter == 5:
         rpc(snapc, "getcmd2x")
     if secondCounter == 8:
-        zCalcWakeTime2info()
-    if secondCounter == 10:
+        print zCalcWakeTimeinfo(2)
+    if secondCounter == 9:
         doEveryMinute()
     #if secondCounter > 5 and secondCounter < 20:
     #    rpc(portalAddr, "logEvent", secondCounter)
-    if secondCounter >= 20 and allowSleep == True:
+    if secondCounter >= 13 and allowSleep == True:
         #doEverySecond()    
         rpc(portalAddr, "logEvent", secondCounter)  
-        secondCounter = 0
         sleep(1,180)
-    if secondCounter >= 30 and secondCounter %10 == 0:
+        if (contactPortal):
+            rpc(portalAddr, "getcmd2x")
+        rpc(snapc, "getcmd2x")
+        secondCounter = 0
+    if secondCounter >= 30 and secondCounter %30 == 0:
         rpc(snapc, "getcmd2x")
         if (contactPortal):
             rpc(portalAddr, "getcmd2x")
@@ -118,13 +124,31 @@ def timer100msEvent(msTick):
         #    doEveryMinute()
         #    minuteCounter = 0
     
+def gotoSleep():
+    """Verify all conditions are met before sleeping"""
+    if (allowSleep):
+        if (jcdebug):
+            print secondCounter
+        if (verboseM):
+            print secondCounter
+        if (timeSynced):
+            if (readPin(RTC_INT)):
+                sleep(1,180)
+            else:
+                rpc(portalAddr, "logEvent", "Cannot Sleep Interrupt pin already low")
+        else:
+            rpc(portalAddr,"logEvent","Cannot sleep time not synchronized")
+    else:
+        return 0
+    
+
 def doEverySecond():
-    #pass
-    global taddress
-    dts = str(displayClockDT())
-    eventString = dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
-    print eventString
-    rpc(portalAddr, "plotlq", devName, getLq(), dts)
+    pass
+    #global taddress
+    #dts = str(displayClockDT())
+    #eventString = dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
+    #print eventString
+    #rpc(portalAddr, "plotlq", devName, getLq(), dts)
     #rpc(portalAddr, "infoDT", displayClockDT())
     #print displayClockDT()
     #sleep(0,1)
@@ -137,28 +161,25 @@ def doEveryMinute():
     
     #For testing, we log clockdate and time, temp C, temp F to half a page of eeprom
     dts = str(displayClockDT())
-    buffer = readLM75(0,2)
-    lm75a = (ord(buffer[0])) << 8 | ord(buffer[1])
-    eventString = dts + "," + str(displayLMTemp()) + "," + str(displayLMTempF()) + ",EOB"
-    t = len(eventString)
-    if (t < 32):
-        index = t
-        while (index < 32):
-            eventString = eventString + "0"
-            index += 1
-    tt = len(eventString)
+    #eventString = dts + "," + str(displayLMTemp()) + "," + str(displayLMTempF()) + ",EOB"
+    #t = len(eventString)
+    #if (t < 32):
+    #    index = t
+    #    while (index < 32):
+    #        eventString = eventString + "0"
+    #        index += 1
+    #tt = len(eventString)
     #writeEEblock(taddress, eventString)
-
-    eventString2 = loadNvParam(8) + ": " + eventString + " " + str(t) + " " + str(taddress) + " " + str(tt)
-    rpc(portalAddr, "logEvent", eventString2)
+    #eventString2 = devName + ": " + eventString + " " + str(t) + " " + str(taddress) + " " + str(tt)
+    #rpc(portalAddr, "logEvent", eventString2)
     rpc(portalAddr, 'graph_generic_lqdts', devName, displayLMTempF(), getLq(), dts)
     
-    rpc(snapc, "logToCSV", devName, eventString)
-    rpc(snapc, "loglm75aRawCalc", devName, str(lm75a))
+    #rpc(snapc, "logToCSV", devName, eventString)
+    rpc(snapc, "loglm75aRawCalc", devName, str(displayLMRaw()))
     #if (t < 32):
     #    t = 32
-    taddress += tt
-    datablock += 1
+    #taddress += tt
+    #datablock += 1
     
     return getI2cResult()
     
@@ -166,42 +187,14 @@ def doEveryMinute():
 def buttonEvent(pinNum, isSet):
     """Hooked into the HOOK_GPIN event"""
     #mostly debug and pointless irw
-    print str(pinNum),
-    print str(isSet)
-    eventString = "HOOK_GPIN " + str(pinNum) + str(isSet)
+    if (jcdebug):
+        print str(pinNum),
+        print str(isSet)
+        #eventString = "HOOK_GPIN " + str(pinNum) + str(isSet)
     #rpc(portalAddr, "logEvent", eventString)
     
-def testLogE():
-    eventString = "Config: " + str(displayClockDT()) + ",EOB"
-    t = len(eventString)
-    #writeEEblock(taddress, eventString)
-    writeEEblock(0, eventString)
-    String2 = str(getI2cResult()) + " " + str(t)
-    return String2
-
-
 def turnONVAUX():
     writePin(VAUX, True)       #Turn on aux power 
 
 def turnOFFVAUX():
     writePin(VAUX, False)      #Turn off aux power
-
-def set_portal_addr():
-    """Set the portal SNAP address to the caller of this function"""
-    global portalAddr
-    portalAddr = rpcSourceAddr()
-    getPortalTime()
-def contactportalEnable():
-    global contactPortal
-    contactPortal = True
-def contactportalDisable():
-    global contactPortal
-    contactPortal = False
-def allowSleepEnable():
-    global allowSleep
-    allowSleep = True
-def allowSleepDisable():
-    global allowSleep
-    allowSleep = False    
-def csleep(a,b):
-    sleep(int(a),int(b))

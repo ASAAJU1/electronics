@@ -8,7 +8,7 @@ http://creativecommons.org/licenses/by/3.0/
 v201103061848   writeClockAlarm(Minute,Second) Sets the control register for an interrupt 
                 to trigger at that time. Easily expandable to hours and date.
 v201108181655   little updates
-
+v201108221422   Start adding error checking/handling and application level verification
 -------------------------------------------------------------------------------------------------
 """
 
@@ -70,11 +70,12 @@ def checkClockYear():
     
     Year = bcdToDec(ord(buff[0]))
     if (Year <> 11):
-        eventString = "Invalid year " + str(Year)
+        eventString = str(loadNvParam(8)) +": Invalid year: " + str(Year)
         rpc(portalAddr, "logEvent", eventString)
         getPortalTime()
     
 def writeClockTime(Year,Month,Day,DOW,Hour,Minute,Second):
+    global timeSynced
     cmd = buildTWICmd(PCF2129_ADDRESS, 0x03, False)
     cmd += chr(decToBcd(int(Second)))
     cmd += chr(decToBcd(int(Minute)))
@@ -96,6 +97,7 @@ def writeClockTime(Year,Month,Day,DOW,Hour,Minute,Second):
         Months = bcdToDec(ord(buff[5]) & 0x1F)
         Years = bcdToDec(ord(buff[6]))
         rpc(rpcSourceAddr(), "GClockDisplay", "NodeClock Set", Years, Months, Days, DOW, Hours, Minutes, Seconds)
+        timeSynced = True
     if t == 2:
         #I2C Bus Busy
         getPortalTime()

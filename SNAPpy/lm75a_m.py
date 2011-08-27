@@ -15,13 +15,16 @@ def readLM75(firstReg, numRegs):
     #dumpHex(cmd)
     i2cWrite(cmd, retries, False)
     #print getI2cResult()
-    
-    cmd = chr( LM75_ADDRESS | 1 )
-    #dumpHex(cmd)
-    result = i2cRead(cmd, numRegs, retries, False)
-
-    #dumpHex(result)
-    return result
+    if (getI2cResult() == 1):
+        cmd = chr( LM75_ADDRESS | 1 )
+        #dumpHex(cmd)
+        result = i2cRead(cmd, numRegs, retries, False)
+        #dumpHex(result)
+        return result
+    else:
+        eventString = devName + ":readLM75(" + str(firstReg) + ", " + str(numRegs) + "): Failed I2C: " + str(getI2cResult())
+        rpc(portalAddr, "logEvent", eventString)
+        return getI2cResult()
 
 def shutdownLM75A():
     cmd = buildTWICmd(LM75_ADDRESS, 1, False)
@@ -51,3 +54,8 @@ def displayLMTempF():
     t = displayLMTemp()
     t = (t * 9)/5 + 32
     return t
+
+def displayLMRaw():
+    buffer = readLM75(0,2)
+    lm75a = (ord(buffer[0])) << 8 | ord(buffer[1])
+    return lm75a
