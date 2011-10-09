@@ -55,7 +55,7 @@ def start():
     setPinPullup(RTC_INT, True) #Turn on pullup
     monitorPin(RTC_INT, True)   #monitor changes to this pin. Will go low on int
     wakeupOn(RTC_INT, True, False)  #Wake from sleep when pin goes low
-    setPinDir(GPIO_9, False)
+    #setPinDir(GPIO_9, False)
     
     # I2C GPIO_17/18 rf100. rf200 needs external pullups.
     i2cInit(True)
@@ -67,8 +67,8 @@ def start():
     # Go ahead and redirect STDOUT to Portal now
     ucastSerial(portalAddr) # put your correct Portal address here!
     getPortalTime()
-    initUart(0,38400)
-    flowControl(0,False)
+    #initUart(0,38400)
+    #flowControl(0,False)
     crossConnect(DS_STDIO,DS_TRANSPARENT)
         
 
@@ -79,7 +79,7 @@ def start():
     checkClockYear()
     #crossConnect(DS_STDIO,DS_TRANSPARENT)
     print "Startup Done!"
-    crossConnect(DS_STDIO,DS_UART0)
+    #crossConnect(DS_STDIO,DS_UART0)
     
 @setHook(HOOK_100MS)
 def timer100msEvent(msTick):
@@ -97,8 +97,9 @@ def timer100msEvent(msTick):
 def doEverySecond():
     #pass
     global taddress
-    dts = str(displayClockDT())
-    eventString = dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
+    dts = displayClockDT()
+    #eventString = dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
+    eventString = displayClockDT() + "," + str(displayLMTemp()) + "," + str(displayLMTempF())
     print eventString
     rpc(portalAddr, "plotlq", devName, getLq(), dts)
     #rpc(portalAddr, "infoDT", displayClockDT())
@@ -160,3 +161,7 @@ def set_portal_addr():
     global portalAddr
     portalAddr = rpcSourceAddr()
     getPortalTime()
+
+def test_sleep():
+    zCalcWakeTimeinfo(1)
+    sleep(0,0)
