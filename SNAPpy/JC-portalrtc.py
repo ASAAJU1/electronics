@@ -14,10 +14,17 @@ at this point, many other synapse example functions added
 """
 
 import logging, logging.handlers, datetime, time, codecs, os, math
-
-
 import binascii
-import time
+import sys
+sys.path.append('C:\Python25\Lib\site-packages')
+sys.path.append('C:\Python25\Lib\site-packages\serial')
+
+#import MySQLdb
+print sys.path
+print sys.getdefaultencoding()
+#import sqlite3
+#import serial
+import apsw
 
 #import thermistor
 import wx
@@ -27,6 +34,10 @@ frame = None
 frame2 = None
 
 CSV_FILENAME = "tempDataLog.csv"
+
+def setInfo(name,value):
+    """Put info in the Info section of Portal"""
+    remoteNode.setColumn(name,value)
 
 def setRFTime(nodeAddr):
     """Call with nodeAddr to set the time on that node"""
@@ -185,6 +196,7 @@ def graph_generic_lqdts(who, data, lq, dts):
     logToCSV(who, str(data))
     remoteNode.setColumn("Link", lq)
     remoteNode.setColumn("DT", dts)
+    remoteNode.setColumn("Temp F", data)
 
 ###############################################################################
 ## Various Test function to help people on forums #############################
@@ -298,3 +310,44 @@ def logToCSV(name, logInfo):
 def convertAddr(addr):
     """Converts binary address string to a more readable hex-ASCII address string"""
     return binascii.hexlify(addr)
+
+def lm75aRawCalc(name, raw):
+    """ Converts the raw reading from a LM75A Temp Sensor """
+    if name == None:
+        name = convertAddr(remoteAddr)
+    intraw = int(raw)
+    #print intraw.bit_length()
+    intC = intraw >> 5
+    #float fC
+    tC = intC / 8.0
+    print tC
+    tF = calcCtoF(tC)
+    eventString = str(name) + "," + str(tF) + "," + str(tC)
+    print eventString
+    #logToCSV(name, eventString)
+    return tC
+
+# intenal function to convert C to F
+def calcCtoF(raw):
+    fraw = float(raw)
+    tempF = (fraw * 9)/5 + 32
+    #print tempF
+    return tempF
+def loglm75aRawCalc(name, raw):
+    """ Converts the raw reading from a LM75A Temp Sensor """
+    mac = convertAddr(remoteAddr)
+    if name == None:
+        name = mac
+    intraw = int(raw)
+    intC = intraw >> 5
+    tC = intC / 8.0
+    tF = calcCtoF(tC)
+    eventString = str(tC) + "," + str(tF) + "," + name
+    #print eventString
+    #formattedString = time.strftime("%m/%d/%Y %I:%M:%S %p") + "," + convertAddr(com.rpc_source_addr()) + "," + name + "," + eventString
+    formattedString = time.strftime("%s") + "," + time.strftime("%m/%d/%Y %I:%M:%S %p") + "," + mac + "," + eventString
+    print formattedString
+    f = open('C:/jc/jctemptureCSV.txt', 'a')
+    f.write(formattedString + '\n')
+    f.close()
+    return tC

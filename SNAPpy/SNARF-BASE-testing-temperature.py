@@ -37,6 +37,7 @@ taddress = 64
 jcdebug = False
 timeSynced = False
 verboseM = True
+allowSleep = False
 
 #These are the GPIO pins used on the SNARF-BASE v3.h
 VAUX = GPIO_5
@@ -93,14 +94,15 @@ def timer100msEvent(msTick):
         getPortalTime()
     if secondCounter == 2:
         rpc(portalAddr, "plotlq", devName, getLq(), str(displayClockDT()))
+        rpc(portalAddr, "loglm75aRawCalc", devName, str(displayLMRaw()))
     if secondCounter == 3:
-        rpc(snapc, "getcmd2x")
+        rpc(portalAddr, "getcmd2x")
     if secondCounter == 4:
-        rpc(snapc, "getcmd2x")
-    if secondCounter == 5:
-        rpc(snapc, "getcmd2x")
+        rpc(e10Addr, "getcmd2x")
+    #if secondCounter == 5:
+    #    rpc(snapc, "getcmd2x")
     if secondCounter == 8:
-        print zCalcWakeTimeinfo(2)
+        zCalcWakeTimeinfo(2)
     if secondCounter == 9:
         doEveryMinute()
     #if secondCounter > 5 and secondCounter < 20:
@@ -108,13 +110,15 @@ def timer100msEvent(msTick):
     if secondCounter >= 13 and allowSleep == True:
         #doEverySecond()    
         rpc(portalAddr, "logEvent", secondCounter)  
-        sleep(1,180)
+        #sleep(1,180)
+        gotoSleep()
         if (contactPortal):
             rpc(portalAddr, "getcmd2x")
-        rpc(snapc, "getcmd2x")
+        if (contactE10):
+            rpc(e10Addr, "getcmd2x")
         secondCounter = 0
     if secondCounter >= 30 and secondCounter %30 == 0:
-        rpc(snapc, "getcmd2x")
+        #rpc(snapc, "getcmd2x")
         if (contactPortal):
             rpc(portalAddr, "getcmd2x")
     if secondCounter >= 1200:
@@ -173,13 +177,8 @@ def doEveryMinute():
     #eventString2 = devName + ": " + eventString + " " + str(t) + " " + str(taddress) + " " + str(tt)
     #rpc(portalAddr, "logEvent", eventString2)
     rpc(portalAddr, 'graph_generic_lqdts', devName, displayLMTempF(), getLq(), dts)
-    
-    #rpc(snapc, "logToCSV", devName, eventString)
-    rpc(snapc, "loglm75aRawCalc", devName, str(displayLMRaw()))
-    #if (t < 32):
-    #    t = 32
-    #taddress += tt
-    #datablock += 1
+    rpc(e10Addr, "logToSQL", devName, str(displayLMRaw()))
+    sendTemperature()
     
     return getI2cResult()
     
@@ -198,3 +197,7 @@ def turnONVAUX():
 
 def turnOFFVAUX():
     writePin(VAUX, False)      #Turn off aux power
+    
+def sendTemperature():
+    rpc(portalAddr, "loglm75aRawCalc", devName, str(displayLMRaw()))
+    rpc(e10Addr,    "loglm75aRawCalc", devName, str(displayLMRaw()))

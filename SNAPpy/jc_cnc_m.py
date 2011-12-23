@@ -6,7 +6,8 @@ import as module. just quick common functions between scrtips.
 jc_cnc_m.py
 JC Command and Control Module and Helper functions CNC expects
 """
-contactPortal = True
+contactPortal = False
+contactE10 = False
 allowSleep = True
 
 def set_portal_addr():
@@ -23,9 +24,13 @@ def contactSCDisable():
 def contactportalEnable():
     global contactPortal
     contactPortal = True
+    rpc(portalAddr, "logEvent", "Contact Portal Enabled")
+    return 1
 def contactportalDisable():
     global contactPortal
     contactPortal = False
+    rpc(portalAddr, "logEvent", "Contact Portal Disenabled")
+    return 0
 def allowSleepEnable():
     global allowSleep
     allowSleep = True
