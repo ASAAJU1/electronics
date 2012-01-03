@@ -27,7 +27,7 @@ from m24lc256_m import *
 from jc_m import *
 from jc_cnc_m import *
 
-portalAddr = '\x00\x00\x01' # hard-coded address for Portal <------------<<<<<<<<
+portalAddr = '\x00\x00\x02' # hard-coded address for Portal <------------<<<<<<<<
 e10Addr = '\x4c\x70\xbd'
 snapc = '\xaa\xbb\xcc'
 secondCounter = 0 
@@ -37,7 +37,8 @@ taddress = 64
 jcdebug = False
 timeSynced = False
 verboseM = True
-allowSleep = False
+allowSleep = True
+contactPortal = True
 
 #These are the GPIO pins used on the SNARF-BASE v3.h
 VAUX = GPIO_5
@@ -66,18 +67,17 @@ def start():
     i2cInit(True)
     initLM75A()
     # On startup try to get the portal address. 
-    if portalAddr is None:
-        mcastRpc(1, 5, "get_portal_logger")
-    else:
-        getPortalTime()
+    findPortal()
     # Go ahead and redirect STDOUT to Portal now
-    ucastSerial(portalAddr) # put your correct Portal address here!
-    getPortalTime()
+    if (contactPortal):
+        #ucastSerial(portalAddr)
+        #crossConnect(DS_STDIO,DS_TRANSPARENT)
+        getPortalTime()
+    
     #initUart(0,38400)
     #flowControl(0,False)
-    crossConnect(DS_STDIO,DS_TRANSPARENT)
+    #crossConnect(DS_STDIO,DS_TRANSPARENT)
     
-    #sleep(1,3)
     #Check if rtc has invalid year, if so, automatically update rtc from portal
     #This is not a very robust check, but work for testing.
     checkClockYear()
@@ -90,17 +90,17 @@ def timer100msEvent(msTick):
     """Hooked into the HOOK_100MS event"""
     global secondCounter, minuteCounter
     secondCounter += 1
-    if timeSynced == False:
+    if ((timeSynced == False) and (contactPortal)):
         getPortalTime()
-    if secondCounter == 2:
+    if ((secondCounter == 2) and (contactPortal)):
         rpc(portalAddr, "plotlq", devName, getLq(), str(displayClockDT()))
         rpc(portalAddr, "loglm75aRawCalc", devName, str(displayLMRaw()))
-    if secondCounter == 3:
+    if ((secondCounter == 3) and (contactPortal)):
         rpc(portalAddr, "getcmd2x")
-    if secondCounter == 4:
+    if ((secondCounter == 4) and (contactE10)):
         rpc(e10Addr, "getcmd2x")
-    #if secondCounter == 5:
-    #    rpc(snapc, "getcmd2x")
+    if ((secondCounter == 5) and (contactSC)):
+        rpc(snapc, "getcmd2x")
     if secondCounter == 8:
         zCalcWakeTimeinfo(2)
     if secondCounter == 9:
@@ -177,7 +177,8 @@ def doEveryMinute():
     #eventString2 = devName + ": " + eventString + " " + str(t) + " " + str(taddress) + " " + str(tt)
     #rpc(portalAddr, "logEvent", eventString2)
     rpc(portalAddr, 'graph_generic_lqdts', devName, displayLMTempF(), getLq(), dts)
-    rpc(e10Addr, "logToSQL", devName, str(displayLMRaw()))
+    eventString = "Temp F is about: " + str(displayLMTempF()) + " the lm75a raw is: " + str(displayLMRaw())
+    rpc(e10Addr, "logToSQL", devName, eventString)
     sendTemperature()
     
     return getI2cResult()
@@ -201,3 +202,9 @@ def turnOFFVAUX():
 def sendTemperature():
     rpc(portalAddr, "loglm75aRawCalc", devName, str(displayLMRaw()))
     rpc(e10Addr,    "loglm75aRawCalc", devName, str(displayLMRaw()))
+
+def findPortal():
+    """multicast to group 1 and no more than 3 hops away"""
+    if (contactPortal):
+        mcastRpc(1, 3, 'getPortal')
+    return

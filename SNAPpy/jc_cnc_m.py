@@ -5,22 +5,31 @@ http://creativecommons.org/licenses/by/3.0/
 import as module. just quick common functions between scrtips. 
 jc_cnc_m.py
 JC Command and Control Module and Helper functions CNC expects
+
+Modified 201112291302 to sect all contact disabled. Added Enable/Disable for E10,Portal,SnapConect
+                      also changed the name of addressPortal to match other scripts.
 """
 contactPortal = False
-contactE10 = False
-allowSleep = True
+contactE10    = False
+contactSC     = False
 
-def set_portal_addr():
+def addressPortal():
     """Set the portal SNAP address to the caller of this function"""
     global portalAddr
     portalAddr = rpcSourceAddr()
-    getPortalTime()
+    #getPortalTime()
 def contactSCEnable():
     global contactSC
     contactSC = True
 def contactSCDisable():
     global contactSC
     contactSC = False
+def contactE10Enable():
+    global contactE10
+    contactE10 = True
+def contactSCDisable():
+    global contactE10
+    contactE10 = False
 def contactportalEnable():
     global contactPortal
     contactPortal = True

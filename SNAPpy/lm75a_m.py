@@ -5,6 +5,8 @@ Uses the buildTWICmd from pcf2129a_m.py
 CC BY 3.0  J.C. Woltz
 http://creativecommons.org/licenses/by/3.0/
 
+Modified 201112291301 for doc strings and to use the contactPortal flags
+
 -------------------------------------------------------------------------------------------------
 """
 LM75_ADDRESS = 72<<1    #slave aaddress is '1001'210, 2 1 0 are gnd =0. shifts to 10010000
@@ -23,7 +25,8 @@ def readLM75(firstReg, numRegs):
         return result
     else:
         eventString = devName + ":readLM75(" + str(firstReg) + ", " + str(numRegs) + "): Failed I2C: " + str(getI2cResult())
-        rpc(portalAddr, "logEvent", eventString)
+        if (contactPortal):
+            rpc(portalAddr, "logEvent", eventString)
         return getI2cResult()
 
 def shutdownLM75A():
@@ -44,6 +47,7 @@ def initLM75A():
     return eventSting
     
 def displayLMTemp():
+    """Crude Celcius conversion. Does not get the 0.125"""
     buffer = readLM75(0,2)
     t = (ord(buffer[0])) << 8 | ord(buffer[1])
     t = (t / 32) / 8
@@ -51,11 +55,13 @@ def displayLMTemp():
     return t
     
 def displayLMTempF():
+    """Crude F calc as the Celcius is off by 0.125"""
     t = displayLMTemp()
     t = (t * 9)/5 + 32
     return t
 
 def displayLMRaw():
+    """Returns the raw value to let a full python calculate the results"""
     buffer = readLM75(0,2)
     lm75a = (ord(buffer[0])) << 8 | ord(buffer[1])
     return lm75a
