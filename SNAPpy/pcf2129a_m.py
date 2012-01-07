@@ -69,7 +69,7 @@ def checkClockYear():
     buff = readPCF2129(0x09,1)
     
     Year = bcdToDec(ord(buff[0]))
-    if (Year <> 11):
+    if (Year <> 12):
         eventString = str(loadNvParam(8)) +": Invalid year: " + str(Year)
         rpc(portalAddr, "logEvent", eventString)
         getPortalTime()
