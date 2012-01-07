@@ -1,3 +1,8 @@
+import logging, logging.handlers, datetime, time, codecs, os, math, sys
+import binascii
+import time
+import sys
+
 def getcmd2x():
     """Called from node, pase file and rpc commands back to node"""
     f_cmds = open('C:/jc/jcCMDS.txt')

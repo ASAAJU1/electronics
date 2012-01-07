@@ -1,3 +1,8 @@
+import logging, logging.handlers, datetime, time, codecs, os, math, sys
+import binascii
+import time
+import sys
+
 def setRFTime(nodeAddr):
     """Call with nodeAddr to set the time on that node"""
     Year = int(time.strftime('%y'))
