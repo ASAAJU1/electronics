@@ -1,3 +1,4 @@
+from __future__ import with_statement
 """
 J.C. Woltz's Portal Script. 
 """
@@ -21,7 +22,7 @@ import apsw
 #from p_cnc_m import *
 
 jccsv = 'C:/jc/jcCSV.txt'
-jcsql = 'C:/jc/downloads/software/sqlite/snapconnect.sqlite3'
+jcsql = 'C:/jc/dc.sqlite3'
 #import thermistor
 import wx
 import wx.grid
@@ -121,31 +122,42 @@ def convertAddr(addr):
 # Unfinished to log to SQLite3
 def logToSQL(name, loginfo):
     mac = convertAddr(remoteAddr)
+    print "logToSQL called from: " + name + "," + mac + ": " + loginfo
     con = sqlite3.connect(jcsql)
-    eventSting = "logToSQL: " + mac + ", " + name + ", " + loginfo
-    print eventSting
-    cur = con.cursor()
-    try:
-        cur.execute("SELECT * FROM RunMe WHERE mac=:mac and active = 'True'",{"mac": mac})
-        con.commit()
+    with con:
+        cur = con.cursor()
+        cur.execute("INSERT INTO snapLogs (NodeMAC, name, loginfo) VALUES (?,?,?)", (mac, name, loginfo))
+
+def getcmdSQL():
+    mac = convertAddr(remoteAddr)
+    print "getcmdSQL called from: " + mac + "."
+    con = sqlite3.connect(jcsql)
+
+    with con:
+        cur = con.cursor()
+        print "Running Select for " + mac + "...",
+        cur.execute('SELECT * FROM RunMe WHERE NodeMAC=:NM and ACTIVE=1',{"NM": mac})
+        print "Select done!"
 
         rows = cur.fetchall()
+
         for row in rows:
-            linefields = row[0].strip().split(',')
-            print linefields
-            com.rpc(remoteAddr, *linefields[1:])
+            linefields = str(row[2]).split(',')
+            com.rpc(com.rpc_source_addr(), *linefields[0:])
+            formattedTime = time.strftime("%Y-%m-%d %H:%M:%S")
+            id = str(row[0])
+            if (str(row[6]) == '0'):
+                cur.execute('UPDATE RunMe SET dtRun=?,active=0 WHERE id=?', (formattedTime,id))
+            else:
+                cur.execute('UPDATE RunMe SET dtRun=? WHERE id=?', (formattedTime,id))
+
+            eventString = str(row[0]) + " sent: " + str(row[2])
+            cur.execute('INSERT INTO snapLogs (NodeMac, name, loginfo) VALUES (?,?,?)', (mac, mac, eventString))
+            con.commit()
             print row[0]
-    except sqlite3.OperationalError, msg:
-        print msg
-        
-    #con = sqlite3.connect('/root/dc.sqlite')
-    try:
-        #cur = con.cursor()
-        cur.execute("INSERT INTO snapLogs (mac, name, loginfo) VALUES (?,?,?)", (mac, name, loginfo))
-        con.commit()
-    except sqlite3.OperationalError, msg:
-        print msg
-    
+            #subject = "Sent cmd to " + mac
+            #body = "Sent " + str(linefields) + " to " + str(mac) + " at " + str(formattedTime)
+            #sendAlert('jc@jcwoltz.com', subject, body)
 
 def printAPSWinfo():
     print "      Using APSW file",apsw.__file__                # from the extension module
