@@ -23,7 +23,7 @@ from contrib.jc.i2c.lm75a_m import *
 from contrib.jc.i2c.m24lc256_m import *
 from contrib.jc.misc.jc_m import *
 
-portalAddr = '\x00\x00\x01' # hard-coded address for Portal <------------<<<<<<<<
+portalAddr = '\x00\x00\x02' # hard-coded address for Portal <------------<<<<<<<<
 #portal_addr = None
 secondCounter = 0 
 minuteCounter = 0
@@ -31,6 +31,7 @@ datablock = 1
 taddress = 64
 jcdebug = False
 contactPortal = True
+evenOdd = 0
 
 #These are the GPIO pins used on the SNARF-BASE v3.h
 VAUX = GPIO_5
@@ -97,13 +98,18 @@ def timer100msEvent(msTick):
     
 def doEverySecond():
     #pass
-    global taddress
+    global taddress, evenOdd
+    evenOdd += 1
     dts = displayClockDT()
     #eventString = dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
     eventString = displayClockDT() + "," + str(displayLMTemp()) + "," + str(displayLMTempF())
     print eventString
     rpc(portalAddr, "plotlq", devName, getLq(), dts)
     rpc(portalAddr, "loglm75aRawCalc", devName, displayLMRaw())
+    if (evenOdd % 2):
+        zCalcWakeTimeinfo(1)
+    else:
+        sleep(0,120)
     #rpc(portalAddr, "infoDT", displayClockDT())
     #print displayClockDT()
     #sleep(0,1)
