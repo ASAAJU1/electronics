@@ -2,24 +2,12 @@
 CC BY 3.0  J.C. Woltz
 http://creativecommons.org/licenses/by/3.0/
 
-import as module. just quick common functions between scrtips. 
+import as module. just quick common functions between scrtips.  primarily different example alarm settings
+v201207141403 - old file, new modularization.
+Clock sleep times are not built to sleep for more than 59 minutes. This can be extended if you need to.
+
 """
 
-
-def sleepTest():
-    """Quick way to goto sleep"""
-    #wakeupOn(GPIO_10, True, False)
-    sleep(0,0)
-    eventString = str(devName) + ":" + str(devType) + ":" + "Now Awake"
-    rpc(portalAddr, "logEvent", eventString)
-    
-def zQuickSleepTest(Minute,Second):
-    eventString = "Going to sleep, wake at: " + str(Minute) + ":" + str(Second)
-    rpc(portalAddr, "logEvent", eventString)
-    writeClockAlarm(Minute,Second)
-    sleep(0,600)    #Wake radio in 10 minutes in case rtc fails
-    eventString = str(devName) + ":" + str(devType) + ":" + "Now Awake"
-    rpc(portalAddr, "logEvent", eventString)
     
 def zCalcWakeTime10():
     """Set the RTC INT to triger at the next 10 minute interval"""

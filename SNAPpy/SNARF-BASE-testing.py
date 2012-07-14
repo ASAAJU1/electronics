@@ -23,7 +23,7 @@ from contrib.jc.i2c.lm75a_m import *
 from contrib.jc.i2c.m24lc256_m import *
 from contrib.jc.misc.jc_m import *
 
-portalAddr = '\x00\x00\x02' # hard-coded address for Portal <------------<<<<<<<<
+portalAddr = '\x00\x00\x01' # hard-coded address for Portal <------------<<<<<<<<
 #portal_addr = None
 secondCounter = 0 
 minuteCounter = 0
@@ -158,7 +158,7 @@ def turnONVAUX():
 def turnOFFVAUX():
     writePin(VAUX, False)      #Turn off aux power
 
-def set_portal_addr():
+def addressPortal():
     """Set the portal SNAP address to the caller of this function"""
     global portalAddr
     portalAddr = rpcSourceAddr()

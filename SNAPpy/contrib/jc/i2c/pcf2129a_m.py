@@ -114,8 +114,8 @@ def writeClockTime(Year,Month,Day,DOW,Hour,Minute,Second):
 
 def writeClockAlarm(Minute,Second):
     # This section clears the Alarm INT and programs
-    # This INT to go low when the alarm is triggered
-    # Control_2
+    # this INT to go low when the alarm is triggered
+    # Control_2. See Datasheet for details.
     cmd = buildTWICmd(PCF2129_ADDRESS, 0x01, False)
     cmd += chr(2)   #Turn on AIE BIT
     i2cWrite(cmd, retries, False)
@@ -134,7 +134,7 @@ def writeClockAlarm(Minute,Second):
     return getI2cResult()
 
 def displayClockDT():
-    """returns a string of length 12 YYMMDDHHmmSS"""
+    """returns a string, length 12, YYMMDDHHmmSS"""
     buff = readPCF2129(0x03,7)
     
     Seconds = bcdToDec(ord(buff[0]) & 0x7F)
@@ -186,7 +186,8 @@ def bcdToDec(val):
 
 def getPortalTime():
     """ Call This to have Portal Set RTC"""
-    #portalAddr = "\x4c\x70\xbd"
+    global timeSynced
+    timeSynced = False
     #portalAddr = snap
     rpc(portalAddr, "setRFTime", localAddr())
     
