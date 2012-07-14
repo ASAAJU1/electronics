@@ -12,24 +12,25 @@ v201103191511 - Would not compile without a portalAddr. So set portal as 1 and l
                 Function to change portal addr.
 v201103272322 - testing plotlq rpc call, modfied arguments
 v201105311415 - modified for quick automated teasting
-
+v201207131307 - move modules for better clarification in portal
 """
 
 from synapse.platforms import *
 from synapse.switchboard import *
 from synapse.pinWakeup import *
-from pcf2129a_m import *
-from lm75a_m import *
-from m24lc256_m import *
-from jc_m import *
+from contrib.jc.i2c.pcf2129a_m import *
+from contrib.jc.i2c.lm75a_m import *
+from contrib.jc.i2c.m24lc256_m import *
+from contrib.jc.misc.jc_m import *
 
-portalAddr = '\x00\x00\x01' # hard-coded address for Portal <------------<<<<<<<<
+portalAddr = '\x00\x00\x02' # hard-coded address for Portal <------------<<<<<<<<
 #portal_addr = None
 secondCounter = 0 
 minuteCounter = 0
 datablock = 1
 taddress = 64
 jcdebug = False
+contactPortal = True
 
 #These are the GPIO pins used on the SNARF-BASE v3.h
 VAUX = GPIO_5
@@ -48,20 +49,20 @@ def start():
     setPinDir(LED1, True)
 
     # Setup the Auxilary Regulator for sensors:
-    setPinDir(VAUX, True)       #output
-    writePin(VAUX, True)       #Turn off aux power
+    setPinDir(VAUX, True)           #output
+    writePin(VAUX, True)            #Turn off aux power
     # Setup the RTC Interrupt pin
-    setPinDir(RTC_INT, False)   #Input
-    setPinPullup(RTC_INT, True) #Turn on pullup
-    monitorPin(RTC_INT, True)   #monitor changes to this pin. Will go low on int
+    setPinDir(RTC_INT, False)       #Input
+    setPinPullup(RTC_INT, True)     #Turn on pullup
+    monitorPin(RTC_INT, True)       #monitor changes to this pin. Will go low on int
     wakeupOn(RTC_INT, True, False)  #Wake from sleep when pin goes low
     #setPinDir(GPIO_9, False)
     
-    # I2C GPIO_17/18 rf100. rf200 needs external pullups.
+    # I2C GPIO_17/18 rf100. rf200 usually needs external pullups.
     i2cInit(True)
     # On startup try to get the portal address. 
     if portalAddr is None:
-        mcastRpc(1, 5, "get_portal_logger")
+        mcastRpc(1, 5, "getPortal")
     else:
         getPortalTime()
     # Go ahead and redirect STDOUT to Portal now
@@ -102,6 +103,7 @@ def doEverySecond():
     eventString = displayClockDT() + "," + str(displayLMTemp()) + "," + str(displayLMTempF())
     print eventString
     rpc(portalAddr, "plotlq", devName, getLq(), dts)
+    rpc(portalAddr, "loglm75aRawCalc", devName, displayLMRaw())
     #rpc(portalAddr, "infoDT", displayClockDT())
     #print displayClockDT()
     #sleep(0,1)
