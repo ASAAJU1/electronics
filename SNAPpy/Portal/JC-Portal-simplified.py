@@ -355,3 +355,6 @@ def calcCtoF(raw):
     #print tempF
     return tempF
 ##############################################################################
+def whereIsPortal(name, netid, scriptname):
+    rpc(remoteAddr, 'setPortalAddr')
+    
