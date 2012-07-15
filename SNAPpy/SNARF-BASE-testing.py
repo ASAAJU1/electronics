@@ -22,32 +22,33 @@ from contrib.jc.i2c.pcf2129a_m import *
 from contrib.jc.i2c.lm75a_m import *
 from contrib.jc.i2c.m24lc256_m import *
 from contrib.jc.misc.jc_m import *
+from contrib.jc.misc.jc_cnc_m import *
 
+# Glabal vars
 portalAddr = '\x00\x00\x02' # hard-coded address for Portal <------------<<<<<<<<
-#portal_addr = None
 secondCounter = 0 
 minuteCounter = 0
 datablock = 1
 taddress = 64
-jcdebug = False
+jcdebug = True
 contactPortal = True
 evenOdd = 0
 
 #These are the GPIO pins used on the SNARF-BASE v3.h
-VAUX = GPIO_5
-RTC_INT = GPIO_10
-LED1 = GPIO_0
+VAUX = GPIO_5       # used to put secondary regulator in shutdown mode
+RTC_INT = GPIO_10   # used to wake module
+LED1 = GPIO_0       # used for testing purposes
 
 @setHook(HOOK_STARTUP)
 def start():    
-    global devName
-    global taddress
-    global Dname, Dtype, devType
+    #global taddress
+    global Dname, Dtype, devType, devName
     Dtype = str(loadNvParam(10))
     Dname = str(loadNvParam(8))
     devName = str(loadNvParam(8))
     devType = str(loadNvParam(10))
-    setPinDir(LED1, True)
+
+    setPinDir(LED1, True)           # output
 
     # Setup the Auxilary Regulator for sensors:
     setPinDir(VAUX, True)           #output
@@ -61,28 +62,27 @@ def start():
     
     # I2C GPIO_17/18 rf100. rf200 usually needs external pullups.
     i2cInit(True)
-    # On startup try to get the portal address. 
-    if portalAddr is None:
-        mcastRpc(1, 5, "getPortal")
-    else:
-        getPortalTime()
+    # On startup try to get the portal address if different from hard coded
+    # This function needs contactPortal to be True
+    findPortal()
     # Go ahead and redirect STDOUT to Portal now
-    ucastSerial(portalAddr) # put your correct Portal address here!
-    getPortalTime()
+    if (contactPortal):
+        getPortalTime()
+        # Go ahead and redirect STDOUT to Portal now
+        ucastSerial(portalAddr) # put your correct Portal address here!
     #initUart(0,38400)
     #flowControl(0,False)
     crossConnect(DS_STDIO,DS_TRANSPARENT)
-        
-
-    
     #sleep(1,3)
     #Check if rtc has invalid year, if so, automatically update rtc from portal
-    #This is not a very robust check, but work for testing.
+    #This is not a very robust check, but works for testing.
     checkClockYear()
     #crossConnect(DS_STDIO,DS_TRANSPARENT)
     print "Startup Done!"
     #crossConnect(DS_STDIO,DS_UART0)
     
+# Run every 100 MS. This is a standard counter/loop 
+# to run events on seconds and minutes
 @setHook(HOOK_100MS)
 def timer100msEvent(msTick):
     """Hooked into the HOOK_100MS event"""
@@ -98,18 +98,21 @@ def timer100msEvent(msTick):
     
 def doEverySecond():
     #pass
-    global taddress, evenOdd
+    global taddress,evenOdd
     evenOdd += 1
+    rpc(portalAddr,"getcmd2x")
+    if (timeSynced == False):
+        getPortalTime()
     dts = displayClockDT()
-    #eventString = dts + "," + str(displayLMTempF()) + "," + str(displayLMTemp()) + "," + str(taddress)
-    eventString = displayClockDT() + "," + str(displayLMTemp()) + "," + str(displayLMTempF())
-    print eventString
+    #eventString = str(dts) + "," + str(displayLMTempF()) + "," + str(displayLMTemp()
+    #eventString = displayClockDT() + "," + str(displayLMTemp()) + "," + str(displayLMTempF())
+    #print eventString
     rpc(portalAddr, "plotlq", devName, getLq(), dts)
     rpc(portalAddr, "loglm75aRawCalc", devName, displayLMRaw())
     if (evenOdd % 2):
         zCalcWakeTimeinfo(1)
     else:
-        sleep(0,120)
+        gotoSleep(120)
     #rpc(portalAddr, "infoDT", displayClockDT())
     #print displayClockDT()
     #sleep(0,1)
@@ -140,7 +143,7 @@ def doEveryMinute():
     
     return getI2cResult()
     
-@setHook(HOOK_GPIN)
+#@setHook(HOOK_GPIN)
 def buttonEvent(pinNum, isSet):
     """Hooked into the HOOK_GPIN event"""
     #mostly debug and pointless irw

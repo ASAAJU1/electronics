@@ -231,6 +231,8 @@ def displayDOW(DOW):
 def getcmd2x():
     """Called from node, pase file and rpc commands back to node"""
     f_cmds = open('C:/jc/jcCMDS.txt')
+    #print "Called from: ",
+    #print convertAddr(remoteAddr)
     #eventString = str(convertAddr(remoteAddr))
     for line in f_cmds.readlines():
         linefields = line.strip().split(',')

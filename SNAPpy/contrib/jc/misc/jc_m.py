@@ -188,3 +188,17 @@ def reportWakeTime(Years,Months,Days,DOW,Hours,Minutes,Seconds):
     #rpc(portalAddr, "logEvent", eventString)
     rpc(portalAddr, "GClockDisplay", "WakeAt",Years,Months,Days,DOW,Hours,Minutes,Seconds)
     
+def gotoSleep(Seconds):
+    """Verify all conditions are met before sleeping, input is seconds incase RTC fails"""
+    if (allowSleep):
+        if (jcdebug):
+            print secondCounter
+        if (timeSynced):
+            if (readPin(RTC_INT)):
+                sleep(1,Seconds)
+            else:
+                rpc(portalAddr, "logEvent", "Cannot Sleep Interrupt pin already low")
+        else:
+            rpc(portalAddr,"logEvent","Cannot sleep time not synchronized")
+    else:
+        return 0
