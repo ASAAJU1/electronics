@@ -37,6 +37,11 @@ def getPortal():
     eventString = "getPortal called from: " + convertAddr(remoteAddr) + ". Replied with: " + convertAddr(Portal.netAddr)
     print eventString
 
+def getRTC():
+    rpc(remoteAddr, "addressRTC")
+    eventString = "getRTC called from: " + convertAddr(remoteAddr) + ". Replied with: " + convertAddr(Portal.netAddr)
+    print eventString
+
 def pingESCO():
     rpc("\x00\x31\x56", "vmStat", 10)
 

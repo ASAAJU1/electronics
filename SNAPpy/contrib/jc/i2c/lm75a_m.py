@@ -9,6 +9,7 @@ Modified 201112291301 for doc strings and to use the contactPortal flags
 
 -------------------------------------------------------------------------------------------------
 """
+
 LM75_ADDRESS = 72<<1    #slave aaddress is '1001'210, 2 1 0 are gnd =0. shifts to 10010000
 
 def readLM75(firstReg, numRegs):
@@ -48,8 +49,9 @@ def initLM75A():
     
 def displayLMTemp():
     """Crude Celcius conversion. Does not get the 0.125"""
-    buffer = readLM75(0,2)
-    t = (ord(buffer[0])) << 8 | ord(buffer[1])
+    #buffer = readLM75(0,2)
+    #t = (ord(buffer[0])) << 8 | ord(buffer[1])
+    t = displayLMRaw()
     t = (t / 32) / 8
     #c =  t / 8
     return t

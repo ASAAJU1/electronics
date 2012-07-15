@@ -108,7 +108,8 @@ def doEverySecond():
     #eventString = displayClockDT() + "," + str(displayLMTemp()) + "," + str(displayLMTempF())
     #print eventString
     rpc(portalAddr, "plotlq", devName, getLq(), dts)
-    rpc(portalAddr, "loglm75aRawCalc", devName, displayLMRaw())
+    if (contactPortal):
+        rpc(portalAddr, "loglm75aRawCalc", devName, displayLMRaw())
     if (evenOdd % 2):
         zCalcWakeTimeinfo(1)
     else:
