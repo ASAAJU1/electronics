@@ -1,0 +1,6 @@
+[submodule "eagle/sparkfun"]
+	path = eagle/sparkfun
+	url = git://github.com/sparkfun/SparkFun-Eagle-Libraries.git
+[submodule "eagle/adafruit"]
+	path = eagle/adafruit
+	url = git://github.com/adafruit/Adafruit-Eagle-Library.git
