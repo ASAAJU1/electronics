@@ -519,13 +519,65 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 </deviceset>
 </devicesets>
 </library>
+<library name="SparkFun-Aesthetics">
+<description>&lt;h3&gt;SparkFun Electronics' preferred foot prints&lt;/h3&gt;
+In this library you'll find non-functional items- supply symbols, logos, notations, frame blocks, etc.&lt;br&gt;&lt;br&gt;
+We've spent an enormous amount of time creating and checking these footprints and parts, but it is the end user's responsibility to ensure correctness and suitablity for a given componet or application. If you enjoy using this library, please buy one of our products at www.sparkfun.com.
+&lt;br&gt;&lt;br&gt;
+&lt;b&gt;Licensing:&lt;/b&gt; CC v3.0 Share-Alike You are welcome to use this library for commercial purposes. For attribution, we ask that when you begin to sell your device using our footprint, you email us with a link to the product being sold. We want bragging rights that we helped (in a very small part) to create your 8th world wonder. We would like the opportunity to feature your device on our homepage.</description>
+<packages>
+</packages>
+<symbols>
+<symbol name="DGND">
+<wire x1="-1.905" y1="0" x2="1.905" y2="0" width="0.254" layer="94"/>
+<text x="-2.54" y="-2.54" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="GND" x="0" y="2.54" visible="off" length="short" direction="sup" rot="R270"/>
+</symbol>
+<symbol name="VCC2">
+<wire x1="0.762" y1="1.27" x2="0" y2="2.54" width="0.254" layer="94"/>
+<wire x1="0" y1="2.54" x2="-0.762" y2="1.27" width="0.254" layer="94"/>
+<text x="-1.016" y="3.556" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="VCC" x="0" y="0" visible="off" length="short" direction="sup" rot="R90"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="GND" prefix="GND">
+<description>&lt;b&gt;SUPPLY SYMBOL&lt;/b&gt;</description>
+<gates>
+<gate name="1" symbol="DGND" x="0" y="0"/>
+</gates>
+<devices>
+<device name="">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="VCC" prefix="SUPPLY">
+<description>&lt;b&gt;SUPPLY SYMBOL&lt;/b&gt;</description>
+<gates>
+<gate name="1" symbol="VCC2" x="0" y="0"/>
+</gates>
+<devices>
+<device name="">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
 <variantdefs>
 </variantdefs>
 <classes>
-<class number="0" name="default" width="0" drill="0">
+<class number="0" name="default" width="0.1524" drill="0">
+</class>
+<class number="1" name="VCC" width="0.254" drill="0">
 </class>
 </classes>
 <parts>
@@ -548,6 +600,28 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <part name="U$14" library="SparkFun-LED" deviceset="LED-TRICOLOR" device=""/>
 <part name="U$15" library="SparkFun-LED" deviceset="LED-TRICOLOR" device=""/>
 <part name="U$16" library="SparkFun-LED" deviceset="LED-TRICOLOR" device=""/>
+<part name="GND1" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
+<part name="GND2" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
+<part name="GND3" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
+<part name="SUPPLY1" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY2" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY3" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY4" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY5" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY6" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY7" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY8" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY9" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY10" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY11" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY12" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY13" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY14" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY15" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY16" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY17" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY18" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
+<part name="SUPPLY19" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -573,6 +647,28 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <instance part="U$14" gate="G$1" x="243.84" y="76.2" rot="R90"/>
 <instance part="U$15" gate="G$1" x="261.62" y="76.2" rot="R90"/>
 <instance part="U$16" gate="G$1" x="279.4" y="76.2" rot="R90"/>
+<instance part="GND1" gate="1" x="170.18" y="-10.16" rot="R90"/>
+<instance part="GND2" gate="1" x="287.02" y="-10.16" rot="R90"/>
+<instance part="GND3" gate="1" x="50.8" y="-10.16" rot="R90"/>
+<instance part="SUPPLY1" gate="1" x="10.16" y="-10.16" rot="R90"/>
+<instance part="SUPPLY2" gate="1" x="129.54" y="-10.16" rot="R90"/>
+<instance part="SUPPLY3" gate="1" x="246.38" y="-10.16" rot="R90"/>
+<instance part="SUPPLY4" gate="1" x="15.24" y="93.98"/>
+<instance part="SUPPLY5" gate="1" x="33.02" y="88.9"/>
+<instance part="SUPPLY6" gate="1" x="50.8" y="88.9"/>
+<instance part="SUPPLY7" gate="1" x="68.58" y="88.9"/>
+<instance part="SUPPLY8" gate="1" x="86.36" y="88.9"/>
+<instance part="SUPPLY9" gate="1" x="104.14" y="88.9"/>
+<instance part="SUPPLY10" gate="1" x="121.92" y="88.9"/>
+<instance part="SUPPLY11" gate="1" x="139.7" y="88.9"/>
+<instance part="SUPPLY12" gate="1" x="157.48" y="88.9"/>
+<instance part="SUPPLY13" gate="1" x="175.26" y="88.9"/>
+<instance part="SUPPLY14" gate="1" x="193.04" y="88.9"/>
+<instance part="SUPPLY15" gate="1" x="210.82" y="88.9"/>
+<instance part="SUPPLY16" gate="1" x="228.6" y="88.9"/>
+<instance part="SUPPLY17" gate="1" x="246.38" y="88.9"/>
+<instance part="SUPPLY18" gate="1" x="264.16" y="88.9"/>
+<instance part="SUPPLY19" gate="1" x="281.94" y="88.9"/>
 </instances>
 <busses>
 <bus name="R[1..16]">
@@ -1097,7 +1193,7 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <wire x1="139.7" y1="-22.86" x2="139.7" y2="-10.16" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$3" class="0">
+<net name="SCLK" class="0">
 <segment>
 <pinref part="U3" gate="G$1" pin="SCLK"/>
 <wire x1="254" y1="-10.16" x2="254" y2="-17.78" width="0.1524" layer="91"/>
@@ -1110,7 +1206,7 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <junction x="137.16" y="-17.78"/>
 </segment>
 </net>
-<net name="N$4" class="0">
+<net name="BLANK" class="0">
 <segment>
 <pinref part="U1" gate="G$1" pin="BLANK"/>
 <wire x1="15.24" y1="-10.16" x2="15.24" y2="-15.24" width="0.1524" layer="91"/>
@@ -1123,7 +1219,7 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <wire x1="251.46" y1="-15.24" x2="251.46" y2="-10.16" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$5" class="0">
+<net name="XLAT" class="0">
 <segment>
 <pinref part="U3" gate="G$1" pin="XLAT"/>
 <wire x1="261.62" y1="-10.16" x2="261.62" y2="-12.7" width="0.1524" layer="91"/>
@@ -1136,7 +1232,7 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <wire x1="25.4" y1="-12.7" x2="25.4" y2="-10.16" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$6" class="0">
+<net name="GSCLK" class="0">
 <segment>
 <pinref part="U2" gate="G$1" pin="GSCLK"/>
 <wire x1="147.32" y1="-10.16" x2="147.32" y2="-25.4" width="0.1524" layer="91"/>
@@ -1147,6 +1243,127 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <wire x1="264.16" y1="-10.16" x2="264.16" y2="-25.4" width="0.1524" layer="91"/>
 <wire x1="264.16" y1="-25.4" x2="147.32" y2="-25.4" width="0.1524" layer="91"/>
 <junction x="147.32" y="-25.4"/>
+</segment>
+</net>
+<net name="DCPRG" class="0">
+<segment>
+<pinref part="U3" gate="G$1" pin="DCPRG"/>
+<wire x1="269.24" y1="-10.16" x2="269.24" y2="-27.94" width="0.1524" layer="91"/>
+<wire x1="269.24" y1="-27.94" x2="149.86" y2="-27.94" width="0.1524" layer="91"/>
+<pinref part="U2" gate="G$1" pin="DCPRG"/>
+<wire x1="149.86" y1="-27.94" x2="149.86" y2="-10.16" width="0.1524" layer="91"/>
+<wire x1="149.86" y1="-10.16" x2="152.4" y2="-10.16" width="0.1524" layer="91"/>
+<pinref part="U1" gate="G$1" pin="DCPRG"/>
+<wire x1="33.02" y1="-10.16" x2="33.02" y2="-27.94" width="0.1524" layer="91"/>
+<wire x1="33.02" y1="-27.94" x2="149.86" y2="-27.94" width="0.1524" layer="91"/>
+<junction x="149.86" y="-27.94"/>
+</segment>
+</net>
+<net name="VPRG" class="0">
+<segment>
+<pinref part="U1" gate="G$1" pin="VPRG"/>
+<wire x1="38.1" y1="-10.16" x2="38.1" y2="-30.48" width="0.1524" layer="91"/>
+<wire x1="38.1" y1="-30.48" x2="157.48" y2="-30.48" width="0.1524" layer="91"/>
+<pinref part="U2" gate="G$1" pin="VPRG"/>
+<wire x1="160.02" y1="-30.48" x2="157.48" y2="-30.48" width="0.1524" layer="91"/>
+<wire x1="157.48" y1="-30.48" x2="157.48" y2="-10.16" width="0.1524" layer="91"/>
+<pinref part="U3" gate="G$1" pin="VPRG"/>
+<wire x1="274.32" y1="-10.16" x2="274.32" y2="-30.48" width="0.1524" layer="91"/>
+<wire x1="274.32" y1="-30.48" x2="160.02" y2="-30.48" width="0.1524" layer="91"/>
+<junction x="157.48" y="-30.48"/>
+</segment>
+</net>
+<net name="GND" class="0">
+<segment>
+<pinref part="U2" gate="G$1" pin="GND"/>
+<pinref part="GND1" gate="1" pin="GND"/>
+</segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="GND"/>
+<pinref part="GND2" gate="1" pin="GND"/>
+</segment>
+<segment>
+<pinref part="U1" gate="G$1" pin="GND"/>
+<pinref part="GND3" gate="1" pin="GND"/>
+</segment>
+</net>
+<net name="VCC" class="1">
+<segment>
+<pinref part="U1" gate="G$1" pin="VCC"/>
+<pinref part="SUPPLY1" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="VCC"/>
+<pinref part="SUPPLY2" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="VCC"/>
+<pinref part="SUPPLY3" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="A"/>
+<pinref part="SUPPLY4" gate="1" pin="VCC"/>
+<wire x1="15.24" y1="93.98" x2="15.24" y2="88.9" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U$2" gate="G$1" pin="A"/>
+<pinref part="SUPPLY5" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U$3" gate="G$1" pin="A"/>
+<pinref part="SUPPLY6" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U$4" gate="G$1" pin="A"/>
+<pinref part="SUPPLY7" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U$5" gate="G$1" pin="A"/>
+<pinref part="SUPPLY8" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U$6" gate="G$1" pin="A"/>
+<pinref part="SUPPLY9" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U$7" gate="G$1" pin="A"/>
+<pinref part="SUPPLY10" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U$8" gate="G$1" pin="A"/>
+<pinref part="SUPPLY11" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U$9" gate="G$1" pin="A"/>
+<pinref part="SUPPLY12" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U$10" gate="G$1" pin="A"/>
+<pinref part="SUPPLY13" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U$11" gate="G$1" pin="A"/>
+<pinref part="SUPPLY14" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U$12" gate="G$1" pin="A"/>
+<pinref part="SUPPLY15" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U$13" gate="G$1" pin="A"/>
+<pinref part="SUPPLY16" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U$14" gate="G$1" pin="A"/>
+<pinref part="SUPPLY17" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U$15" gate="G$1" pin="A"/>
+<pinref part="SUPPLY18" gate="1" pin="VCC"/>
+</segment>
+<segment>
+<pinref part="U$16" gate="G$1" pin="A"/>
+<pinref part="SUPPLY19" gate="1" pin="VCC"/>
 </segment>
 </net>
 </nets>

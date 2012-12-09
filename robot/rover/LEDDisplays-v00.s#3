@@ -764,11 +764,19 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <pinref part="U$1" gate="G$1" pin="BLU"/>
 <wire x1="15.24" y1="66.04" x2="15.24" y2="45.72" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="OUT0"/>
+<wire x1="129.54" y1="15.24" x2="129.54" y2="22.86" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="B2" class="0">
 <segment>
 <pinref part="U$2" gate="G$1" pin="BLU"/>
 <wire x1="33.02" y1="66.04" x2="33.02" y2="45.72" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="OUT1"/>
+<wire x1="132.08" y1="15.24" x2="132.08" y2="22.86" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="B3" class="0">
@@ -776,11 +784,19 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <pinref part="U$3" gate="G$1" pin="BLU"/>
 <wire x1="50.8" y1="66.04" x2="50.8" y2="45.72" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="OUT2"/>
+<wire x1="134.62" y1="15.24" x2="134.62" y2="22.86" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="B4" class="0">
 <segment>
 <pinref part="U$4" gate="G$1" pin="BLU"/>
 <wire x1="68.58" y1="66.04" x2="68.58" y2="45.72" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="OUT3"/>
+<wire x1="137.16" y1="15.24" x2="137.16" y2="22.86" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="B5" class="0">
@@ -788,11 +804,19 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <pinref part="U$5" gate="G$1" pin="BLU"/>
 <wire x1="86.36" y1="66.04" x2="86.36" y2="45.72" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="OUT4"/>
+<wire x1="139.7" y1="15.24" x2="139.7" y2="22.86" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="B6" class="0">
 <segment>
 <pinref part="U$6" gate="G$1" pin="BLU"/>
 <wire x1="104.14" y1="66.04" x2="104.14" y2="45.72" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="OUT5"/>
+<wire x1="142.24" y1="15.24" x2="142.24" y2="22.86" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="B7" class="0">
@@ -800,11 +824,19 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <pinref part="U$7" gate="G$1" pin="BLU"/>
 <wire x1="121.92" y1="66.04" x2="121.92" y2="45.72" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="OUT6"/>
+<wire x1="144.78" y1="15.24" x2="144.78" y2="22.86" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="B8" class="0">
 <segment>
 <pinref part="U$8" gate="G$1" pin="BLU"/>
 <wire x1="139.7" y1="66.04" x2="139.7" y2="45.72" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="OUT7"/>
+<wire x1="147.32" y1="15.24" x2="147.32" y2="22.86" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="B9" class="0">
@@ -812,11 +844,19 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <pinref part="U$9" gate="G$1" pin="BLU"/>
 <wire x1="157.48" y1="66.04" x2="157.48" y2="45.72" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="OUT8"/>
+<wire x1="149.86" y1="15.24" x2="149.86" y2="22.86" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="B10" class="0">
 <segment>
 <pinref part="U$10" gate="G$1" pin="BLU"/>
 <wire x1="175.26" y1="66.04" x2="175.26" y2="45.72" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="OUT9"/>
+<wire x1="152.4" y1="15.24" x2="152.4" y2="22.86" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="B11" class="0">
@@ -824,11 +864,19 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <pinref part="U$11" gate="G$1" pin="BLU"/>
 <wire x1="193.04" y1="66.04" x2="193.04" y2="45.72" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="OUT10"/>
+<wire x1="154.94" y1="15.24" x2="154.94" y2="22.86" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="B12" class="0">
 <segment>
 <pinref part="U$12" gate="G$1" pin="BLU"/>
 <wire x1="210.82" y1="66.04" x2="210.82" y2="45.72" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="OUT11"/>
+<wire x1="157.48" y1="15.24" x2="157.48" y2="22.86" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="B13" class="0">
@@ -836,11 +884,19 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <pinref part="U$13" gate="G$1" pin="BLU"/>
 <wire x1="228.6" y1="66.04" x2="228.6" y2="45.72" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="OUT12"/>
+<wire x1="160.02" y1="15.24" x2="160.02" y2="22.86" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="B14" class="0">
 <segment>
 <pinref part="U$14" gate="G$1" pin="BLU"/>
 <wire x1="246.38" y1="66.04" x2="246.38" y2="45.72" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="OUT13"/>
+<wire x1="162.56" y1="15.24" x2="162.56" y2="22.86" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="B15" class="0">
@@ -848,11 +904,19 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <pinref part="U$15" gate="G$1" pin="BLU"/>
 <wire x1="264.16" y1="66.04" x2="264.16" y2="45.72" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="OUT14"/>
+<wire x1="165.1" y1="15.24" x2="165.1" y2="22.86" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="B16" class="0">
 <segment>
 <pinref part="U$16" gate="G$1" pin="BLU"/>
 <wire x1="281.94" y1="66.04" x2="281.94" y2="45.72" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="OUT15"/>
+<wire x1="167.64" y1="15.24" x2="167.64" y2="22.86" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="G1" class="0">
@@ -860,11 +924,19 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <pinref part="U$1" gate="G$1" pin="GRN"/>
 <wire x1="17.78" y1="66.04" x2="17.78" y2="50.8" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="OUT0"/>
+<wire x1="246.38" y1="15.24" x2="246.38" y2="20.32" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="G2" class="0">
 <segment>
 <pinref part="U$2" gate="G$1" pin="GRN"/>
 <wire x1="35.56" y1="66.04" x2="35.56" y2="50.8" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="OUT1"/>
+<wire x1="248.92" y1="15.24" x2="248.92" y2="20.32" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="G3" class="0">
@@ -872,11 +944,19 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <pinref part="U$3" gate="G$1" pin="GRN"/>
 <wire x1="53.34" y1="66.04" x2="53.34" y2="50.8" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="OUT2"/>
+<wire x1="251.46" y1="15.24" x2="251.46" y2="20.32" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="G4" class="0">
 <segment>
 <pinref part="U$4" gate="G$1" pin="GRN"/>
 <wire x1="71.12" y1="66.04" x2="71.12" y2="50.8" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="OUT3"/>
+<wire x1="254" y1="15.24" x2="254" y2="20.32" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="G5" class="0">
@@ -884,11 +964,19 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <pinref part="U$5" gate="G$1" pin="GRN"/>
 <wire x1="88.9" y1="66.04" x2="88.9" y2="50.8" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="OUT4"/>
+<wire x1="256.54" y1="15.24" x2="256.54" y2="20.32" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="G6" class="0">
 <segment>
 <pinref part="U$6" gate="G$1" pin="GRN"/>
 <wire x1="106.68" y1="66.04" x2="106.68" y2="50.8" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="OUT5"/>
+<wire x1="259.08" y1="15.24" x2="259.08" y2="20.32" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="G7" class="0">
@@ -896,11 +984,19 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <pinref part="U$7" gate="G$1" pin="GRN"/>
 <wire x1="124.46" y1="66.04" x2="124.46" y2="50.8" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="OUT6"/>
+<wire x1="261.62" y1="15.24" x2="261.62" y2="20.32" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="G8" class="0">
 <segment>
 <pinref part="U$8" gate="G$1" pin="GRN"/>
 <wire x1="142.24" y1="66.04" x2="142.24" y2="50.8" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="OUT7"/>
+<wire x1="264.16" y1="15.24" x2="264.16" y2="20.32" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="G9" class="0">
@@ -908,11 +1004,19 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <pinref part="U$9" gate="G$1" pin="GRN"/>
 <wire x1="160.02" y1="66.04" x2="160.02" y2="50.8" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="OUT8"/>
+<wire x1="266.7" y1="15.24" x2="266.7" y2="20.32" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="G10" class="0">
 <segment>
 <pinref part="U$10" gate="G$1" pin="GRN"/>
 <wire x1="177.8" y1="66.04" x2="177.8" y2="50.8" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="OUT9"/>
+<wire x1="269.24" y1="15.24" x2="269.24" y2="20.32" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="G11" class="0">
@@ -920,11 +1024,19 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <pinref part="U$11" gate="G$1" pin="GRN"/>
 <wire x1="195.58" y1="66.04" x2="195.58" y2="50.8" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="OUT10"/>
+<wire x1="271.78" y1="15.24" x2="271.78" y2="20.32" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="G12" class="0">
 <segment>
 <pinref part="U$12" gate="G$1" pin="GRN"/>
 <wire x1="213.36" y1="66.04" x2="213.36" y2="50.8" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="OUT11"/>
+<wire x1="274.32" y1="15.24" x2="274.32" y2="20.32" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="G13" class="0">
@@ -932,11 +1044,19 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <pinref part="U$13" gate="G$1" pin="GRN"/>
 <wire x1="231.14" y1="66.04" x2="231.14" y2="50.8" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="OUT12"/>
+<wire x1="276.86" y1="15.24" x2="276.86" y2="20.32" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="G14" class="0">
 <segment>
 <pinref part="U$14" gate="G$1" pin="GRN"/>
 <wire x1="248.92" y1="66.04" x2="248.92" y2="50.8" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="OUT13"/>
+<wire x1="279.4" y1="15.24" x2="279.4" y2="20.32" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="G15" class="0">
@@ -944,11 +1064,89 @@ Proven layout and schematic for triple color LED in SMD package - common anode. 
 <pinref part="U$15" gate="G$1" pin="GRN"/>
 <wire x1="266.7" y1="66.04" x2="266.7" y2="50.8" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="OUT14"/>
+<wire x1="281.94" y1="15.24" x2="281.94" y2="20.32" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="G16" class="0">
 <segment>
 <pinref part="U$16" gate="G$1" pin="GRN"/>
 <wire x1="284.48" y1="66.04" x2="284.48" y2="50.8" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="OUT15"/>
+<wire x1="284.48" y1="15.24" x2="284.48" y2="20.32" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$1" class="0">
+<segment>
+<pinref part="U1" gate="G$1" pin="SOUT"/>
+<wire x1="22.86" y1="-10.16" x2="22.86" y2="-20.32" width="0.1524" layer="91"/>
+<pinref part="U3" gate="G$1" pin="SIN"/>
+<wire x1="22.86" y1="-20.32" x2="256.54" y2="-20.32" width="0.1524" layer="91"/>
+<wire x1="256.54" y1="-20.32" x2="256.54" y2="-10.16" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$2" class="0">
+<segment>
+<pinref part="U3" gate="G$1" pin="SOUT"/>
+<wire x1="259.08" y1="-10.16" x2="259.08" y2="-22.86" width="0.1524" layer="91"/>
+<wire x1="259.08" y1="-22.86" x2="139.7" y2="-22.86" width="0.1524" layer="91"/>
+<pinref part="U2" gate="G$1" pin="SIN"/>
+<wire x1="139.7" y1="-22.86" x2="139.7" y2="-10.16" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$3" class="0">
+<segment>
+<pinref part="U3" gate="G$1" pin="SCLK"/>
+<wire x1="254" y1="-10.16" x2="254" y2="-17.78" width="0.1524" layer="91"/>
+<wire x1="254" y1="-17.78" x2="137.16" y2="-17.78" width="0.1524" layer="91"/>
+<pinref part="U2" gate="G$1" pin="SCLK"/>
+<wire x1="137.16" y1="-17.78" x2="137.16" y2="-10.16" width="0.1524" layer="91"/>
+<pinref part="U1" gate="G$1" pin="SCLK"/>
+<wire x1="17.78" y1="-10.16" x2="17.78" y2="-17.78" width="0.1524" layer="91"/>
+<wire x1="17.78" y1="-17.78" x2="137.16" y2="-17.78" width="0.1524" layer="91"/>
+<junction x="137.16" y="-17.78"/>
+</segment>
+</net>
+<net name="N$4" class="0">
+<segment>
+<pinref part="U1" gate="G$1" pin="BLANK"/>
+<wire x1="15.24" y1="-10.16" x2="15.24" y2="-15.24" width="0.1524" layer="91"/>
+<wire x1="15.24" y1="-15.24" x2="134.62" y2="-15.24" width="0.1524" layer="91"/>
+<pinref part="U2" gate="G$1" pin="BLANK"/>
+<wire x1="134.62" y1="-15.24" x2="134.62" y2="-10.16" width="0.1524" layer="91"/>
+<wire x1="134.62" y1="-15.24" x2="251.46" y2="-15.24" width="0.1524" layer="91"/>
+<junction x="134.62" y="-15.24"/>
+<pinref part="U3" gate="G$1" pin="BLANK"/>
+<wire x1="251.46" y1="-15.24" x2="251.46" y2="-10.16" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$5" class="0">
+<segment>
+<pinref part="U3" gate="G$1" pin="XLAT"/>
+<wire x1="261.62" y1="-10.16" x2="261.62" y2="-12.7" width="0.1524" layer="91"/>
+<wire x1="261.62" y1="-12.7" x2="144.78" y2="-12.7" width="0.1524" layer="91"/>
+<pinref part="U2" gate="G$1" pin="XLAT"/>
+<wire x1="144.78" y1="-12.7" x2="144.78" y2="-10.16" width="0.1524" layer="91"/>
+<wire x1="144.78" y1="-12.7" x2="25.4" y2="-12.7" width="0.1524" layer="91"/>
+<junction x="144.78" y="-12.7"/>
+<pinref part="U1" gate="G$1" pin="XLAT"/>
+<wire x1="25.4" y1="-12.7" x2="25.4" y2="-10.16" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$6" class="0">
+<segment>
+<pinref part="U2" gate="G$1" pin="GSCLK"/>
+<wire x1="147.32" y1="-10.16" x2="147.32" y2="-25.4" width="0.1524" layer="91"/>
+<wire x1="147.32" y1="-25.4" x2="27.94" y2="-25.4" width="0.1524" layer="91"/>
+<pinref part="U1" gate="G$1" pin="GSCLK"/>
+<wire x1="27.94" y1="-25.4" x2="27.94" y2="-10.16" width="0.1524" layer="91"/>
+<pinref part="U3" gate="G$1" pin="GSCLK"/>
+<wire x1="264.16" y1="-10.16" x2="264.16" y2="-25.4" width="0.1524" layer="91"/>
+<wire x1="264.16" y1="-25.4" x2="147.32" y2="-25.4" width="0.1524" layer="91"/>
+<junction x="147.32" y="-25.4"/>
 </segment>
 </net>
 </nets>
