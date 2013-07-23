@@ -1,0 +1,2 @@
+DRC SAVE 'C:/Users/jcwoltz/Documents/GitHub/electronics/Synapse/SNARFB-Reza/BBB-cape-basic-v00.dru';
+RUN eagle2freerouter.ulp 'BBB-cape-basic-v00.dru';
