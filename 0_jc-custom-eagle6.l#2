@@ -7751,10 +7751,10 @@ Source: http://focus.ti.com/lit/ds/symlink/iso1176.pdf</description>
 <wire x1="5.08" y1="5.08" x2="5.08" y2="-5.08" width="0.254" layer="94"/>
 <wire x1="5.08" y1="-5.08" x2="-5.08" y2="-5.08" width="0.254" layer="94"/>
 <wire x1="-5.08" y1="-5.08" x2="-5.08" y2="5.08" width="0.254" layer="94"/>
-<pin name="1" x="-2.54" y="-7.62" length="short" rot="R90"/>
-<pin name="2" x="-2.54" y="7.62" length="short" rot="R270"/>
-<pin name="3" x="2.54" y="-7.62" length="short" rot="R90"/>
-<pin name="4" x="2.54" y="7.62" length="short" rot="R270"/>
+<pin name="TXD" x="-2.54" y="-7.62" length="short" rot="R90"/>
+<pin name="TXF" x="-2.54" y="7.62" length="short" rot="R270"/>
+<pin name="RXF" x="2.54" y="-7.62" length="short" rot="R90"/>
+<pin name="RXD" x="2.54" y="7.62" length="short" rot="R270"/>
 </symbol>
 <symbol name="LM75A">
 <wire x1="-7.62" y1="7.62" x2="7.62" y2="7.62" width="0.254" layer="94"/>
@@ -8339,6 +8339,8 @@ Source: http://focus.ti.com/lit/ds/symlink/iso1176.pdf</description>
 <wire x1="5.08" y1="7.62" x2="5.08" y2="-7.62" width="0.254" layer="94"/>
 <wire x1="5.08" y1="-7.62" x2="-5.08" y2="-7.62" width="0.254" layer="94"/>
 <wire x1="-5.08" y1="-7.62" x2="-5.08" y2="7.62" width="0.254" layer="94"/>
+<text x="-5.588" y="8.128" size="1.778" layer="95">&gt;NAME</text>
+<text x="-5.08" y="-10.16" size="1.778" layer="96">&gt;VALUE</text>
 </symbol>
 </symbols>
 <devicesets>
@@ -9907,10 +9909,10 @@ Standard 7805 5V regulator. IGO (Input Ground Output). Spark Fun Electronics SKU
 <devices>
 <device name="" package="2X02_PTH">
 <connects>
-<connect gate="G$1" pin="1" pad="1"/>
-<connect gate="G$1" pin="2" pad="2"/>
-<connect gate="G$1" pin="3" pad="3"/>
-<connect gate="G$1" pin="4" pad="4"/>
+<connect gate="G$1" pin="RXD" pad="4"/>
+<connect gate="G$1" pin="RXF" pad="3"/>
+<connect gate="G$1" pin="TXD" pad="1"/>
+<connect gate="G$1" pin="TXF" pad="2"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -10682,6 +10684,23 @@ Simple RJ45, 8-pin connection - connector for common Cat5, Cat5e, and Cat6 Ether
 <connect gate="G$1" pin="VDD_5V@1" pad="51"/>
 <connect gate="G$1" pin="VDD_5V@2" pad="52"/>
 <connect gate="G$1" pin="VDD_ADC" pad="78"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="ATSHA204">
+<gates>
+<gate name="G$1" symbol="ATSHA204-TSU" x="0" y="0"/>
+</gates>
+<devices>
+<device name="TSU" package="SOT23-3">
+<connects>
+<connect gate="G$1" pin="GND" pad="3"/>
+<connect gate="G$1" pin="SDA" pad="1"/>
+<connect gate="G$1" pin="VCC" pad="2"/>
 </connects>
 <technologies>
 <technology name=""/>
