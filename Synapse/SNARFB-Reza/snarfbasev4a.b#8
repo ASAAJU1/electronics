@@ -1493,14 +1493,10 @@ Please make sure your boards conform to these design rules.</description>
 <element name="R6" library="0_jc-custom" package="0603-RES" value="22" x="60.96" y="39.37" rot="R180"/>
 <element name="R7" library="0_jc-custom" package="0603-RES" value="22" x="60.96" y="37.338" rot="R180"/>
 <element name="SJ8" library="SparkFun" package="SJ_3_PASTE2&amp;3" value="" x="55.88" y="13.97"/>
-<element name="VREG" library="0_jc-custom" package="SOT23-5" value="MCP1802" x="43.18" y="13.97" rot="R90"/>
-<element name="C11" library="0_jc-custom" package="0805" value="1uF" x="46.482" y="13.97" rot="R90"/>
-<element name="C12" library="0_jc-custom" package="0805" value="1uF" x="62.23" y="41.91"/>
 <element name="C13" library="0_jc-custom" package="0805" value="1uF" x="45.72" y="30.48" rot="R270"/>
 <element name="C14" library="0_jc-custom" package="0805" value="1uF" x="64.77" y="24.13" rot="R90"/>
 <element name="C15" library="0_jc-custom" package="0805" value="1uF" x="52.07" y="19.05" rot="R180"/>
 <element name="C16" library="0_jc-custom" package="0805" value="1uF" x="64.77" y="31.75" rot="R270"/>
-<element name="SJ9" library="SparkFun" package="SJ_2S-NO" value="SOLDERJUMPERNO" x="38.1" y="38.1"/>
 <element name="USB" library="0_jc-custom" package="LED-0603" value="GREEN" x="41.91" y="52.07"/>
 <element name="BLOADER" library="0_jc-custom" package="LED-0603" value="RED" x="34.29" y="52.07"/>
 <element name="BOOT" library="adaprog" package="EVQ-Q2" value="EVQQ2" x="76.2" y="5.08" rot="R180"/>
@@ -1562,9 +1558,6 @@ Please make sure your boards conform to these design rules.</description>
 <contactref element="C8" pad="1"/>
 <contactref element="C10" pad="1"/>
 <contactref element="U4" pad="5"/>
-<contactref element="VREG" pad="2"/>
-<contactref element="C11" pad="2"/>
-<contactref element="C12" pad="2"/>
 <contactref element="C13" pad="2"/>
 <contactref element="C14" pad="2"/>
 <contactref element="C15" pad="2"/>
@@ -1607,18 +1600,15 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="61.68" y1="31.14" x2="64.77" y2="30.85" width="0" layer="19" extent="1-1"/>
 <wire x1="56.68" y1="33.74" x2="61.68" y2="31.14" width="0" layer="19" extent="1-1"/>
 <wire x1="56.78" y1="39.37" x2="56.68" y2="33.74" width="0" layer="19" extent="1-1"/>
-<wire x1="63.13" y1="41.91" x2="56.78" y2="39.37" width="0" layer="19" extent="1-1"/>
 <wire x1="50.08" y1="29.54" x2="56.68" y2="33.74" width="0" layer="19" extent="1-1"/>
 <wire x1="45.72" y1="29.58" x2="50.08" y2="29.54" width="0" layer="19" extent="1-1"/>
 <wire x1="43.18" y1="30.06" x2="45.72" y2="29.58" width="0" layer="19" extent="1-1"/>
 <wire x1="43.18" y1="24.55" x2="43.18" y2="30.06" width="0" layer="19" extent="1-1"/>
 <wire x1="43.815" y1="18.15" x2="43.18" y2="24.55" width="0" layer="19" extent="1-1"/>
-<wire x1="46.482" y1="14.87" x2="43.815" y2="18.15" width="0" layer="19" extent="1-1"/>
-<wire x1="44.4801" y1="13.97" x2="46.482" y2="14.87" width="0" layer="19" extent="1-1"/>
 <wire x1="38.735" y1="18.658" x2="43.815" y2="18.15" width="0" layer="19" extent="1-1"/>
-<wire x1="52.52" y1="13.97" x2="46.482" y2="14.87" width="0" layer="19" extent="1-1"/>
-<wire x1="51.17" y1="19.05" x2="52.52" y2="13.97" width="0" layer="19" extent="1-1"/>
+<wire x1="51.17" y1="19.05" x2="43.815" y2="18.15" width="0" layer="19" extent="1-1"/>
 <wire x1="51.88" y1="22.14" x2="51.17" y2="19.05" width="0" layer="19" extent="1-1"/>
+<wire x1="52.52" y1="13.97" x2="51.17" y2="19.05" width="0" layer="19" extent="1-1"/>
 <wire x1="54.2" y1="3.08" x2="52.52" y2="13.97" width="0" layer="19" extent="1-1"/>
 <wire x1="47.4" y1="3.08" x2="54.2" y2="3.08" width="0" layer="19" extent="1-1"/>
 <wire x1="63.5" y1="5.08" x2="54.2" y2="3.08" width="0" layer="19" extent="1-1"/>
@@ -1779,7 +1769,6 @@ Please make sure your boards conform to these design rules.</description>
 <contactref element="U4" pad="44"/>
 <contactref element="U4" pad="14"/>
 <contactref element="SJ8" pad="3"/>
-<contactref element="SJ9" pad="2"/>
 <contactref element="R13" pad="2"/>
 <contactref element="J1" pad="2"/>
 <contactref element="U1" pad="3"/>
@@ -1803,8 +1792,7 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="50.08" y1="30.34" x2="52.68" y2="22.14" width="0" layer="19" extent="1-1"/>
 <wire x1="45.72" y1="31.38" x2="50.08" y2="30.34" width="0" layer="19" extent="1-1"/>
 <wire x1="42.037" y1="37.338" x2="45.72" y2="31.38" width="0" layer="19" extent="1-1"/>
-<wire x1="38.55" y1="38.1" x2="42.037" y2="37.338" width="0" layer="19" extent="1-1"/>
-<wire x1="37.338" y1="33.263" x2="38.55" y2="38.1" width="0" layer="19" extent="1-1"/>
+<wire x1="37.338" y1="33.263" x2="42.037" y2="37.338" width="0" layer="19" extent="1-1"/>
 <wire x1="31.485" y1="15.113" x2="38.735" y2="20.458" width="0" layer="19" extent="1-1"/>
 <wire x1="22.56" y1="31.373" x2="37.338" y2="33.263" width="0" layer="19" extent="1-1"/>
 <wire x1="19.1262" y1="33.909" x2="22.56" y2="31.373" width="0" layer="19" extent="1-1"/>
@@ -1953,21 +1941,15 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="55.88" y1="33.74" x2="54.98" y2="39.37" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="VBUS">
-<contactref element="U4" pad="7"/>
-<contactref element="SJ8" pad="1"/>
-<contactref element="PTC1" pad="1"/>
-<contactref element="VREG" pad="1"/>
-<contactref element="C11" pad="1"/>
-<contactref element="VREG" pad="3"/>
 <contactref element="R5" pad="1"/>
 <contactref element="R5" pad="2"/>
 <contactref element="R5" pad="3"/>
 <contactref element="R5" pad="4"/>
+<contactref element="U4" pad="7"/>
+<contactref element="SJ8" pad="1"/>
+<contactref element="PTC1" pad="1"/>
 <wire x1="55.08" y1="33.74" x2="73.53" y2="39.37" width="0" layer="19" extent="1-1"/>
 <wire x1="54.991" y1="13.97" x2="55.08" y2="33.74" width="0" layer="19" extent="1-1"/>
-<wire x1="46.482" y1="13.07" x2="54.991" y2="13.97" width="0" layer="19" extent="1-1"/>
-<wire x1="44.4801" y1="13.02" x2="46.482" y2="13.07" width="0" layer="19" extent="1-1"/>
-<wire x1="44.4801" y1="14.92" x2="44.4801" y2="13.02" width="0" layer="19" extent="1-1"/>
 <wire x1="39.654" y1="47.383" x2="55.08" y2="33.74" width="0" layer="19" extent="1-1"/>
 <wire x1="38.754" y1="47.383" x2="39.654" y2="47.383" width="0" layer="19" extent="1-1"/>
 <wire x1="37.954" y1="47.383" x2="38.754" y2="47.383" width="0" layer="19" extent="1-1"/>
@@ -2028,13 +2010,6 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="50.08" y1="31.14" x2="72.8" y2="7.08" width="0" layer="19" extent="1-1"/>
 <wire x1="44.577" y1="42.418" x2="50.08" y2="31.14" width="0" layer="19" extent="1-1"/>
 <wire x1="-17.41" y1="-6.35" x2="50.08" y2="31.14" width="0" layer="19" extent="1-1"/>
-</signal>
-<signal name="MVOUT">
-<contactref element="VREG" pad="5"/>
-<contactref element="C12" pad="1"/>
-<contactref element="SJ9" pad="1"/>
-<wire x1="37.65" y1="38.1" x2="61.33" y2="41.91" width="0" layer="19" extent="1-1"/>
-<wire x1="41.8799" y1="13.02" x2="37.65" y2="38.1" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="AREF-7">
 <contactref element="U4" pad="42"/>
