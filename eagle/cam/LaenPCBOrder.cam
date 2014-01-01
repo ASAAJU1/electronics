@@ -13,8 +13,7 @@ Section=Sec_9
 [Sec_1]
 Name[C]="Cream"
 Name[en]="Top Solder Paste"
-Prompt[C]=""
-Prompt[en]=""
+Prompt=""
 Device="GERBER_RS274X"
 Wheel=".whl"
 Rack=""
@@ -33,8 +32,7 @@ Colors=" 1 2 1 2 1 2 1 2 1 2 1 2 1 2 1 2 6 6 4 8 8 8 8 8 8 8 8 8 8 8 8 8 4 4 1 1
 [Sec_2]
 Name[C]="Component side"
 Name[en]="Top Copper Layer"
-Prompt[C]=""
-Prompt[en]=""
+Prompt=""
 Device="GERBER_RS274X"
 Wheel=".whl"
 Rack=""
@@ -53,8 +51,7 @@ Colors=" 1 2 1 2 1 2 1 2 1 2 1 2 1 2 1 2 6 6 4 8 8 8 8 8 8 8 8 8 8 8 8 8 4 4 1 1
 [Sec_3]
 Name[C]="Solder side"
 Name[en]="Bottom Copper Layer"
-Prompt[C]=""
-Prompt[en]=""
+Prompt=""
 Device="GERBER_RS274X"
 Wheel=".whl"
 Rack=""
@@ -73,8 +70,7 @@ Colors=" 1 2 1 2 1 2 1 2 1 2 1 2 1 2 1 2 6 6 4 8 8 8 8 8 8 8 8 8 8 8 8 8 4 4 1 1
 [Sec_4]
 Name[C]="Silk screen CMP"
 Name[en]="Top Silkscreen "
-Prompt[C]=""
-Prompt[en]=""
+Prompt=""
 Device="GERBER_RS274X"
 Wheel=".whl"
 Rack=""
@@ -87,14 +83,13 @@ Sheet=1
 Tolerance="0 0 0 0 0 0"
 Pen="0.0mil 0"
 Page="12000.0mil 8000.0mil"
-Layers=" 20 21 25 121"
+Layers=" 20 21 121"
 Colors=" 1 2 1 2 1 2 1 2 1 2 1 2 1 2 1 2 6 6 4 8 8 8 8 8 8 8 8 8 8 8 8 8 4 4 1 1 1 1 3 3 1 2 6 8 8 5 8 8 8 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 4 2 4 3 6 6 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0"
 
 [Sec_5]
 Name[C]="Silk screen SOL"
 Name[en]="Bottom Silk screen"
-Prompt[C]=""
-Prompt[en]=""
+Prompt=""
 Device="GERBER_RS274X"
 Wheel=".whl"
 Rack=""
@@ -107,14 +102,13 @@ Sheet=1
 Tolerance="0 0 0 0 0 0"
 Pen="0.0mil 0"
 Page="12000.0mil 8000.0mil"
-Layers=" 20 22 26 122"
+Layers=" 20 22 122"
 Colors=" 1 2 1 2 1 2 1 2 1 2 1 2 1 2 1 2 6 6 4 8 8 8 8 8 8 8 8 8 8 8 8 8 4 4 1 1 1 1 3 3 1 2 6 8 8 5 8 8 8 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 4 2 4 3 6 6 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0"
 
 [Sec_6]
 Name[C]="Solder stop mask CMP"
 Name[en]="Top Solder Mask"
-Prompt[C]=""
-Prompt[en]=""
+Prompt=""
 Device="GERBER_RS274X"
 Wheel=".whl"
 Rack=""
@@ -133,8 +127,7 @@ Colors=" 1 2 1 2 1 2 1 2 1 2 1 2 1 2 1 2 6 6 4 8 8 8 8 8 8 8 8 8 8 8 8 8 4 4 1 1
 [Sec_7]
 Name[C]="Solder stop mask SOL"
 Name[en]="Bottom Solder Mask"
-Prompt[C]=""
-Prompt[en]=""
+Prompt=""
 Device="GERBER_RS274X"
 Wheel=".whl"
 Rack=""
@@ -153,8 +146,7 @@ Colors=" 1 2 1 2 1 2 1 2 1 2 1 2 1 2 1 2 6 6 4 8 8 8 8 8 8 8 8 8 8 8 8 8 4 4 1 1
 [Sec_8]
 Name[C]="Board Outline"
 Name[en]="Board Outline"
-Prompt[C]=""
-Prompt[en]=""
+Prompt=""
 Device="GERBER_RS274X"
 Wheel=".whl"
 Rack=""
@@ -173,8 +165,7 @@ Colors=" 1 2 1 2 1 2 1 2 1 2 1 2 1 2 1 2 6 6 4 8 8 8 8 8 8 8 8 8 8 8 8 8 4 4 1 1
 [Sec_9]
 Name[C]="Excellion Drill"
 Name[en]="Excellion Drill"
-Prompt[C]=""
-Prompt[en]=""
+Prompt=""
 Device="EXCELLON"
 Wheel=".whl"
 Rack=""
