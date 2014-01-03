@@ -1,2 +1,0 @@
-DRC SAVE 'C:/Users/jcwoltz/Documents/GitHub/electronics/Synapse/SNARFB-Reza/snarfbasev4a.dru';
-RUN eagle2freerouter.ulp 'snarfbasev4a.dru';
